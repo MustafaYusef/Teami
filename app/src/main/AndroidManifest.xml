@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.martin.representativesmap">
+          package="com.martin.teami">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -22,9 +22,9 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
-        <activity android:name=".activities.AddDoctor">
+        <activity android:name="com.martin.teami.activities.AddDoctor">
         </activity>
-        <activity android:name=".activities.MainActivity">
+        <activity android:name="com.martin.teami.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -32,11 +32,11 @@
             </intent-filter>
         </activity>
         <activity
-                android:name=".activities.LoginActivity"
+                android:name="com.martin.teami.activities.LoginActivity"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".activities.MapActivity"
+                android:name="com.martin.teami.activities.MapActivity"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
