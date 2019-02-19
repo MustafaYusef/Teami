@@ -1,0 +1,26 @@
+<resources>
+    <string name="app_name">Teami</string>
+    <string name="maps_api" translatable="false">AIzaSyBnp5kfH-F36i06KVEUEoa6p_0ylIhPuEE</string>
+    <string name="not_near_pharmacy">You\'re not near a pharmacy, you must be at most 5 meters away from a phamracy to
+        register your location at that pharmacy.
+    </string>
+    <string name="registeration_done">Registered Your Location At</string>
+    <string name="dif_device">Please login from the same device you used before, only one device is allowed per
+        account!
+    </string>
+    <string name="bottomnav_title_0">Home</string>
+    <string name="bottomnav_title_1">Map</string>
+    <string name="login">Login</string>
+    <string name="loginTV">LOGIN</string>
+    <string name="usernameHint">Username</string>
+    <string name="passwordHint">Password</string>
+    <string name="register_location">Register Location</string>
+    <string name="pharmacies">Pharmacies</string>
+    <string name="permissionMessage">You need to allow permissions to use this app</string>
+    <string name="permissionsTitle">Permissions Needed</string>
+    <string name="doneRegisteration">Done</string>
+    <string name="errorRegisteration">Error!</string>
+    <string name="okDialog">OK</string>
+    <string name="cancelDialog">Cancel</string>
+
+</resources>

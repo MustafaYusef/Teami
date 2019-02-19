@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="wrap_content"
+                                             android:id="@+id/constLay">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pharmacyNameTV"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="16dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
+            app:layout_constraintHorizontal_bias="0.0"
+            android:textSize="14sp" android:textColor="#444444"
+            app:layout_constraintVertical_bias="1.0" tools:text="Hudda Pharmacy"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintTop_toBottomOf="@+id/view2"
+            android:layout_marginTop="8dp"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/distanceTV"
+            android:layout_gravity="end|center_vertical" tools:text="1.5 m"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="8dp" app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintHorizontal_bias="1.0" app:layout_constraintTop_toBottomOf="@+id/view2"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"/>
+    <View android:layout_width="match_parent" android:layout_height="1dp" android:id="@+id/view2"
+          app:layout_constraintBottom_toBottomOf="parent"
+          android:background="@color/colorPrimary" app:layout_constraintTop_toTopOf="parent"
+          app:layout_constraintVertical_bias="0.0" android:layout_marginTop="8dp"
+          app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
+          android:layout_marginStart="8dp" android:layout_marginEnd="8dp"/>
+</android.support.constraint.ConstraintLayout>

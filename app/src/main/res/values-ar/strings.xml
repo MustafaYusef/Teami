@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">تيمي</string>
+    <string name="not_near_pharmacy">لست بالقرب من أي صيدلية، لتسجيل زيارة يتوجب ان تكون قرب صيدلية</string>
+    <string name="registeration_done">تم تسجيل زيارتك في</string>
+    <string name="dif_device">"الرجاء تسجيل الدخول من نفس الجهاز المستخدم في اول تسجيل، لا يمكن تسجيل الدخول بأكثر
+        من جهاز في نفس الحساب "
+    </string>
+    <string name="bottomnav_title_0">الرئيسية</string>
+    <string name="bottomnav_title_1">الخريطة</string>
+    <string name="login">دخول</string>
+    <string name="loginTV">تسجيل الدخول</string>
+    <string name="usernameHint">اسم المستخدم</string>
+    <string name="passwordHint">الرقم السري</string>
+    <string name="register_location">تسجيل زيارة</string>
+    <string name="pharmacies">الصيدليات</string>
+    <string name="permissionMessage">يجب السماح بالأذونات لإستعمال هذا التطبيق</string>
+    <string name="permissionsTitle">تفعيل الإذونات</string>
+    <string name="doneRegisteration">تم</string>
+    <string name="errorRegisteration">خطأ</string>
+    <string name="okDialog">موافق</string>
+    <string name="cancelDialog">إلغاء</string>
+</resources>
