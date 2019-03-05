@@ -74,12 +74,14 @@ class MainActivity : AppCompatActivity() {
     private var calendar: Calendar? = null
     private val homeFragment = HomeFragment()
     private val mapFragment = MapFragment()
+    private var running = false
+    private lateinit var activity: MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Hawk.init(this).build()
-
+        activity = this
         checkUser()
         setBottomNav()
 
@@ -100,7 +102,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkUser() {
-                val loginResponse = Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED)
+        val loginResponse = Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED)
         calendar = Hawk.get(LOGIN_TIME)
         if (loginResponse != null) {
             token = loginResponse.token
@@ -108,7 +110,13 @@ class MainActivity : AppCompatActivity() {
             checkExpirationLimit(token, tokenExp, getID(), calendar, this)
         } else {
             val intent = Intent(this, LoginActivity::class.java)
-            this.finish()
+            Hawk.deleteAll()
+            intent.flags = Intent
+                .FLAG_ACTIVITY_CLEAR_TOP or Intent
+                .FLAG_ACTIVITY_NO_HISTORY or Intent
+                .FLAG_ACTIVITY_NEW_TASK or Intent
+                .FLAG_ACTIVITY_CLEAR_TASK
+            finish()
             startActivity(intent)
         }
     }
@@ -142,7 +150,7 @@ class MainActivity : AppCompatActivity() {
         val bundle = Bundle()
         if (this::token.isInitialized) {
             bundle.putString("TOKEN", token)
-            bundle.putInt("EXP",tokenExp)
+            bundle.putInt("EXP", tokenExp)
             bundle.putString("PHONEID", getID())
             homeFragment.arguments = bundle
         } else {
@@ -242,7 +250,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
@@ -271,6 +278,10 @@ class MainActivity : AppCompatActivity() {
     private fun initGPS() {
         val builder = LocationSettingsRequest.Builder()
             .addLocationRequest(locationRequest)
+        locationRequest.interval = 16000
+        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        locationRequest.maxWaitTime = 32000
+
         val result = LocationServices.getSettingsClient(this@MainActivity)
             .checkLocationSettings(builder.build())
 
@@ -407,20 +418,21 @@ class MainActivity : AppCompatActivity() {
             requestUpdates()
             return
         }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 0f, listener)
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 0f, listener)
-        locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 5000, 0f, listener)
-        fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
-            val location = task.result
-            val name = this.intent.getStringExtra("NAME")
-            location?.let {
-                userLocation = it
-            }
-            mapView?.getMapAsync {
-                it.isMyLocationEnabled = true
+        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5f, listener)
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, listener)
+        locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 5000, 5f, listener)
+        if (fusedLocationProviderClient.locationAvailability.isSuccessful)
+            fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
+                val location = task.result
+                val name = this.intent.getStringExtra("NAME")
+                location?.let {
+                    userLocation = it
+                }
+                mapView?.getMapAsync {
+                    it.isMyLocationEnabled = true
 //                getMarkers(location)
+                }
             }
-        }
     }
 
     private fun showMessageOK(title: String, message: String, okListener: DialogInterface.OnClickListener) {
@@ -447,6 +459,16 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
+    override fun onStop() {
+        running = false
+        super.onStop()
+    }
+
+    override fun onStart() {
+        running = true
+        super.onStart()
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.main_menu, menu)
         return super.onCreateOptionsMenu(menu)
@@ -457,5 +479,10 @@ class MainActivity : AppCompatActivity() {
             R.id.logout -> logoutUser(this, token, getID())
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun getInstance(): MainActivity {
+        return activity
+
     }
 }

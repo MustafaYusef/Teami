@@ -52,7 +52,7 @@ fun checkTokenWithBackEnd(activity: Activity, token: String,phoneId: String) {
 }
 
 fun logoutUser(activity: Activity, token: String,phoneId: String) {
-    Hawk.delete(Consts.LOGIN_RESPONSE_SHARED)
+    Hawk.deleteAll()
     val retrofit = Retrofit.Builder()
         .baseUrl(Consts.BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
@@ -68,8 +68,13 @@ fun logoutUser(activity: Activity, token: String,phoneId: String) {
         override fun onResponse(call: Call<LogoutResponse>, response: Response<LogoutResponse>) {
             val logoutResponse = response.body()
             val intent = Intent(activity, LoginActivity::class.java)
-            activity.startActivity(intent)
+            intent.flags = Intent
+                .FLAG_ACTIVITY_CLEAR_TOP or Intent
+                .FLAG_ACTIVITY_NO_HISTORY or Intent
+                .FLAG_ACTIVITY_NEW_TASK or Intent
+                .FLAG_ACTIVITY_CLEAR_TASK
             activity.finish()
+            activity.startActivity(intent)
         }
     })
 }

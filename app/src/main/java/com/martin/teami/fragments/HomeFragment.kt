@@ -52,14 +52,14 @@ class HomeFragment : Fragment() {
 
     fun setCardView(isNear: Boolean) {
         if (isNear) {
-            imageView4.setImageResource(R.drawable.ic_my_location_green_24dp)
-            detailsCV.setOnClickListener {
+            imageView4?.setImageResource(R.drawable.ic_my_location_green_24dp)
+            detailsCV?.setOnClickListener {
                 val intent = Intent(requireContext(), FullDetailsActivity::class.java)
                 startActivity(intent)
             }
         } else {
-            imageView4.setImageResource(R.drawable.ic_my_location_red_24dp)
-            detailsCV.setOnClickListener(null)
+            imageView4?.setImageResource(R.drawable.ic_my_location_red_24dp)
+            detailsCV?.setOnClickListener(null)
         }
     }
 
