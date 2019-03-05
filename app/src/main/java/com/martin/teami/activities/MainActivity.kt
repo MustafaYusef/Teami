@@ -181,7 +181,7 @@ class MainActivity : AppCompatActivity() {
             val distanceTwo = userLocation.distanceTo(locationB)
             return@Comparator java.lang.Float.compare(distanceOne, distanceTwo)
         })
-        mapFragment.listMarkers(sortedMarkers, location ?: userLocation)
+//        mapFragment.listMarkers(sortedMarkers, location ?: userLocation)
         homeFragment.setCardView(checkIfNearMarker(sortedMarkers))
 //        getMarkers(location ?: userLocation)
         return sortedMarkers

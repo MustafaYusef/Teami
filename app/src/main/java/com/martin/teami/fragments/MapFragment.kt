@@ -41,7 +41,6 @@ class MapFragment : Fragment(), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val bottomSheetBehavior = BottomSheetBehavior.from(bottom_sheet)
 
         initGoogleMaps(savedInstanceState)
 
@@ -53,21 +52,23 @@ class MapFragment : Fragment(), OnMapReadyCallback {
         markersRV.layoutManager = linearLayoutManager
         markersRV.adapter = PharmaciesAdapter(markers, location)
     }
+
     fun showMarkers(markers: List<Pharmacy>) {
-        mapView.getMapAsync { map ->
-            map.clear()
-            context?.let {
-                markers.forEach { it2 ->
-                    map.addMarker(MarkerOptions().position(it2.getPos()).title(it2.name))
-                        .setIcon(
-                            bitmapDescriptorFromVector(
-                                it,
-                                R.drawable.ic_marker_pharmacy
+        if (mapView != null)
+            mapView.getMapAsync { map ->
+                map.clear()
+                context?.let {
+                    markers.forEach { it2 ->
+                        map.addMarker(MarkerOptions().position(it2.getPos()).title(it2.name))
+                            .setIcon(
+                                bitmapDescriptorFromVector(
+                                    it,
+                                    R.drawable.ic_marker_pharmacy
+                                )
                             )
-                        )
+                    }
                 }
             }
-        }
     }
 
     private fun bitmapDescriptorFromVector(context: Context, @DrawableRes vectorDrawableResourceId: Int): BitmapDescriptor {
