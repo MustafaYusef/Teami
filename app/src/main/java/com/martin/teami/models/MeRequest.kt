@@ -2,7 +2,7 @@ package com.martin.teami.models
 
 import com.google.gson.annotations.SerializedName
 
-class LogoutRequest(
+class MeRequest(
     var token: String,
     @SerializedName("phone_id")
     var phoneId: String

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                             xmlns:app="http://schemas.android.com/apk/res-auto"
+                                             android:layout_width="match_parent"
+                                             android:layout_height="match_parent"
+                                             xmlns:tools="http://schemas.android.com/tools"
+                                             tools:context=".activities.FullDetailsActivity">
+
+    <RatingBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/feedbackRatingBar"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" android:layout_marginTop="16dp" app:layout_constraintTop_toTopOf="parent"
+            android:stepSize="1" android:numStars="5"/>
+    <EditText
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:ems="10"
+            android:id="@+id/feedbackNoteET" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/feedbackRatingBar" android:layout_marginEnd="8dp"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            android:hint="Notes" android:gravity="top"
+    />
+    <Button
+            android:text="Done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" android:id="@+id/doneFeedbackBtn"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="8dp" android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/feedbackNoteET" android:background="@drawable/rounded_btn_shape"
+            android:textColor="#ffffff" android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.0"/>
+</android.support.constraint.ConstraintLayout>

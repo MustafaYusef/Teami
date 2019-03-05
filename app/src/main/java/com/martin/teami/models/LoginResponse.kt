@@ -3,7 +3,7 @@ package com.martin.teami.models
 import android.os.Parcel
 import android.os.Parcelable
 
-class LoginResponse(var token: String?,var expire:Int) : Parcelable {
+class LoginResponse(var token: String, var expire: Int) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
         parcel.readInt()

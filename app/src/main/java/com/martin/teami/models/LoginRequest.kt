@@ -1,3 +1,8 @@
 package com.martin.teami.models
 
-class LoginRequest(var email:String, var password:String)
+import com.google.gson.annotations.SerializedName
+
+class LoginRequest(var email: String,
+                   var password: String,
+                   @SerializedName("phone_id")
+                   var phoneId: String)

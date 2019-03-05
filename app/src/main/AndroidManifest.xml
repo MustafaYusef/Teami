@@ -22,9 +22,18 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
-        <activity android:name="com.martin.teami.activities.AddDoctor">
+        <activity
+                android:name=".activities.AboutActivity"
+                android:label="@string/title_activity_about"
+                android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name="com.martin.teami.activities.MainActivity">
+        <activity android:name=".activities.OrderActivity">
+        </activity>
+        <activity android:name=".activities.FullDetailsActivity">
+        </activity>
+        <activity android:name=".activities.AddDoctor">
+        </activity>
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -32,11 +41,11 @@
             </intent-filter>
         </activity>
         <activity
-                android:name="com.martin.teami.activities.LoginActivity"
+                android:name=".activities.LoginActivity"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name="com.martin.teami.activities.MapActivity"
+                android:name=".activities.MapActivity"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
@@ -46,6 +55,9 @@
         <meta-data
                 android:name="com.google.android.gms.version"
                 android:value="@integer/google_play_services_version"/>
+        <meta-data
+                android:name="preloaded_fonts"
+                android:resource="@array/preloaded_fonts"/>
 
         <uses-library
                 android:name="org.apache.http.legacy"

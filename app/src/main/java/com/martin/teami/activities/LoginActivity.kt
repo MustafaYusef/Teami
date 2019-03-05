@@ -1,10 +1,13 @@
 package com.martin.teami.activities
 
+import android.arch.lifecycle.ViewModelProviders
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.view.View
 import android.widget.Toast
+import com.martin.teami.ViewModels.LoginViewModel
 import com.martin.teami.models.LoginRequest
 import com.martin.teami.models.LoginResponse
 import com.martin.teami.retrofit.RepresentativesInterface
@@ -23,11 +26,18 @@ import java.util.*
 
 class LoginActivity : AppCompatActivity() {
 
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.martin.teami.R.layout.activity_login)
+//        val viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
+        val email = emailET.text.toString()
+        val password = passwordET.text.toString()
+//        viewModel.email = email
+//        viewModel.password = password
         initLogin()
-
+        Hawk.init(this).build()
     }
 
     private fun initLogin() {
@@ -37,18 +47,24 @@ class LoginActivity : AppCompatActivity() {
             .build()
         val loginInterface = retrofit.create(RepresentativesInterface::class.java)
         loginBtn.setOnClickListener {
-            val loginRequest = LoginRequest(emailET.text.toString(), passwordET.text.toString())
+            loginProgressBar.visibility = View.VISIBLE
+            it.visibility = View.GONE
+            val loginRequest = LoginRequest(emailET.text.toString(), passwordET.text.toString(), getID())
             val loginResponseCall = loginInterface.getToken(loginRequest)
             loginResponseCall.enqueue(object : Callback<LoginResponse> {
                 override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                    loginProgressBar.visibility = View.GONE
+                    it.visibility = View.VISIBLE
                     Toast.makeText(this@LoginActivity, t.message, Toast.LENGTH_LONG).show()
                 }
 
                 override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                    loginProgressBar.visibility = View.GONE
+                    it.visibility = View.VISIBLE
                     val loginResponse = response.body()
                     val intent = Intent(this@LoginActivity, MainActivity::class.java)
                     Hawk.put(LOGIN_RESPONSE_SHARED, loginResponse)
-                    Hawk.put(LOGIN_TIME,Calendar.getInstance(TimeZone.getDefault()))
+                    Hawk.put(LOGIN_TIME, Calendar.getInstance(TimeZone.getDefault()))
                     if (!loginResponse?.token.isNullOrEmpty()) {
                         startActivity(intent)
                     }

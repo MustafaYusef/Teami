@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">تيمي</string>
-    <string name="not_near_pharmacy">لست بالقرب من أي صيدلية، لتسجيل زيارة يتوجب ان تكون قرب صيدلية</string>
+    <string name="not_near_marker">لست بالقرب من أي صيدلية، لتسجيل زيارة يتوجب ان تكون قرب صيدلية</string>
     <string name="registeration_done">تم تسجيل زيارتك في</string>
     <string name="dif_device">"الرجاء تسجيل الدخول من نفس الجهاز المستخدم في اول تسجيل، لا يمكن تسجيل الدخول بأكثر
         من جهاز في نفس الحساب "

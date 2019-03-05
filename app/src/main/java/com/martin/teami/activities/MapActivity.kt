@@ -121,7 +121,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
                 }.show()
         } else {
             val builder: AlertDialog = AlertDialog.Builder(this)
-                .setMessage(getString(R.string.not_near_pharmacy))
+                .setMessage(getString(R.string.not_near_marker))
                 .setPositiveButton(
                     "Ok"
                 ) { dialog, which -> dialog?.dismiss() }.show()
@@ -178,8 +178,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun listPharmacies(pharmacies: List<Pharmacy>, location: Location?) {
         val linearLayoutManager = LinearLayoutManager(this)
         linearLayoutManager.orientation = LinearLayoutManager.VERTICAL
-        pharmaciesRV.layoutManager = linearLayoutManager
-        pharmaciesRV.adapter = PharmaciesAdapter(pharmacies, location)
+        markersRV.layoutManager = linearLayoutManager
+        markersRV.adapter = PharmaciesAdapter(pharmacies, location)
     }
 
     private fun showPharmacies(it: List<Pharmacy>, map: GoogleMap) {

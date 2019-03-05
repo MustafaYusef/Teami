@@ -10,6 +10,9 @@ import retrofit2.http.POST
 
 interface RepresentativesInterface {
 
+    @GET(".")
+    fun getBooks(): Call<List<Item>>
+
     @GET("pharmacies/")
     fun getPharmacies(): Call<PharmaciesResponse>
 
@@ -17,7 +20,7 @@ interface RepresentativesInterface {
     fun registerPharmacy(
         @Header("Content-Type") header1: String,
         @Header("cache-control") header2: String,
-        @Header("crossDomain") header3:Boolean,
+        @Header("crossDomain") header3: Boolean,
         @Body pharmacy: Pharmacy
     ): Call<RegisterResponse>
 
@@ -33,4 +36,6 @@ interface RepresentativesInterface {
     @POST("logout")
     fun logout(@Body logoutRequest: LogoutRequest): Call<LogoutResponse>
 
+    @POST("me")
+    fun getMe(@Body meRequest: MeRequest): Call<MeResponse>
 }
