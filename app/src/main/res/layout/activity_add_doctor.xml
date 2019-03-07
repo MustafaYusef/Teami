@@ -67,7 +67,7 @@
                 android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintVertical_bias="0.0"/>
-    
+
         <TextView
                 android:background="@color/background"
                 android:text="Specialty"
@@ -83,7 +83,7 @@
                 android:textColor="@color/colorAccentDark"
                 android:textStyle="bold"
                 app:layout_constraintTop_toTopOf="@+id/addSpecialityET"
-                />
+        />
     
         <EditText
                 android:layout_width="0dp"
