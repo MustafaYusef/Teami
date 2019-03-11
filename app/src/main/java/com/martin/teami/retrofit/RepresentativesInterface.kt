@@ -10,9 +10,6 @@ interface RepresentativesInterface {
     @GET(".")
     fun getBooks(): Call<List<Item>>
 
-    @GET("pharmacies/")
-    fun getPharmacies(): Call<PharmaciesResponse>
-
     @POST("pharmacies/edit/")
     fun registerPharmacy(
         @Header("Content-Type") header1: String,
@@ -64,4 +61,8 @@ interface RepresentativesInterface {
 
     @POST("AddNewPharmacy")
     fun addNewPharmacy(@Body pharmacy: Pharmacy):Call<AddPharmacyResponse>
+
+    @GET("GetMyResource")
+    fun getMyResources(@Query("token") token: String,
+                       @Query("phone_id") phoneId: String):Call<MyResourcesResponse>
 }

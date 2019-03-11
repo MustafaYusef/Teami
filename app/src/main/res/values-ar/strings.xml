@@ -34,4 +34,9 @@
     <string name="work">وقت العمل</string>
     <string name="name">الأسم</string>
     <string name="location_unavailable">خدمة تحديد الموقع غير متوفرة</string>
+    <string name="logout">تسجيل الخروج</string>
+    <string name="profile">الحساب</string>
+    <string name="areas">المناطق</string>
+    <string name="new_pharm">صيدلية جديدة</string>
+    <string name="new_doc">طبيب جديد</string>
 </resources>

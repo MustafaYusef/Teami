@@ -21,7 +21,7 @@
                 android:id="@+id/addDocFab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:fab_title="New Doctor"
+                app:fab_title="@string/new_doc"
                 app:fab_size="mini"
                 app:fab_icon="@drawable/ic_doctor_black"
                 app:rippleColor="@color/colorAccentDark"
@@ -32,7 +32,7 @@
                 android:id="@+id/addPharmFab"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:fab_title="New Pharmacy"
+                app:fab_title="@string/new_pharm"
                 app:fab_size="mini"
                 app:fab_icon="@drawable/ic_pharmacy"
                 app:rippleColor="@color/colorAccentDark"
@@ -52,7 +52,9 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:theme="@style/AppTheme.AppBarOverlay" android:background="@drawable/ic_subtraction_1"
-        >
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent">
 
             <android.support.design.widget.CollapsingToolbarLayout
                     android:id="@+id/toolbar_layout"
@@ -72,7 +74,7 @@
                     <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" app:srcCompat="@drawable/ic_person_white_24dp"
-                            android:id="@+id/imageView3"
+                            android:id="@+id/profileIV"
                             android:layout_marginEnd="8dp" android:scaleY="1.2" android:scaleX="1.2"
                             android:layout_marginBottom="8dp" android:layout_gravity="start"
                             android:layout_marginStart="8dp"/>
@@ -191,7 +193,7 @@
                         app:layout_constraintVertical_chainStyle="spread_inside"
                         app:layout_constraintTop_toBottomOf="@+id/distanceTV"/>
                 <ImageView
-                        android:layout_width="2dp"
+                        android:layout_width="4dp"
                         android:layout_height="0dp" android:id="@+id/imageView7"
                         app:layout_constraintEnd_toEndOf="@+id/imageView6"
                         android:layout_marginBottom="8dp" app:layout_constraintBottom_toTopOf="@+id/imageView4"

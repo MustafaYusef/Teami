@@ -20,6 +20,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.PermissionChecker
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
@@ -30,12 +31,11 @@ import com.google.android.gms.tasks.Task
 import com.martin.teami.R
 import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
-import com.martin.teami.utils.Consts
+import com.martin.teami.utils.Consts.BASE_URL
 import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.Consts.USER_LOCATION
 import com.martin.teami.utils.checkExpirationLimit
-import com.martin.teami.utils.logoutUser
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listener: LocationListener
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
-    private lateinit var markersList: List<Pharmacy>
+    private lateinit var doctorsList: List<Doctor>
     private lateinit var userLocation: Location
     private var permissionCount = 0
     private lateinit var token: String
@@ -64,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Hawk.init(this).build()
+        imageView7.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         checkUser()
 
         locationRequest = LocationRequest()
@@ -96,6 +97,10 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
         }
+        profileIV.setOnClickListener {
+            val i = Intent(this@MainActivity, AboutActivity::class.java)
+            startActivity(i)
+        }
     }
 
     private fun checkUser() {
@@ -126,9 +131,9 @@ class MainActivity : AppCompatActivity() {
         return Settings.Secure.getString(this@MainActivity.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    fun checkNearestMarker(location: Location?): List<Pharmacy> {
-        val sortedMarkers = markersList
-        Collections.sort(sortedMarkers, Comparator<Pharmacy> { marker1, marker2 ->
+    fun checkNearestMarker(location: Location?): List<Doctor> {
+        val sortedMarkers = doctorsList
+        Collections.sort(sortedMarkers, Comparator<Doctor> { marker1, marker2 ->
             val locationA = Location("point A")
             locationA.latitude = marker1.latitude.toDouble()
             locationA.longitude = marker1.longitude.toDouble()
@@ -143,9 +148,9 @@ class MainActivity : AppCompatActivity() {
         return sortedMarkers
     }
 
-    fun checkIfNearMarker(sortedMarkers: List<Pharmacy>): Boolean {
+    fun checkIfNearMarker(sortedMarkers: List<Doctor>): Boolean {
 
-        val nearestPharm = Location("Nearest Pharmacy")
+        val nearestPharm = Location("Nearest Doctor")
         nearestPharm.latitude = sortedMarkers[0].latitude.toDouble()
         nearestPharm.longitude = sortedMarkers[0].longitude.toDouble()
         val distance = userLocation.distanceTo(nearestPharm)
@@ -167,45 +172,22 @@ class MainActivity : AppCompatActivity() {
         } else imageView4?.setImageResource(R.drawable.ic_not_available)
     }
 
-//    private fun registerLocation(marker: Pharmacy) {
-////        marker.registered = true
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl(Consts.BASE_URL)
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//        val registerInterface = retrofit.create(RepresentativesInterface::class.java)
-//        val registerCall = registerInterface.registerPharmacy(
-//            "application/json", "no-cache", true,
-//            marker
-//        )
-//        registerCall.enqueue(object : Callback<RegisterResponse> {
-//            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-//
-//            }
-//
-//            override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
-//            }
-//
-//        })
-//
-//    }
-
     private fun getMarkers() {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl("https://pharmas.herokuapp.com/")
+            .baseUrl(BASE_URL)
             .build()
-        val pharmInterface = retrofit.create(RepresentativesInterface::class.java)
-        pharmInterface.getPharmacies().enqueue(object : Callback<PharmaciesResponse> {
-            override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
+        val resourcesInterface = retrofit.create(RepresentativesInterface::class.java)
+        resourcesInterface.getMyResources(token, getID()).enqueue(object : Callback<MyResourcesResponse> {
+            override fun onFailure(call: Call<MyResourcesResponse>, t: Throwable) {
                 Toast.makeText(this@MainActivity, t.message, Toast.LENGTH_LONG).show()
             }
 
-            override fun onResponse(call: Call<PharmaciesResponse>, response: Response<PharmaciesResponse>) {
+            override fun onResponse(call: Call<MyResourcesResponse>, response: Response<MyResourcesResponse>) {
                 response.body()?.let {
-                    markersList = it.pharmacies
-                    if (this@MainActivity::userLocation.isInitialized)
-                        checkNearestMarker(null)
+                    doctorsList = it.Resource.doctors
+//                    if (this@MainActivity::userLocation.isInitialized)
+//                        checkNearestMarker(null)
                 }
             }
         })
@@ -292,8 +274,8 @@ class MainActivity : AppCompatActivity() {
                     val userLat = location.latitude
                     val userLong = location.longitude
                     val userLatLng = LatLng(userLat, userLong)
-                    if (this@MainActivity::markersList.isInitialized)
-                        checkNearestMarker(it)
+//                    if (this@MainActivity::doctorsList.isInitialized)
+//                        checkNearestMarker(it)
                 }
             }
 
@@ -422,20 +404,5 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         running = true
         super.onStart()
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.main_menu, menu)
-        return super.onCreateOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
-        when (item?.itemId) {
-            R.id.profile->{
-                val i=Intent(this@MainActivity,AboutActivity::class.java)
-                startActivity(i)
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 }
