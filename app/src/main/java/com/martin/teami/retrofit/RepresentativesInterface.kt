@@ -2,10 +2,7 @@ package com.martin.teami.retrofit
 
 import com.martin.teami.models.*
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
+import retrofit2.http.*
 
 
 interface RepresentativesInterface {
@@ -31,11 +28,40 @@ interface RepresentativesInterface {
     fun checkToken(@Body checkRequest: CheckRequest): Call<CheckResponse>
 
     @POST("refresh")
-    fun getRefresh(@Body loginRequest: LoginRequest): Call<LoginResponse>
+    fun getRefresh(@Body refreshRequest: RefreshRequest): Call<LoginResponse>
 
     @POST("logout")
     fun logout(@Body logoutRequest: LogoutRequest): Call<LogoutResponse>
 
     @POST("me")
     fun getMe(@Body meRequest: MeRequest): Call<MeResponse>
+
+    @POST("forget-password")
+    fun sendForgotPasswordEmail(@Body forgotRequest: ForgotRequest): Call<ForgotResponse>
+
+    @GET("GetSpecialities")
+    fun getSpecialty(@Query("token") token:String,
+                     @Query("phone_id") phoneId:String):Call<SpecialityResponse>
+
+    @GET("GetReigns")
+    fun getRegion(@Query("token") token:String,
+                  @Query("phone_id") phoneId:String,
+                  @Query("organisation_id")orgId:Int):Call<RegionResponse>
+
+    @GET("get-status")
+    fun getStatus(@Query("token") token:String,
+                  @Query("phone_id") phoneId:String):Call<StatusResponse>
+    @GET("GetOrganisations")
+    fun getOrgs(@Query("token") token:String,
+                @Query("phone_id") phoneId:String):Call<OrganizationResponse>
+
+    @GET("GetHospitals")
+    fun getHospitals(@Query("token") token:String,
+                @Query("phone_id") phoneId:String):Call<HospitalsResponse>
+
+    @POST("AddNewDoctor")
+    fun addNewDoctor(@Body doctor: Doctor):Call<AddDoctorResponse>
+
+    @POST("AddNewPharmacy")
+    fun addNewPharmacy(@Body pharmacy: Pharmacy):Call<AddPharmacyResponse>
 }

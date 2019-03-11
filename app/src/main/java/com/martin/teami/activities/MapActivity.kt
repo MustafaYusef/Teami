@@ -83,11 +83,11 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
         val sortedPharms = pharmaciesList
         Collections.sort(sortedPharms, Comparator<Pharmacy> { pharmacy1, pharmacy2 ->
             val locationA = Location("point A")
-            locationA.latitude = pharmacy1.latitude
-            locationA.longitude = pharmacy1.longitude
+            locationA.latitude = pharmacy1.latitude.toDouble()
+            locationA.longitude = pharmacy1.longitude.toDouble()
             val locationB = Location("point B")
-            locationB.latitude = pharmacy2.latitude
-            locationB.longitude = pharmacy2.longitude
+            locationB.latitude = pharmacy2.latitude.toDouble()
+            locationB.longitude = pharmacy2.longitude.toDouble()
             val distanceOne = userLocation.distanceTo(locationA)
             val distanceTwo = userLocation.distanceTo(locationB)
             return@Comparator java.lang.Float.compare(distanceOne, distanceTwo)
@@ -105,8 +105,8 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun checkIfNearPharm(sortedPharms: List<Pharmacy>) {
 
         val nearestPharm = Location("Nearest Pharmacy")
-        nearestPharm.latitude = sortedPharms[0].latitude
-        nearestPharm.longitude = sortedPharms[0].longitude
+        nearestPharm.latitude = sortedPharms[0].latitude.toDouble()
+        nearestPharm.longitude = sortedPharms[0].longitude.toDouble()
         val distance = userLocation.distanceTo(nearestPharm)
         if (distance < 50) {
             registerLocation(sortedPharms[0])
@@ -129,7 +129,7 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun registerLocation(pharmacy: Pharmacy) {
-        pharmacy.registered = true
+//        pharmacy.registered = true
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -185,13 +185,13 @@ class MapActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun showPharmacies(it: List<Pharmacy>, map: GoogleMap) {
         map.clear()
         it.forEach {
-            map.addMarker(MarkerOptions().position(it.getPos()).title(it.name))
-                .setIcon(
-                    bitmapDescriptorFromVector(
-                        this@MapActivity,
-                        R.drawable.ic_marker_pharmacy
-                    )
-                )
+//            map.addMarker(MarkerOptions().position(it.getPos()).title(it.name))
+//                .setIcon(
+//                    bitmapDescriptorFromVector(
+//                        this@MapActivity,
+//                        R.drawable.ic_marker_pharmacy
+//                    )
+//                )
         }
     }
 

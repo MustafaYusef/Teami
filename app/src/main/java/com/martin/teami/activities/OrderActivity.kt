@@ -29,7 +29,7 @@ class OrderActivity : AppCompatActivity() {
         if (iteems!=null) {
             itemsOrdered = iteems
             for(item in itemsOrdered){
-                addItem(item.name,item.itemId.toString(),item.quantity.toString())
+                addItem(item.name,item.id.toString(),item.name)
             }
         }
 
@@ -42,7 +42,7 @@ class OrderActivity : AppCompatActivity() {
                 val quantity = editText.text.toString()
                 val id = cardView.id
                 itemsOrdered.add(allItems[id - 1])
-                itemsOrdered.last().quantity = quantity.toInt()
+                itemsOrdered.last().name = quantity
             }
             intent.putParcelableArrayListExtra("ITEMS_ORDERED", itemsOrdered)
             setResult(101, intent)
@@ -81,7 +81,7 @@ class OrderActivity : AppCompatActivity() {
         autoCompleteTextView.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
                 val textview = view as TextView
-                addItem(textview.text.toString(), items[itemNames.indexOf(textview.text)].itemId.toString(),null)
+                addItem(textview.text.toString(), items[itemNames.indexOf(textview.text)].id.toString(),null)
                 autoCompleteTextView.text.clear()
                 arrayAdapter.remove(textview.text.toString())
             }

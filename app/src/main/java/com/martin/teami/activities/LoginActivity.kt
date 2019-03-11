@@ -35,13 +35,11 @@ class LoginActivity : AppCompatActivity() {
             .FLAG_ACTIVITY_NO_HISTORY or Intent
             .FLAG_ACTIVITY_NEW_TASK or Intent
             .FLAG_ACTIVITY_CLEAR_TASK
-
-//        val viewModel = ViewModelProviders.of(this).get(LoginViewModel::class.java)
-        val email = emailET.text.toString()
-        val password = passwordET.text.toString()
-//        viewModel.email = email
-//        viewModel.password = password
         initLogin()
+        forgotPasswordTV.setOnClickListener{
+            val intent =Intent(this,ForgotPasswordActivity::class.java)
+            startActivity(intent)
+        }
         Hawk.init(this).build()
     }
 

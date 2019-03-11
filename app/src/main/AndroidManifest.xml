@@ -22,18 +22,26 @@
             android:supportsRtl="true"
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
+        <activity android:name=".activities.AddPharmacy"
+        android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+                android:name=".activities.ForgotPasswordActivity"
+                android:theme="@style/AppTheme.NoActionBar">
+        </activity>
         <activity
                 android:name=".activities.AboutActivity"
-                android:label="@string/title_activity_about"
-                android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.TransparentActionBar">
         </activity>
         <activity android:name=".activities.OrderActivity">
         </activity>
         <activity android:name=".activities.FullDetailsActivity">
         </activity>
-        <activity android:name=".activities.AddDoctor">
+        <activity android:name=".activities.AddDoctor"
+        android:theme="@style/AppTheme.NoActionBar">
         </activity>
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".activities.MainActivity"
+        android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -55,6 +63,7 @@
         <meta-data
                 android:name="com.google.android.gms.version"
                 android:value="@integer/google_play_services_version"/>
+
         <uses-library
                 android:name="org.apache.http.legacy"
                 android:required="false"/>

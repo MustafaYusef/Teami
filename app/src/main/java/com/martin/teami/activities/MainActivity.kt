@@ -14,49 +14,35 @@ import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigation
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem
-import kotlinx.android.synthetic.main.activity_main.*
 import android.support.v4.content.ContextCompat
 import android.support.annotation.ColorRes
 import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
 import android.support.v4.content.PermissionChecker
-import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
-import com.martin.teami.fragments.HomeFragment
-import com.martin.teami.fragments.MapFragment
 import com.martin.teami.R
-import com.martin.teami.adapters.BottomBarAdapter
-import com.martin.teami.adapters.PharmaciesAdapter
-import com.martin.teami.models.LoginResponse
-import com.martin.teami.models.PharmaciesResponse
-import com.martin.teami.models.Pharmacy
-import com.martin.teami.models.RegisterResponse
+import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
 import com.martin.teami.utils.Consts
 import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.martin.teami.utils.Consts.LOGIN_TIME
+import com.martin.teami.utils.Consts.USER_LOCATION
 import com.martin.teami.utils.checkExpirationLimit
 import com.martin.teami.utils.logoutUser
 import com.orhanobut.hawk.Hawk
-import kotlinx.android.synthetic.main.activity_map.*
-import kotlinx.android.synthetic.main.map_bottom_sheet_layout.*
+import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.lang.StringBuilder
 import java.util.*
 
 
@@ -70,20 +56,15 @@ class MainActivity : AppCompatActivity() {
     private lateinit var userLocation: Location
     private var permissionCount = 0
     private lateinit var token: String
-    private var tokenExp: Int = 0
+    private var tokenExp: Long = 0
     private var calendar: Calendar? = null
-    private val homeFragment = HomeFragment()
-    private val mapFragment = MapFragment()
     private var running = false
-    private lateinit var activity: MainActivity
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Hawk.init(this).build()
-        activity = this
         checkUser()
-        setBottomNav()
 
         locationRequest = LocationRequest()
 
@@ -99,6 +80,22 @@ class MainActivity : AppCompatActivity() {
 
         getMarkers()
 
+        addDocFab.setOnClickListener {
+            if (this::userLocation.isInitialized) {
+                checkUser()
+                val intent = Intent(this, AddDoctor::class.java)
+                intent.putExtra(USER_LOCATION, userLocation)
+                startActivity(intent)
+            } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
+        }
+        addPharmFab.setOnClickListener {
+            if (this::userLocation.isInitialized) {
+                checkUser()
+                val intent = Intent(this, AddPharmacy::class.java)
+                intent.putExtra(USER_LOCATION, userLocation)
+                startActivity(intent)
+            } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun checkUser() {
@@ -121,53 +118,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setBottomNav() {
-        val item1 = AHBottomNavigationItem(
-            getString(R.string.bottomnav_title_0),
-            R.drawable.ic_home_white_24dp
-        )
-        val item2 = AHBottomNavigationItem(
-            getString(R.string.bottomnav_title_1),
-            R.drawable.ic_map_white_24dp
-        )
-        bottomNavigation.addItem(item1)
-        bottomNavigation.addItem(item2)
-        bottomNavigation.setUseElevation(true, 8f)
-        bottomNavigation.setTitleTextSize(54f, 40f)
-        bottomNavigation.titleState = AHBottomNavigation.TitleState.ALWAYS_SHOW
-        bottomNavigation.defaultBackgroundColor = fetchColor(R.color.colorPrimary)
-        bottomNavigation.accentColor = fetchColor(R.color.background)
-        bottomNavigation.inactiveColor = fetchColor(R.color.colorPrimaryDark)
-        bottomNavigation.isBehaviorTranslationEnabled = true
-        bottomNavigation.setOnTabSelectedListener { position, wasSelected ->
-            if (!wasSelected) {
-                checkExpirationLimit(token, tokenExp, getID(), calendar, this@MainActivity)
-                viewPager.currentItem = position
-            }
-            return@setOnTabSelectedListener true
-        }
-
-        val bundle = Bundle()
-        if (this::token.isInitialized) {
-            bundle.putString("TOKEN", token)
-            bundle.putInt("EXP", tokenExp)
-            bundle.putString("PHONEID", getID())
-            homeFragment.arguments = bundle
-        } else {
-            val intent = Intent(this, LoginActivity::class.java)
-            this.finish()
-            startActivity(intent)
-        }
-        val fragmentsList = listOf(
-            homeFragment,
-            mapFragment
-        )
-        val pagerAdapter = BottomBarAdapter(supportFragmentManager, fragmentsList)
-        viewPager.adapter = pagerAdapter
-        viewPager.setPagingEnabled(false)
-        bottomNavigation.currentItem = 0
-    }
-
     private fun fetchColor(@ColorRes color: Int): Int {
         return ContextCompat.getColor(this, color)
     }
@@ -180,52 +130,65 @@ class MainActivity : AppCompatActivity() {
         val sortedMarkers = markersList
         Collections.sort(sortedMarkers, Comparator<Pharmacy> { marker1, marker2 ->
             val locationA = Location("point A")
-            locationA.latitude = marker1.latitude
-            locationA.longitude = marker1.longitude
+            locationA.latitude = marker1.latitude.toDouble()
+            locationA.longitude = marker1.longitude.toDouble()
             val locationB = Location("point B")
-            locationB.latitude = marker2.latitude
-            locationB.longitude = marker2.longitude
+            locationB.latitude = marker2.latitude.toDouble()
+            locationB.longitude = marker2.longitude.toDouble()
             val distanceOne = userLocation.distanceTo(locationA)
             val distanceTwo = userLocation.distanceTo(locationB)
             return@Comparator java.lang.Float.compare(distanceOne, distanceTwo)
         })
-//        mapFragment.listMarkers(sortedMarkers, location ?: userLocation)
-        homeFragment.setCardView(checkIfNearMarker(sortedMarkers))
-//        getMarkers(location ?: userLocation)
+        setCardView(checkIfNearMarker(sortedMarkers))
         return sortedMarkers
     }
 
     fun checkIfNearMarker(sortedMarkers: List<Pharmacy>): Boolean {
 
         val nearestPharm = Location("Nearest Pharmacy")
-        nearestPharm.latitude = sortedMarkers[0].latitude
-        nearestPharm.longitude = sortedMarkers[0].longitude
+        nearestPharm.latitude = sortedMarkers[0].latitude.toDouble()
+        nearestPharm.longitude = sortedMarkers[0].longitude.toDouble()
         val distance = userLocation.distanceTo(nearestPharm)
         return distance < 10
     }
 
-    private fun registerLocation(marker: Pharmacy) {
-        marker.registered = true
-        val retrofit = Retrofit.Builder()
-            .baseUrl(Consts.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val registerInterface = retrofit.create(RepresentativesInterface::class.java)
-        val registerCall = registerInterface.registerPharmacy(
-            "application/json", "no-cache", true,
-            marker
-        )
-        registerCall.enqueue(object : Callback<RegisterResponse> {
-            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-
+    fun setCardView(isNear: Boolean) {
+        if (this::userLocation.isInitialized) {
+            if (isNear) {
+                imageView4?.setImageResource(R.drawable.ic_my_location_green_24dp)
+                detailsCV?.setOnClickListener {
+                    val intent = Intent(this, FullDetailsActivity::class.java)
+                    startActivity(intent)
+                }
+            } else {
+                imageView4?.setImageResource(R.drawable.ic_my_location_red_24dp)
+                detailsCV?.setOnClickListener(null)
             }
-
-            override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
-            }
-
-        })
-
+        } else imageView4?.setImageResource(R.drawable.ic_not_available)
     }
+
+//    private fun registerLocation(marker: Pharmacy) {
+////        marker.registered = true
+//        val retrofit = Retrofit.Builder()
+//            .baseUrl(Consts.BASE_URL)
+//            .addConverterFactory(GsonConverterFactory.create())
+//            .build()
+//        val registerInterface = retrofit.create(RepresentativesInterface::class.java)
+//        val registerCall = registerInterface.registerPharmacy(
+//            "application/json", "no-cache", true,
+//            marker
+//        )
+//        registerCall.enqueue(object : Callback<RegisterResponse> {
+//            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
+//
+//            }
+//
+//            override fun onResponse(call: Call<RegisterResponse>, response: Response<RegisterResponse>) {
+//            }
+//
+//        })
+//
+//    }
 
     private fun getMarkers() {
         val retrofit = Retrofit.Builder()
@@ -243,7 +206,6 @@ class MainActivity : AppCompatActivity() {
                     markersList = it.pharmacies
                     if (this@MainActivity::userLocation.isInitialized)
                         checkNearestMarker(null)
-                    mapFragment.showMarkers(it.pharmacies)
                 }
             }
         })
@@ -256,18 +218,15 @@ class MainActivity : AppCompatActivity() {
             100 -> {
                 when (resultCode) {
                     Activity.RESULT_OK -> {
-                        mapView?.getMapAsync {
-                            if (PermissionChecker.checkSelfPermission(
-                                    this,
-                                    Manifest.permission.ACCESS_FINE_LOCATION
-                                ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                                    this,
-                                    Manifest.permission.ACCESS_COARSE_LOCATION
-                                ) != PackageManager.PERMISSION_GRANTED
-                            )
-                                it.isMyLocationEnabled = true
-                            else requestUpdates()
-                        }
+                        if (PermissionChecker.checkSelfPermission(
+                                this,
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                            ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                                this,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            ) != PackageManager.PERMISSION_GRANTED
+                        )
+                        else requestUpdates()
                     }
                     Activity.RESULT_CANCELED -> initGPS()
                 }
@@ -428,10 +387,6 @@ class MainActivity : AppCompatActivity() {
                 location?.let {
                     userLocation = it
                 }
-                mapView?.getMapAsync {
-                    it.isMyLocationEnabled = true
-//                getMarkers(location)
-                }
             }
     }
 
@@ -476,13 +431,11 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         when (item?.itemId) {
-            R.id.logout -> logoutUser(this, token, getID())
+            R.id.profile->{
+                val i=Intent(this@MainActivity,AboutActivity::class.java)
+                startActivity(i)
+            }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    fun getInstance(): MainActivity {
-        return activity
-
     }
 }

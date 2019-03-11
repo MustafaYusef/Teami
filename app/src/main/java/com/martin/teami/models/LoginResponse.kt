@@ -3,16 +3,16 @@ package com.martin.teami.models
 import android.os.Parcel
 import android.os.Parcelable
 
-class LoginResponse(var token: String, var expire: Int) : Parcelable {
+class LoginResponse(var token: String, var expire: Long) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString(),
-        parcel.readInt()
+        parcel.readLong()
     ) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(token)
-        parcel.writeInt(expire)
+        parcel.writeLong(expire)
     }
 
     override fun describeContents(): Int {

@@ -28,8 +28,8 @@ class PharmaciesAdapter(val pharmacies: List<Pharmacy>, val location: Location?)
 
         fun setPharmacy(pharmacy: Pharmacy, location: Location?) {
             val pharmacyLocation = Location("pharmacy")
-            pharmacyLocation.longitude = pharmacy.longitude
-            pharmacyLocation.latitude = pharmacy.latitude
+            pharmacyLocation.longitude = pharmacy.longitude.toDouble()
+            pharmacyLocation.latitude = pharmacy.latitude.toDouble()
             var distance=0
             location?.let {
                 distance = it.distanceTo(pharmacyLocation).toInt()
@@ -40,7 +40,7 @@ class PharmaciesAdapter(val pharmacies: List<Pharmacy>, val location: Location?)
                 "${distance / 1000} km"
             else "$distance m"
             view.distanceTV.text = distanceString
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && pharmacy.registered) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M ) {
 //                view.constLay.setBackgroundColor(
 //                    view.resources.getColor(
 //                        R.color.registered,

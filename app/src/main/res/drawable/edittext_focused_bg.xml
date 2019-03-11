@@ -3,19 +3,19 @@
     <item android:bottom="4dp">
         <shape>
             <solid android:color="@color/background"/>
-            <corners android:radius="16dp"/>
+            <corners android:radius="4dp"/>
         </shape>
     </item>
     <item android:bottom="4dp" android:right="2dp" android:left="2dp">
         <shape android:shape="rectangle">
             <gradient android:startColor="#1000" android:centerColor="#4000" android:endColor="#000000" android:angle="90"/>
-            <corners android:radius="16dp"/>
+            <corners android:radius="4dp"/>
         </shape>
     </item>
     <item android:left="2dp" android:right="2dp">
         <shape android:shape="rectangle">
             <gradient android:startColor="#1000" android:centerColor="#4000" android:endColor="#000000" android:angle="90"/>
-            <corners android:radius="16dp"/>
+            <corners android:radius="4dp"/>
         </shape>
     </item>
     <item
@@ -30,7 +30,7 @@
     </item>
     <item android:bottom="3dp">
         <shape>
-            <corners android:radius="16dp"/>
+            <corners android:radius="4dp"/>
             <stroke
                     android:width="3dp"
                     android:color="@color/colorAccent"/>

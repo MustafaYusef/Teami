@@ -6,11 +6,9 @@
     <string name="dif_device">"الرجاء تسجيل الدخول من نفس الجهاز المستخدم في اول تسجيل، لا يمكن تسجيل الدخول بأكثر
         من جهاز في نفس الحساب "
     </string>
-    <string name="bottomnav_title_0">الرئيسية</string>
-    <string name="bottomnav_title_1">الخريطة</string>
+
     <string name="login">دخول</string>
-    <string name="loginTV">تسجيل الدخول</string>
-    <string name="usernameHint">اسم المستخدم</string>
+    <string name="emailHint">البريد الالكتروني</string>
     <string name="passwordHint">الرقم السري</string>
     <string name="register_location">تسجيل زيارة</string>
     <string name="pharmacies">الصيدليات</string>
@@ -20,4 +18,20 @@
     <string name="errorRegisteration">خطأ</string>
     <string name="okDialog">موافق</string>
     <string name="cancelDialog">إلغاء</string>
+    <string name="action_settings">الإعدادات</string>
+    <string name="about">حول</string>
+    <string name="email">البريد:</string>
+    <string name="phone">الهاتف:</string>
+    <string name="supervisor">المشرف:</string>
+    <string name="type">النوع</string>
+    <string name="send_email">ارسال ايميل</string>
+    <string name="street">الشارع</string>
+    <string name="hospital">المستشفى</string>
+    <string name="region">المنطقة</string>
+    <string name="specialty">الأختصاص</string>
+    <string name="add">إضافة</string>
+    <string name="organization">المحافظة</string>
+    <string name="work">وقت العمل</string>
+    <string name="name">الأسم</string>
+    <string name="location_unavailable">خدمة تحديد الموقع غير متوفرة</string>
 </resources>

@@ -2,21 +2,28 @@ package com.martin.teami.models
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.google.gson.annotations.SerializedName
 
-class Item(var name:String, var cost:Int, var quantity:Int,var itemId:Int) : Parcelable {
+class Item(
+    var id:Int,
+    var name:String,
+    var description:String,
+    @SerializedName("company_name")
+    var companyName:String
+) : Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readInt(),
         parcel.readString(),
-        parcel.readInt(),
-        parcel.readInt(),
-        parcel.readInt()
+        parcel.readString(),
+        parcel.readString()
     ) {
     }
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeInt(id)
         parcel.writeString(name)
-        parcel.writeInt(cost)
-        parcel.writeInt(quantity)
-        parcel.writeInt(itemId)
+        parcel.writeString(description)
+        parcel.writeString(companyName)
     }
 
     override fun describeContents(): Int {
