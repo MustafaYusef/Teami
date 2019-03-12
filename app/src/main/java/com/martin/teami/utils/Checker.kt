@@ -1,7 +1,11 @@
 package com.martin.teami.utils
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkInfo
+import android.os.AsyncTask
 import android.widget.Toast
 import com.martin.teami.activities.LoginActivity
 import com.martin.teami.models.*
@@ -14,6 +18,9 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
+import java.net.InetSocketAddress
+import java.net.Socket
 import java.util.*
 
 fun checkExpirationLimit(token: String, tokenSecs: Long, phoneId: String, calendar: Calendar?, activity: Activity) {
@@ -23,10 +30,27 @@ fun checkExpirationLimit(token: String, tokenSecs: Long, phoneId: String, calend
         val currentSecs = currentCalendar.timeInMillis / 1000
         val difference = currentSecs - loginSecs
         if (tokenSecs - (0.17 * tokenSecs) > difference)
-            checkTokenWithBackEnd(activity, token, phoneId)
-        else getRefresh(activity, token, phoneId)
+            if (checkNetworkConnection(activity))
+                checkTokenWithBackEnd(activity, token, phoneId)
+            else
+                if (checkNetworkConnection(activity))
+                    getRefresh(activity, token, phoneId)
 //            logoutUser(activity, token,phoneId)
     }
+}
+
+fun checkNetworkConnection(activity: Activity): Boolean {
+    val runtime = Runtime.getRuntime()
+    try {
+        val ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8")
+        val exitValue = ipProcess.waitFor()
+        return exitValue == 0
+    } catch (e: IOException) {
+        e.printStackTrace()
+    } catch (e: InterruptedException) {
+        e.printStackTrace()
+    }
+    return false
 }
 
 fun checkTokenWithBackEnd(activity: Activity, token: String, phoneId: String) {
@@ -63,7 +87,6 @@ fun getRefresh(activity: Activity, token: String, phoneId: String) {
     val refreshResponseCall = refreshInterface.getRefresh(refreshRequest).enqueue(object : Callback<LoginResponse> {
         override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
             Toast.makeText(activity, t.message, Toast.LENGTH_LONG).show()
-            logoutUser(activity, token, phoneId)
         }
 
         override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {

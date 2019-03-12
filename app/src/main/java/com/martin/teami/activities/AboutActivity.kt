@@ -11,6 +11,9 @@ import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.view.animation.Animation
+import android.view.animation.ScaleAnimation
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -37,6 +40,8 @@ class AboutActivity : AppCompatActivity() {
     private lateinit var token: String
     private var tokenExp: Long = 0
     private var calendar: Calendar? = null
+    private var lastPosition = -1
+    private val FADE_DURATION: Long = 500
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,6 +85,7 @@ class AboutActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<MeResponse>, response: Response<MeResponse>) {
                     val meResponse = response.body()
                     showUserInfo(meResponse?.user)
+                    setAnimation(cardView4,0)
                 }
             })
     }
@@ -97,6 +103,23 @@ class AboutActivity : AppCompatActivity() {
         }
     }
 
+    fun setAnimation(viewToAnimate: View, position: Int) {
+        if (position > lastPosition) {
+            val anim = ScaleAnimation(
+                0.8f,
+                1.0f,
+                0.8f,
+                1.0f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f,
+                Animation.RELATIVE_TO_SELF,
+                0.5f
+            )
+            anim.duration = FADE_DURATION//to make duration random number between [0,501)
+            viewToAnimate.startAnimation(anim)
+            lastPosition = position
+        }
+    }
     fun getID(): String {
         return Settings.Secure.getString(this@AboutActivity.contentResolver, Settings.Secure.ANDROID_ID)
     }

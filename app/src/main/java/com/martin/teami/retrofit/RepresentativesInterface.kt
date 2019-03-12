@@ -65,4 +65,10 @@ interface RepresentativesInterface {
     @GET("GetMyResource")
     fun getMyResources(@Query("token") token: String,
                        @Query("phone_id") phoneId: String):Call<MyResourcesResponse>
+
+    @POST("post-feedback")
+    fun postFeedback(@Body feedbackRequest: FeedbackRequest):Call<FeedbackResponse>
+
+    @POST("post-order")
+    fun postOrder(@Body orderRequest:OrderRequest ):Call<FeedbackResponse>
 }
