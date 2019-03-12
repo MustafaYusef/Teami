@@ -30,27 +30,11 @@ fun checkExpirationLimit(token: String, tokenSecs: Long, phoneId: String, calend
         val currentSecs = currentCalendar.timeInMillis / 1000
         val difference = currentSecs - loginSecs
         if (tokenSecs - (0.17 * tokenSecs) > difference)
-            if (checkNetworkConnection(activity))
-                checkTokenWithBackEnd(activity, token, phoneId)
-            else
-                if (checkNetworkConnection(activity))
-                    getRefresh(activity, token, phoneId)
+            checkTokenWithBackEnd(activity, token, phoneId)
+        else
+            getRefresh(activity, token, phoneId)
 //            logoutUser(activity, token,phoneId)
     }
-}
-
-fun checkNetworkConnection(activity: Activity): Boolean {
-    val runtime = Runtime.getRuntime()
-    try {
-        val ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8")
-        val exitValue = ipProcess.waitFor()
-        return exitValue == 0
-    } catch (e: IOException) {
-        e.printStackTrace()
-    } catch (e: InterruptedException) {
-        e.printStackTrace()
-    }
-    return false
 }
 
 fun checkTokenWithBackEnd(activity: Activity, token: String, phoneId: String) {
@@ -124,4 +108,30 @@ fun logoutUser(activity: Activity, token: String, phoneId: String) {
             activity.startActivity(intent)
         }
     })
+}
+
+internal class InternetCheck(private val mConsumer: Consumer) : AsyncTask<Void, Void, Boolean>() {
+    interface Consumer {
+        fun accept(internet: Boolean?)
+    }
+
+    init {
+        execute()
+    }
+
+    override fun doInBackground(vararg voids: Void): Boolean? {
+        try {
+            val sock = Socket()
+            sock.connect(InetSocketAddress("8.8.8.8", 53), 1500)
+            sock.close()
+            return true
+        } catch (e: IOException) {
+            return false
+        }
+
+    }
+
+    override fun onPostExecute(internet: Boolean?) {
+        mConsumer.accept(internet)
+    }
 }

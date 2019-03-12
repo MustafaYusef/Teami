@@ -1,12 +1,8 @@
 package com.martin.teami.activities
 
 import android.content.Intent
-import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
 import android.os.Bundle
 import android.provider.Settings
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
@@ -14,10 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
-import android.widget.ArrayAdapter
 import android.widget.Toast
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationRequest
 import com.martin.teami.R
 import com.martin.teami.adapters.AreaAdapter
 import com.martin.teami.models.*
@@ -33,9 +26,8 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
-import kotlin.collections.ArrayList
 
-class AboutActivity : AppCompatActivity() {
+class ProfileActivity : AppCompatActivity() {
 
     private lateinit var token: String
     private var tokenExp: Long = 0
@@ -79,7 +71,7 @@ class AboutActivity : AppCompatActivity() {
         val userCallback = retrofit.create(RepresentativesInterface::class.java)
             .getMe(MeRequest(token, phoneId)).enqueue(object : Callback<MeResponse> {
                 override fun onFailure(call: Call<MeResponse>, t: Throwable) {
-                    Toast.makeText(this@AboutActivity, t.message, Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@ProfileActivity, t.message, Toast.LENGTH_LONG).show()
                 }
 
                 override fun onResponse(call: Call<MeResponse>, response: Response<MeResponse>) {
@@ -121,7 +113,7 @@ class AboutActivity : AppCompatActivity() {
         }
     }
     fun getID(): String {
-        return Settings.Secure.getString(this@AboutActivity.contentResolver, Settings.Secure.ANDROID_ID)
+        return Settings.Secure.getString(this@ProfileActivity.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

@@ -18,8 +18,6 @@ import android.support.v4.content.ContextCompat
 import android.support.annotation.ColorRes
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.PermissionChecker
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import com.google.android.gms.common.api.ApiException
@@ -36,7 +34,6 @@ import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.Consts.USER_LOCATION
 import com.martin.teami.utils.checkExpirationLimit
-import com.martin.teami.utils.checkNetworkConnection
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
@@ -84,29 +81,23 @@ class MainActivity : AppCompatActivity() {
 
         addDocFab.setOnClickListener {
             if (this::userLocation.isInitialized) {
-                if (checkNetworkConnection(this)) {
                     checkUser()
                     val intent = Intent(this, AddDoctor::class.java)
                     intent.putExtra(USER_LOCATION, userLocation)
                     startActivity(intent)
-                } else Toast.makeText(this, getString(R.string.no_connection), Toast.LENGTH_LONG).show()
             } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
         }
         addPharmFab.setOnClickListener {
             if (this::userLocation.isInitialized) {
-                if (checkNetworkConnection(this)) {
                     checkUser()
                     val intent = Intent(this, AddPharmacy::class.java)
                     intent.putExtra(USER_LOCATION, userLocation)
                     startActivity(intent)
-                } else Toast.makeText(this, getString(R.string.no_connection), Toast.LENGTH_LONG).show()
             } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
         }
         profileIV.setOnClickListener {
-            if (checkNetworkConnection(this)) {
-                val i = Intent(this@MainActivity, AboutActivity::class.java)
+                val i = Intent(this@MainActivity, ProfileActivity::class.java)
                 startActivity(i)
-            } else Toast.makeText(this, getString(R.string.no_connection), Toast.LENGTH_LONG).show()
         }
     }
 

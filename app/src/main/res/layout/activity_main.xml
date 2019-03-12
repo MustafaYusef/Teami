@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context=".activities.AboutActivity" android:background="@color/background"
+        tools:context=".activities.ProfileActivity" android:background="@color/background"
         android:id="@+id/coordinatorLayout2">
     <com.getbase.floatingactionbutton.FloatingActionsMenu
             android:id="@+id/pink_icon"

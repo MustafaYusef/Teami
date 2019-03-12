@@ -30,7 +30,7 @@
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-                android:name=".activities.AboutActivity"
+                android:name=".activities.ProfileActivity"
         android:theme="@style/AppTheme.TransparentActionBar">
         </activity>
         <activity android:name=".activities.OrderActivity">

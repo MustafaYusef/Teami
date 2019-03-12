@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context=".activities.AboutActivity" android:background="@color/background">
+        tools:context=".activities.ProfileActivity" android:background="@color/background">
 
     <android.support.design.widget.AppBarLayout
             android:id="@+id/app_bar"
@@ -22,7 +22,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:toolbarId="@+id/toolbar"
-                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:layout_scrollFlags="snap"
                 app:contentScrim="?attr/colorPrimary">
 
             <LinearLayout
