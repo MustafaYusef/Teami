@@ -25,12 +25,11 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
-import kotlin.collections.ArrayList
 import android.widget.TextView
 import android.view.ViewGroup
 
 
-class AddDoctor : AppCompatActivity(), AdapterView.OnItemSelectedListener {
+class AddDoctor : AppCompatActivity(){
 
     private lateinit var token: String
     private var tokenExp: Long = 0
@@ -82,6 +81,8 @@ class AddDoctor : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     private fun addDoctor() {
+        addDocPB.visibility=View.VISIBLE
+        finishAddBtn.visibility=View.INVISIBLE
         val name = addDocNameTV.text.toString()
         val street = addStreetET.text.toString()
         val work = when (selectedWork) {
@@ -110,10 +111,14 @@ class AddDoctor : AppCompatActivity(), AdapterView.OnItemSelectedListener {
         val addDoctorResponseCall = retrofit.create(RepresentativesInterface::class.java)
             .addNewDoctor(doctor).enqueue(object : Callback<AddDoctorResponse> {
                 override fun onFailure(call: Call<AddDoctorResponse>, t: Throwable) {
+                    addDocPB.visibility=View.GONE
+                    finishAddBtn.visibility=View.VISIBLE
                     Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
                 }
 
                 override fun onResponse(call: Call<AddDoctorResponse>, response: Response<AddDoctorResponse>) {
+                    addDocPB.visibility=View.GONE
+                    finishAddBtn.visibility=View.VISIBLE
                     if (response.body()?.doctor_id != null) {
                         this@AddDoctor.finish()
                     }
@@ -206,132 +211,110 @@ class AddDoctor : AppCompatActivity(), AdapterView.OnItemSelectedListener {
     }
 
     private fun setSpecialtySpinner() {
-        val list = mutableListOf<CharSequence>()
-        list.add(getString(R.string.specialty))
-        specialtiesList.forEach {
-            list.add(it.text)
-        }
-        val adapter = object : ArrayAdapter<CharSequence>(
+        val adapter = ArrayAdapter(
             this,
-            R.layout.support_simple_spinner_dropdown_item, list
-        ) {
-            override fun isEnabled(position: Int): Boolean {
-                return position != 0
-            }
-
-            override fun getDropDownView(
-                position: Int, convertView: View?,
-                parent: ViewGroup
-            ): View {
-                val mView = super.getDropDownView(position, convertView, parent)
-                val mTextView = mView as TextView
-                if (position == 0) {
-                    mTextView.setTextColor(Color.GRAY)
-                } else {
-                    mTextView.setTextColor(Color.BLACK)
-                }
-                return mView
-            }
+            R.layout.support_simple_spinner_dropdown_item,specialtiesList
+        )
+        addSpecialityET.setAdapter(adapter)
+        addSpecialityET.setOnFocusChangeListener { v, hasFocus ->
+            v.isEnabled=true
+            if(hasFocus)
+                addSpecialityET.showDropDown()
         }
-        addSpecialitySpinner.adapter = adapter
-        addSpecialitySpinner.onItemSelectedListener = this
+        addSpecialityET.setOnClickListener {
+            it.isEnabled=true
+            addSpecialityET.showDropDown()
+        }
+        addSpecialityET.setOnItemClickListener { parent, view, position, id ->
+            addSpecialityET.isEnabled=false
+            selectedSpeciality=position+1
+            specialtyRmvIV.visibility=View.VISIBLE
+        }
+        specialtyRmvIV.setOnClickListener {
+            addSpecialityET.isEnabled=true
+            addSpecialityET.text.clear()
+            it.visibility=View.GONE
+        }
     }
 
     private fun setRegionsSpinner() {
-        val list = mutableListOf<CharSequence>()
-        list.add(getString(R.string.region))
-        regionsList.forEach {
-            list.add(it.text)
-        }
-        val adapter = object : ArrayAdapter<CharSequence>(
+        val adapter = ArrayAdapter(
             this,
-            R.layout.support_simple_spinner_dropdown_item, list
-        ) {
-            override fun isEnabled(position: Int): Boolean {
-                return position != 0
-            }
-
-            override fun getDropDownView(
-                position: Int, convertView: View?,
-                parent: ViewGroup
-            ): View {
-                val mView = super.getDropDownView(position, convertView, parent)
-                val mTextView = mView as TextView
-                if (position == 0) {
-                    mTextView.setTextColor(Color.GRAY)
-                } else {
-                    mTextView.setTextColor(Color.BLACK)
-                }
-                return mView
-            }
+            R.layout.support_simple_spinner_dropdown_item, regionsList
+        )
+        addRegionET.setAdapter(adapter)
+        addRegionET.setOnFocusChangeListener { v, hasFocus ->
+            v.isEnabled=true
+            if(hasFocus)
+                addRegionET.showDropDown()
         }
-        addRegionSpinner.adapter = adapter
-        addRegionSpinner.onItemSelectedListener = this
+        addRegionET.setOnClickListener {
+            it.isEnabled=true
+            addRegionET.showDropDown()
+        }
+        addRegionET.setOnItemClickListener { parent, view, position, id ->
+            addRegionET.isEnabled=false
+            selectedRegion=position+1
+            regionRmvIV.visibility=View.VISIBLE
+        }
+        regionRmvIV.setOnClickListener {
+            addRegionET.isEnabled=true
+            addRegionET.text.clear()
+            it.visibility=View.GONE
+        }
     }
 
     private fun setOrgsSpinner() {
-        val list = mutableListOf<CharSequence>()
-        list.add(getString(R.string.organization))
-        organiztionsList.forEach {
-            list.add(it.text)
-        }
-        val adapter = object : ArrayAdapter<CharSequence>(
+        val adapter = ArrayAdapter(
             this,
-            R.layout.support_simple_spinner_dropdown_item, list
-        ) {
-            override fun isEnabled(position: Int): Boolean {
-                return position != 0
-            }
-
-            override fun getDropDownView(
-                position: Int, convertView: View?,
-                parent: ViewGroup
-            ): View {
-                val mView = super.getDropDownView(position, convertView, parent)
-                val mTextView = mView as TextView
-                if (position == 0) {
-                    mTextView.setTextColor(Color.GRAY)
-                } else {
-                    mTextView.setTextColor(Color.BLACK)
-                }
-                return mView
-            }
+            R.layout.support_simple_spinner_dropdown_item, organiztionsList
+        )
+        addOrganiztionET.setAdapter(adapter)
+        addOrganiztionET.setOnFocusChangeListener { v, hasFocus ->
+            if(hasFocus)
+                addOrganiztionET.showDropDown()
         }
-        addOrganiztionSpinner.adapter = adapter
-        addOrganiztionSpinner.onItemSelectedListener = this
-
+        addOrganiztionET.setOnClickListener {
+            addOrganiztionET.showDropDown()
+        }
+        addOrganiztionET.setOnItemClickListener { parent, view, position, id ->
+            addOrganiztionET.isEnabled=false
+            selectedOrg=position+1
+            getRegion()
+            orgRmvIV.visibility=View.VISIBLE
+        }
+        orgRmvIV.setOnClickListener {
+            addOrganiztionET.isEnabled=true
+            addOrganiztionET.text.clear()
+            it.visibility=View.GONE
+        }
     }
 
     private fun setHospitalsSpinner() {
-        val list = mutableListOf<CharSequence>()
-        list.add(getString(R.string.hospital))
-        hospitalsList.forEach {
-            list.add(it.text)
-        }
-        val adapter = object : ArrayAdapter<CharSequence>(
+        val adapter = ArrayAdapter(
             this,
-            R.layout.support_simple_spinner_dropdown_item, list
-        ) {
-            override fun isEnabled(position: Int): Boolean {
-                return position != 0
-            }
-
-            override fun getDropDownView(
-                position: Int, convertView: View?,
-                parent: ViewGroup
-            ): View {
-                val mView = super.getDropDownView(position, convertView, parent)
-                val mTextView = mView as TextView
-                if (position == 0) {
-                    mTextView.setTextColor(Color.GRAY)
-                } else {
-                    mTextView.setTextColor(Color.BLACK)
-                }
-                return mView
-            }
+            R.layout.support_simple_spinner_dropdown_item, hospitalsList
+        )
+        addHospitalET.setAdapter(adapter)
+        addHospitalET.setOnFocusChangeListener { v, hasFocus ->
+            v.isEnabled=true
+            if(hasFocus)
+                addHospitalET.showDropDown()
         }
-        addHospitalSpinner.adapter = adapter
-        addHospitalSpinner.onItemSelectedListener = this
+        addHospitalET.setOnClickListener {
+            it.isEnabled=true
+            addHospitalET.showDropDown()
+        }
+        addHospitalET.setOnItemClickListener { parent, view, position, id ->
+            addHospitalET.isEnabled=false
+            selectedHospital=position+1
+            hospitalRmvIV.visibility=View.VISIBLE
+        }
+        hospitalRmvIV.setOnClickListener {
+            addHospitalET.isEnabled=true
+            addHospitalET.text.clear()
+            it.visibility=View.GONE
+        }
     }
 
     private fun setWorkSpinner() {
@@ -363,32 +346,37 @@ class AddDoctor : AppCompatActivity(), AdapterView.OnItemSelectedListener {
             }
         }
         workSpinner.adapter = adapter
-        workSpinner.onItemSelectedListener = this
+        workSpinner.onItemSelectedListener=object :AdapterView.OnItemSelectedListener{
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                selectedWork=position
+            }
+        }
     }
 
     fun getID(): String {
         return Settings.Secure.getString(this@AddDoctor.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    override fun onNothingSelected(parent: AdapterView<*>?) {
-    }
-
-    override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+    fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         when (parent?.id) {
-            R.id.addSpecialitySpinner -> {
+            R.id.addSpecialityET -> {
                 selectedSpeciality = position + 1
                 return
             }
-            R.id.addHospitalSpinner -> {
+            R.id.addHospitalET -> {
                 selectedHospital = position
                 return
             }
-            R.id.addOrganiztionSpinner -> {
+            R.id.addOrganiztionET -> {
                 getRegion()
                 selectedOrg = position
                 return
             }
-            R.id.addRegionSpinner -> {
+            R.id.addRegionET -> {
                 selectedRegion = position
                 return
             }

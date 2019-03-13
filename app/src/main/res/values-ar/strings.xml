@@ -37,7 +37,7 @@
     <string name="logout">تسجيل الخروج</string>
     <string name="profile">الحساب</string>
     <string name="areas">المناطق</string>
-    <string name="new_pharm">صيدلية جديدة</string>
-    <string name="new_doc">طبيب جديد</string>
-    <string name="no_connection">لا يوجد اتصال</string>
+    <string name="newPharm">صيدلية جديدة</string>
+    <string name="newDoc">طبيب جديد</string>
+    <string name="noConnection">لا يوجد اتصال</string>
 </resources>

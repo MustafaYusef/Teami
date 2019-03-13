@@ -38,8 +38,8 @@
     <string name="logout">logout</string>
     <string name="profile">Profile</string>
     <string name="areas">Areas</string>
-    <string name="new_pharm">New Pharmacy</string>
-    <string name="new_doc">New Doctor</string>
-    <string name="no_connection">No Connection</string>
+    <string name="newPharm">New Pharmacy</string>
+    <string name="newDoc">New Doctor</string>
+    <string name="noConnection">No Connection</string>
 
 </resources>
