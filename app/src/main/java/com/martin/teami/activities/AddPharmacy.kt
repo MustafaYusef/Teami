@@ -37,7 +37,7 @@ class AddPharmacy : AppCompatActivity() {
     private lateinit var userLocation: Location
     private var selectedSpeciality = -1
     private var selectedHospital = -1
-    private var selectedOrg = 1
+    private var selectedOrg = 0
     private var selectedRegion = -1
     private var selectedWork = -1
 
