@@ -16,6 +16,8 @@ import com.martin.teami.adapters.AreaAdapter
 import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
 import com.martin.teami.utils.Consts
+import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
+import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.checkExpirationLimit
 import com.martin.teami.utils.logoutUser
 import com.orhanobut.hawk.Hawk
@@ -47,8 +49,8 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun checkUser() {
-        val loginResponse = Hawk.get<LoginResponse>(Consts.LOGIN_RESPONSE_SHARED)
-        calendar = Hawk.get(Consts.LOGIN_TIME)
+        val loginResponse = Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED)
+        calendar = Hawk.get(LOGIN_TIME)
         if (loginResponse != null) {
             token = loginResponse.token
             tokenExp = loginResponse.expire

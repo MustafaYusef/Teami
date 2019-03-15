@@ -41,5 +41,6 @@
     <string name="newPharm">New Pharmacy</string>
     <string name="newDoc">New Doctor</string>
     <string name="noConnection">No Connection</string>
+    <string name="forgot_password">Forgot Password?</string>
 
 </resources>
