@@ -68,9 +68,9 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun getUserData(token: String, phoneId: String) {
-        errorLayout.visibility=View.INVISIBLE
-        progressBar.visibility=View.VISIBLE
-        contentLayout.visibility=View.INVISIBLE
+        errorLayout.visibility = View.INVISIBLE
+        progressBar.visibility = View.VISIBLE
+        contentLayout.visibility = View.INVISIBLE
         val retrofit = Retrofit.Builder()
             .baseUrl(Consts.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -78,20 +78,18 @@ class ProfileActivity : AppCompatActivity() {
         val userCallback = retrofit.create(RepresentativesInterface::class.java)
             .getMe(MeRequest(token, phoneId)).enqueue(object : Callback<MeResponse> {
                 override fun onFailure(call: Call<MeResponse>, t: Throwable) {
-                    var url="\"teami.skylimitx.com\""
-                    var tt=t.message?.split(url)
-                    errorTV.text=tt?.get(0)+tt?.get(1)
-                    progressBar.visibility=View.GONE
-                    errorLayout.visibility=View.VISIBLE
-                    contentLayout.visibility=View.INVISIBLE
+                    errorTV.text = t.message
+                    progressBar.visibility = View.GONE
+                    errorLayout.visibility = View.VISIBLE
+                    contentLayout.visibility = View.INVISIBLE
                 }
 
                 override fun onResponse(call: Call<MeResponse>, response: Response<MeResponse>) {
-                    progressBar.visibility=View.GONE
-                    contentLayout.visibility=View.VISIBLE
+                    progressBar.visibility = View.GONE
+                    contentLayout.visibility = View.VISIBLE
                     val meResponse = response.body()
                     showUserInfo(meResponse?.user)
-                    setAnimation(cardView4,0)
+                    setAnimation(cardView4, 0)
                 }
             })
     }
@@ -126,6 +124,7 @@ class ProfileActivity : AppCompatActivity() {
             lastPosition = position
         }
     }
+
     fun getID(): String {
         return Settings.Secure.getString(this@ProfileActivity.contentResolver, Settings.Secure.ANDROID_ID)
     }
