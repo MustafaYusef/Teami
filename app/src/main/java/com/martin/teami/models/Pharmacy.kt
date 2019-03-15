@@ -1,6 +1,5 @@
 package com.martin.teami.models
 
-import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
 
 class Pharmacy(
@@ -12,8 +11,6 @@ class Pharmacy(
     var regionId:String,
     var latitude:String,
     var longitude:String,
-    @SerializedName("work_time")
-    var workTime:String,
     var token:String,
     @SerializedName("phone_id")
     var phoneID:String

@@ -55,7 +55,7 @@
                             android:inputType="textPersonName"
                             android:digits="ءآأؤإئابةتثجحخدذرزسشصضطظعغـفقكلمنهوىي ً ٌ ٍ َ ُ ِ ّ ْ ٓ ٔ ٕﷵﷶﷷﷸﷹٮٯ ٰٱٲٳٴٵٶٷٸٹٺٻټٽپٿڀځڂڃڄڅچڇڈډڊڋڌڍڎڏڐڑڒړڔڕږڗژڙښڛڜڝڞڟڠڡڢڣڤڥڦڧڨکڪګڬڭڮگڰڱڲڳڴڵڶڷڸڹںڻڼڽھڿۀہۂۃۄۅۆۇۈۉۊۋیۍێۏېۑےۓ۔ەۖۗ ۘ ۙ ۚ ۛ ۜ۟۠ ۡ ۢ ۣ ۤ ۥ ۦ ۧ ۨ ۪ ۫ ۬ ۭۺۻۼ۽۾ﹰﹱﹲﹴﹶﹷﹸﹹﹺﹻﹼﹽﹾﹿﺀﺁﺂﺃﺄﺅﺆﺇﺈﺉﺊﺋﺌﺍﺎﺏﺐﺑﺒﺓﺔﺕﺖﺗﺘﺙﺚﺛﺜﺝﺞﺟﺠﺡﺢﺣﺤﺥﺦﺧﺨﺩﺪﺫﺬﺭﺮﺯﺰﺱﺲﺳﺴﺵﺶﺷﺸﺹﺺﺻﺼﺽﺾﺿﻀﻁﻂﻃﻄﻅﻆﻇﻈﻉﻊﻋﻌﻍﻎﻏﻐﻑﻒﻓﻔﻕﻖﻗﻘﻙﻚﻛﻜﻝﻞﻟﻠﻡﻢﻣﻤﻥﻦﻧﻨﻩﻪﻫﻬﻭﻮﻯﻰﻱﻲﻵﻶﻷﻸﻹﻺﻻﻼ"
                             android:ems="10"
-                            android:id="@+id/addDocNameTV" android:background="@drawable/edittext_normal"
+                            android:id="@+id/addDocNameET" android:background="@drawable/edittext_normal"
                             android:paddingStart="8dp"
                             android:paddingEnd="32dp"
                             android:hint="@string/name" android:layout_marginTop="8dp"

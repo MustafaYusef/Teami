@@ -1,21 +1,20 @@
 package com.martin.teami.activities
 
 import android.content.Intent
-import android.graphics.Color
 import android.location.Location
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
-import android.view.ViewGroup
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import android.widget.TextView
 import android.widget.Toast
 import com.martin.teami.R
 import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
-import com.martin.teami.utils.Consts
+import com.martin.teami.utils.Consts.BASE_URL
+import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
+import com.martin.teami.utils.Consts.LOGIN_TIME
+import com.martin.teami.utils.Consts.USER_LOCATION
 import com.martin.teami.utils.checkExpirationLimit
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_add_pharmacy.*
@@ -39,7 +38,6 @@ class AddPharmacy : AppCompatActivity() {
     private var selectedHospital = -1
     private var selectedOrg = 0
     private var selectedRegion = -1
-    private var selectedWork = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,13 +48,12 @@ class AddPharmacy : AppCompatActivity() {
         }
         getRegion()
         getOrganizations()
-        setWorkSpinner()
     }
 
     private fun checkUser() {
-        val loginResponse = Hawk.get<LoginResponse>(Consts.LOGIN_RESPONSE_SHARED)
-        calendar = Hawk.get(Consts.LOGIN_TIME)
-        userLocation = intent.getParcelableExtra(Consts.USER_LOCATION)
+        val loginResponse = Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED)
+        calendar = Hawk.get(LOGIN_TIME)
+        userLocation = intent.getParcelableExtra(USER_LOCATION)
         if (loginResponse != null) {
             token = loginResponse.token
             tokenExp = loginResponse.expire
@@ -75,38 +72,40 @@ class AddPharmacy : AppCompatActivity() {
     }
 
     private fun addPharm() {
-        addPharmPB.visibility=View.VISIBLE
-        finishAddPharmBtn.visibility=View.INVISIBLE
+        addPharmPB.visibility = View.VISIBLE
+        finishAddPharmBtn.visibility = View.INVISIBLE
         val name = pharmNameET.text.toString()
-        val street = pharmNameET.text.toString()
-        val work = when (selectedWork) {
-            1 -> "a"
-            2 -> "p"
-            3 -> "b"
-            else -> "a"
-        }
+        val street = pharmStreetET.text.toString()
         val pharmacy = Pharmacy(
             name, street, selectedOrg.toString(), selectedRegion.toString()
-            , userLocation.latitude.toString(), userLocation.longitude.toString(), work, token, getID()
+            ,userLocation.latitude.toString(), userLocation.longitude.toString(), token, getID()
         )
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(Consts.BASE_URL)
+            .baseUrl(BASE_URL)
             .build()
         val addPharmacyResponseCall = retrofit.create(RepresentativesInterface::class.java)
             .addNewPharmacy(pharmacy).enqueue(object : Callback<AddPharmacyResponse> {
                 override fun onFailure(call: Call<AddPharmacyResponse>, t: Throwable) {
-                    addPharmPB.visibility=View.GONE
-                    finishAddPharmBtn.visibility=View.VISIBLE
+                    addPharmPB.visibility = View.GONE
+                    finishAddPharmBtn.visibility = View.VISIBLE
                     Toast.makeText(this@AddPharmacy, t.message, Toast.LENGTH_LONG).show()
                 }
 
                 override fun onResponse(call: Call<AddPharmacyResponse>, response: Response<AddPharmacyResponse>) {
-                    addPharmPB.visibility=View.GONE
-                    finishAddPharmBtn.visibility=View.VISIBLE
+                    addPharmPB.visibility = View.GONE
+                    finishAddPharmBtn.visibility = View.VISIBLE
                     if (response.body()?.pharmacy_id != null) {
                         this@AddPharmacy.finish()
                     }
+//                    else {
+//                        val converter = retrofit.responseBodyConverter<ErrorResponse>(
+//                            ErrorResponse::class.java,
+//                            arrayOfNulls<Annotation>(0)
+//                        )
+//                        val errors = converter.convert(response.errorBody())
+//                        Toast.makeText(this@AddPharmacy, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
+//                    }
                 }
             })
     }
@@ -114,7 +113,7 @@ class AddPharmacy : AppCompatActivity() {
 
     private fun getRegion() {
         val retrofit = Retrofit.Builder()
-            .baseUrl(Consts.BASE_URL)
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val regionResponseCall = retrofit.create(RepresentativesInterface::class.java)
@@ -135,7 +134,7 @@ class AddPharmacy : AppCompatActivity() {
 
     private fun getOrganizations() {
         val retrofit = Retrofit.Builder()
-            .baseUrl(Consts.BASE_URL)
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val organizationResponseCall = retrofit.create(RepresentativesInterface::class.java)
@@ -161,23 +160,23 @@ class AddPharmacy : AppCompatActivity() {
         )
         pharmRegionET.setAdapter(adapter)
         pharmRegionET.setOnFocusChangeListener { v, hasFocus ->
-            v.isEnabled=true
-            if(hasFocus)
+            v.isEnabled = true
+            if (hasFocus)
                 pharmRegionET.showDropDown()
         }
         pharmRegionET.setOnClickListener {
-            it.isEnabled=true
+            it.isEnabled = true
             pharmRegionET.showDropDown()
         }
         pharmRegionET.setOnItemClickListener { parent, view, position, id ->
-            pharmRegionET.isEnabled=false
-            selectedRegion=position+1
-            regionRmvIV2.visibility=View.VISIBLE
+            pharmRegionET.isEnabled = false
+            selectedRegion = position + 1
+            regionRmvIV2.visibility = View.VISIBLE
         }
         regionRmvIV2.setOnClickListener {
-            pharmRegionET.isEnabled=true
+            pharmRegionET.isEnabled = true
             pharmRegionET.text.clear()
-            it.visibility=View.GONE
+            it.visibility = View.GONE
         }
     }
 
@@ -188,64 +187,24 @@ class AddPharmacy : AppCompatActivity() {
         )
         pharmOrganiztionET.setAdapter(adapter)
         pharmOrganiztionET.setOnFocusChangeListener { v, hasFocus ->
-            if(hasFocus)
+            if (hasFocus)
                 pharmOrganiztionET.showDropDown()
         }
         pharmOrganiztionET.setOnClickListener {
             pharmOrganiztionET.showDropDown()
         }
         pharmOrganiztionET.setOnItemClickListener { parent, view, position, id ->
-            pharmOrganiztionET.isEnabled=false
-            selectedOrg=position+1
+            pharmOrganiztionET.isEnabled = false
+            selectedOrg = position + 1
             getRegion()
-            orgRmvIV2.visibility=View.VISIBLE
+            orgRmvIV2.visibility = View.VISIBLE
         }
         orgRmvIV2.setOnClickListener {
-            pharmOrganiztionET.isEnabled=true
+            pharmOrganiztionET.isEnabled = true
             pharmOrganiztionET.text.clear()
-            it.visibility=View.GONE
+            it.visibility = View.GONE
         }
 
-    }
-
-    private fun setWorkSpinner() {
-        val workArray = mutableListOf<CharSequence>()
-        workArray.add("Work")
-        workArray.add("AM")
-        workArray.add("PM")
-        workArray.add("Both")
-        val adapter = object : ArrayAdapter<CharSequence>(
-            this,
-            R.layout.support_simple_spinner_dropdown_item, workArray
-        ) {
-            override fun isEnabled(position: Int): Boolean {
-                return position != 0
-            }
-
-            override fun getDropDownView(
-                position: Int, convertView: View?,
-                parent: ViewGroup
-            ): View {
-                val mView = super.getDropDownView(position, convertView, parent)
-                val mTextView = mView as TextView
-                if (position == 0) {
-                    mTextView.setTextColor(Color.GRAY)
-                } else {
-                    mTextView.setTextColor(Color.BLACK)
-                }
-                return mView
-            }
-        }
-        pharmWorkSpinner.adapter = adapter
-        pharmWorkSpinner.onItemSelectedListener=object :AdapterView.OnItemSelectedListener{
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
-
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                selectedWork=position
-            }
-        }
     }
 
     fun getID(): String {

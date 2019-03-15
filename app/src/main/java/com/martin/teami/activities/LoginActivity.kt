@@ -20,10 +20,10 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
+import com.martin.teami.models.ErrorResponse
 
 
 class LoginActivity : AppCompatActivity() {
-
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,8 +36,8 @@ class LoginActivity : AppCompatActivity() {
             .FLAG_ACTIVITY_NEW_TASK or Intent
             .FLAG_ACTIVITY_CLEAR_TASK
         initLogin()
-        forgotPasswordTV.setOnClickListener{
-            val intent =Intent(this,ForgotPasswordActivity::class.java)
+        forgotPasswordTV.setOnClickListener {
+            val intent = Intent(this, ForgotPasswordActivity::class.java)
             startActivity(intent)
         }
         Hawk.init(this).build()
@@ -71,6 +71,14 @@ class LoginActivity : AppCompatActivity() {
                     if (!loginResponse?.token.isNullOrEmpty()) {
                         startActivity(intent)
                     }
+//                    else {
+//                        val converter = retrofit.responseBodyConverter<ErrorResponse>(
+//                            ErrorResponse::class.java,
+//                            arrayOfNulls<Annotation>(0)
+//                        )
+//                        val errors = converter.convert(response.errorBody())
+//                        Toast.makeText(this@LoginActivity, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
+//                    }
                 }
 
             })

@@ -83,7 +83,7 @@ class AddDoctor : AppCompatActivity(){
     private fun addDoctor() {
         addDocPB.visibility=View.VISIBLE
         finishAddBtn.visibility=View.INVISIBLE
-        val name = addDocNameTV.text.toString()
+        val name = addDocNameET.text.toString()
         val street = addStreetET.text.toString()
         val work = when (selectedWork) {
             1 -> "a"
@@ -121,6 +121,13 @@ class AddDoctor : AppCompatActivity(){
                     finishAddBtn.visibility=View.VISIBLE
                     if (response.body()?.doctor_id != null) {
                         this@AddDoctor.finish()
+                    } else {
+                        val converter = retrofit.responseBodyConverter<ErrorResponse>(
+                            ErrorResponse::class.java,
+                            arrayOfNulls<Annotation>(0)
+                        )
+                        val errors = converter.convert(response.errorBody())
+                        Toast.makeText(this@AddDoctor, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
                     }
                 }
             })
