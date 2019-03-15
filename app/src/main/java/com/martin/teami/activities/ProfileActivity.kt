@@ -39,7 +39,11 @@ class ProfileActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_about)
         supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
         checkUser()
+        reloadIV.setOnClickListener {
+            checkUser()
+        }
     }
 
     private fun checkUser() {
@@ -64,6 +68,9 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun getUserData(token: String, phoneId: String) {
+        errorLayout.visibility=View.INVISIBLE
+        progressBar.visibility=View.VISIBLE
+        contentLayout.visibility=View.INVISIBLE
         val retrofit = Retrofit.Builder()
             .baseUrl(Consts.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -71,10 +78,17 @@ class ProfileActivity : AppCompatActivity() {
         val userCallback = retrofit.create(RepresentativesInterface::class.java)
             .getMe(MeRequest(token, phoneId)).enqueue(object : Callback<MeResponse> {
                 override fun onFailure(call: Call<MeResponse>, t: Throwable) {
-                    Toast.makeText(this@ProfileActivity, t.message, Toast.LENGTH_LONG).show()
+                    var url="\"teami.skylimitx.com\""
+                    var tt=t.message?.split(url)
+                    errorTV.text=tt?.get(0)+tt?.get(1)
+                    progressBar.visibility=View.GONE
+                    errorLayout.visibility=View.VISIBLE
+                    contentLayout.visibility=View.INVISIBLE
                 }
 
                 override fun onResponse(call: Call<MeResponse>, response: Response<MeResponse>) {
+                    progressBar.visibility=View.GONE
+                    contentLayout.visibility=View.VISIBLE
                     val meResponse = response.body()
                     showUserInfo(meResponse?.user)
                     setAnimation(cardView4,0)

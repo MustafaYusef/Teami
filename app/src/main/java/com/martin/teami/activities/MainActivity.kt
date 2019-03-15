@@ -77,7 +77,7 @@ class MainActivity : AppCompatActivity() {
 
         requestUpdates()
 
-        getMarkers()
+//        getMarkers()
 
         addDocFab.setOnClickListener {
             if (this::userLocation.isInitialized) {
