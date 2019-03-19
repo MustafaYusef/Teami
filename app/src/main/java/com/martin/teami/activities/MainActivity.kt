@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listener: LocationListener
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
-    private lateinit var doctorsList: List<Doctor>
+    private lateinit var doctorsList: List<MyDoctor>
     private lateinit var userLocation: Location
     private var permissionCount = 0
     private lateinit var token: String
@@ -77,8 +77,7 @@ class MainActivity : AppCompatActivity() {
 
         requestUpdates()
 
-//        getMarkers()
-
+//        getMyResources()
         addDocFab.setOnClickListener {
             if (this::userLocation.isInitialized) {
                     checkUser()
@@ -170,7 +169,7 @@ class MainActivity : AppCompatActivity() {
         } else imageView4?.setImageResource(R.drawable.ic_not_available)
     }
 
-    private fun getMarkers() {
+    private fun getMyResources() {
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_URL)

@@ -142,4 +142,9 @@ class ProfileActivity : AppCompatActivity() {
         }
         return super.onOptionsItemSelected(item)
     }
+
+    override fun onSupportNavigateUp(): Boolean {
+        this.finish()
+        return true
+    }
 }

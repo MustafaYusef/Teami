@@ -1,11 +1,17 @@
 package com.martin.teami.activities
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.location.Location
+import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
 import android.support.v7.app.AppCompatActivity
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -27,9 +33,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import android.widget.TextView
 import android.view.ViewGroup
+import kotlinx.android.synthetic.main.activity_add_pharmacy.*
 
 
-class AddDoctor : AppCompatActivity(){
+class AddDoctor : AppCompatActivity() {
 
     private lateinit var token: String
     private var tokenExp: Long = 0
@@ -57,6 +64,26 @@ class AddDoctor : AppCompatActivity(){
         getOrganizations()
         getHospitals()
         setWorkSpinner()
+        addDocNameET.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!s.isNullOrEmpty()) {
+
+                        addDocNameET.background = ColorDrawable(getColor(R.color.colorPrimary))
+                        addDocNameET.setTextColor(resources.getColor(R.color.background))
+                    } else {
+                        addDocNameET.background = ColorDrawable(getColor(R.color.background))
+                        addDocNameET.setTextColor(Color.parseColor("#666666"))
+                    }
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
     }
 
     private fun checkUser() {
@@ -81,8 +108,8 @@ class AddDoctor : AppCompatActivity(){
     }
 
     private fun addDoctor() {
-        addDocPB.visibility=View.VISIBLE
-        finishAddBtn.visibility=View.INVISIBLE
+        addDocPB.visibility = View.VISIBLE
+        finishAddBtn.visibility = View.INVISIBLE
         val name = addDocNameET.text.toString()
         val street = addStreetET.text.toString()
         val work = when (selectedWork) {
@@ -111,23 +138,20 @@ class AddDoctor : AppCompatActivity(){
         val addDoctorResponseCall = retrofit.create(RepresentativesInterface::class.java)
             .addNewDoctor(doctor).enqueue(object : Callback<AddDoctorResponse> {
                 override fun onFailure(call: Call<AddDoctorResponse>, t: Throwable) {
-                    addDocPB.visibility=View.GONE
-                    finishAddBtn.visibility=View.VISIBLE
+                    addDocPB.visibility = View.GONE
+                    finishAddBtn.visibility = View.VISIBLE
                     Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
                 }
 
                 override fun onResponse(call: Call<AddDoctorResponse>, response: Response<AddDoctorResponse>) {
-                    addDocPB.visibility=View.GONE
-                    finishAddBtn.visibility=View.VISIBLE
+                    addDocPB.visibility = View.GONE
+                    finishAddBtn.visibility = View.VISIBLE
                     if (response.body()?.doctor_id != null) {
-                        this@AddDoctor.finish()
-                    } else {
-                        val converter = retrofit.responseBodyConverter<ErrorResponse>(
-                            ErrorResponse::class.java,
-                            arrayOfNulls<Annotation>(0)
-                        )
-                        val errors = converter.convert(response.errorBody())
-                        Toast.makeText(this@AddDoctor, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
+                        showMessageOK("Doctor Added Successfully!",
+                            DialogInterface.OnClickListener { dialog, which ->
+                                dialog?.dismiss()
+                                addDocNameET.text.clear()
+                            })
                     }
                 }
             })
@@ -220,27 +244,34 @@ class AddDoctor : AppCompatActivity(){
     private fun setSpecialtySpinner() {
         val adapter = ArrayAdapter(
             this,
-            R.layout.support_simple_spinner_dropdown_item,specialtiesList
+            R.layout.support_simple_spinner_dropdown_item, specialtiesList
         )
         addSpecialityET.setAdapter(adapter)
         addSpecialityET.setOnFocusChangeListener { v, hasFocus ->
-            v.isEnabled=true
-            if(hasFocus)
+            v.isEnabled = true
+            if (hasFocus)
                 addSpecialityET.showDropDown()
         }
         addSpecialityET.setOnClickListener {
-            it.isEnabled=true
+            it.isEnabled = true
             addSpecialityET.showDropDown()
         }
         addSpecialityET.setOnItemClickListener { parent, view, position, id ->
-            addSpecialityET.isEnabled=false
-            selectedSpeciality=position+1
-            specialtyRmvIV.visibility=View.VISIBLE
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                addSpecialityET.background = ColorDrawable(getColor(R.color.colorPrimary))
+                addSpecialityET.setTextColor(resources.getColor(R.color.background))
+            }
+            val speciality:Resource=addSpecialityET.adapter.getItem(position) as Resource
+            selectedSpeciality = speciality.id
+            specialtyRmvIV.visibility = View.VISIBLE
         }
         specialtyRmvIV.setOnClickListener {
-            addSpecialityET.isEnabled=true
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                addSpecialityET.background = ColorDrawable(getColor(R.color.background))
+                addSpecialityET.setTextColor(Color.parseColor("#666666"))
+            }
             addSpecialityET.text.clear()
-            it.visibility=View.GONE
+            it.visibility = View.GONE
         }
     }
 
@@ -251,23 +282,24 @@ class AddDoctor : AppCompatActivity(){
         )
         addRegionET.setAdapter(adapter)
         addRegionET.setOnFocusChangeListener { v, hasFocus ->
-            v.isEnabled=true
-            if(hasFocus)
+            v.isEnabled = true
+            if (hasFocus)
                 addRegionET.showDropDown()
         }
         addRegionET.setOnClickListener {
-            it.isEnabled=true
+            it.isEnabled = true
             addRegionET.showDropDown()
         }
         addRegionET.setOnItemClickListener { parent, view, position, id ->
-            addRegionET.isEnabled=false
-            selectedRegion=position+1
-            regionRmvIV.visibility=View.VISIBLE
+            addRegionET.isEnabled = false
+            val region:Resource=addRegionET.adapter.getItem(position) as Resource
+            selectedRegion = region.id
+            regionRmvIV.visibility = View.VISIBLE
         }
         regionRmvIV.setOnClickListener {
-            addRegionET.isEnabled=true
+            addRegionET.isEnabled = true
             addRegionET.text.clear()
-            it.visibility=View.GONE
+            it.visibility = View.GONE
         }
     }
 
@@ -278,22 +310,23 @@ class AddDoctor : AppCompatActivity(){
         )
         addOrganiztionET.setAdapter(adapter)
         addOrganiztionET.setOnFocusChangeListener { v, hasFocus ->
-            if(hasFocus)
+            if (hasFocus)
                 addOrganiztionET.showDropDown()
         }
         addOrganiztionET.setOnClickListener {
             addOrganiztionET.showDropDown()
         }
         addOrganiztionET.setOnItemClickListener { parent, view, position, id ->
-            addOrganiztionET.isEnabled=false
-            selectedOrg=position+1
+            addOrganiztionET.isEnabled = false
+            val org:Resource=addOrganiztionET.adapter.getItem(position) as Resource
+            selectedOrg = org.id
             getRegion()
-            orgRmvIV.visibility=View.VISIBLE
+            orgRmvIV.visibility = View.VISIBLE
         }
         orgRmvIV.setOnClickListener {
-            addOrganiztionET.isEnabled=true
+            addOrganiztionET.isEnabled = true
             addOrganiztionET.text.clear()
-            it.visibility=View.GONE
+            it.visibility = View.GONE
         }
     }
 
@@ -304,23 +337,24 @@ class AddDoctor : AppCompatActivity(){
         )
         addHospitalET.setAdapter(adapter)
         addHospitalET.setOnFocusChangeListener { v, hasFocus ->
-            v.isEnabled=true
-            if(hasFocus)
+            v.isEnabled = true
+            if (hasFocus)
                 addHospitalET.showDropDown()
         }
         addHospitalET.setOnClickListener {
-            it.isEnabled=true
+            it.isEnabled = true
             addHospitalET.showDropDown()
         }
         addHospitalET.setOnItemClickListener { parent, view, position, id ->
-            addHospitalET.isEnabled=false
-            selectedHospital=position+1
-            hospitalRmvIV.visibility=View.VISIBLE
+            addHospitalET.isEnabled = false
+            val hospital:Resource=addHospitalET.adapter.getItem(position) as Resource
+            selectedHospital = hospital.id
+            hospitalRmvIV.visibility = View.VISIBLE
         }
         hospitalRmvIV.setOnClickListener {
-            addHospitalET.isEnabled=true
+            addHospitalET.isEnabled = true
             addHospitalET.text.clear()
-            it.visibility=View.GONE
+            it.visibility = View.GONE
         }
     }
 
@@ -353,13 +387,13 @@ class AddDoctor : AppCompatActivity(){
             }
         }
         workSpinner.adapter = adapter
-        workSpinner.onItemSelectedListener=object :AdapterView.OnItemSelectedListener{
+        workSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
 
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                selectedWork=position
+                selectedWork = position
             }
         }
     }
@@ -370,23 +404,6 @@ class AddDoctor : AppCompatActivity(){
 
     fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         when (parent?.id) {
-            R.id.addSpecialityET -> {
-                selectedSpeciality = position + 1
-                return
-            }
-            R.id.addHospitalET -> {
-                selectedHospital = position
-                return
-            }
-            R.id.addOrganiztionET -> {
-                getRegion()
-                selectedOrg = position
-                return
-            }
-            R.id.addRegionET -> {
-                selectedRegion = position
-                return
-            }
             R.id.workSpinner -> {
                 selectedWork = position
                 return
@@ -394,4 +411,11 @@ class AddDoctor : AppCompatActivity(){
         }
     }
 
+    private fun showMessageOK(title: String, okListener: DialogInterface.OnClickListener) {
+        AlertDialog.Builder(this@AddDoctor)
+            .setTitle(title)
+            .setPositiveButton(getString(R.string.okDialog), okListener)
+            .create()
+            .show()
+    }
 }

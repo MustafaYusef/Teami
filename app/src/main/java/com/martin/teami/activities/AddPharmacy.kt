@@ -1,10 +1,17 @@
 package com.martin.teami.activities
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.location.Location
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -17,6 +24,7 @@ import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.Consts.USER_LOCATION
 import com.martin.teami.utils.checkExpirationLimit
 import com.orhanobut.hawk.Hawk
+import kotlinx.android.synthetic.main.activity_add_doctor.*
 import kotlinx.android.synthetic.main.activity_add_pharmacy.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -48,6 +56,26 @@ class AddPharmacy : AppCompatActivity() {
         }
         getRegion()
         getOrganizations()
+        pharmNameET.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!s.isNullOrEmpty()) {
+
+                        pharmNameET.background = ColorDrawable(getColor(R.color.colorPrimary))
+                        pharmNameET.setTextColor(resources.getColor(R.color.background))
+                    } else {
+                        pharmNameET.background = ColorDrawable(getColor(R.color.background))
+                        pharmNameET.setTextColor(Color.parseColor("#666666"))
+                    }
+                }
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+        })
     }
 
     private fun checkUser() {
@@ -96,7 +124,12 @@ class AddPharmacy : AppCompatActivity() {
                     addPharmPB.visibility = View.GONE
                     finishAddPharmBtn.visibility = View.VISIBLE
                     if (response.body()?.pharmacy_id != null) {
-                        this@AddPharmacy.finish()
+                        showMessageOK("Pharmacy Added Successfully!",object :DialogInterface.OnClickListener{
+                            override fun onClick(dialog: DialogInterface?, which: Int) {
+                                dialog?.dismiss()
+                                pharmNameET.text.clear()
+                            }
+                        })
                     }
 //                    else {
 //                        val converter = retrofit.responseBodyConverter<ErrorResponse>(
@@ -170,7 +203,8 @@ class AddPharmacy : AppCompatActivity() {
         }
         pharmRegionET.setOnItemClickListener { parent, view, position, id ->
             pharmRegionET.isEnabled = false
-            selectedRegion = position + 1
+            val region:Resource=pharmRegionET.adapter.getItem(position) as Resource
+            selectedRegion = region.id
             regionRmvIV2.visibility = View.VISIBLE
         }
         regionRmvIV2.setOnClickListener {
@@ -195,7 +229,8 @@ class AddPharmacy : AppCompatActivity() {
         }
         pharmOrganiztionET.setOnItemClickListener { parent, view, position, id ->
             pharmOrganiztionET.isEnabled = false
-            selectedOrg = position + 1
+            val org:Resource=pharmOrganiztionET.adapter.getItem(position) as Resource
+            selectedOrg = org.id
             getRegion()
             orgRmvIV2.visibility = View.VISIBLE
         }
@@ -209,5 +244,13 @@ class AddPharmacy : AppCompatActivity() {
 
     fun getID(): String {
         return Settings.Secure.getString(this@AddPharmacy.contentResolver, Settings.Secure.ANDROID_ID)
+    }
+
+    private fun showMessageOK(title: String, okListener: DialogInterface.OnClickListener) {
+        AlertDialog.Builder(this@AddPharmacy)
+            .setTitle(title)
+            .setPositiveButton(getString(R.string.okDialog), okListener)
+            .create()
+            .show()
     }
 }
