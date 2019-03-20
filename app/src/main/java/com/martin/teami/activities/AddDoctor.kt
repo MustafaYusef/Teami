@@ -242,6 +242,7 @@ class AddDoctor : AppCompatActivity() {
     }
 
     private fun setSpecialtySpinner() {
+        addSpecialityET.threshold=0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, specialtiesList
@@ -276,6 +277,7 @@ class AddDoctor : AppCompatActivity() {
     }
 
     private fun setRegionsSpinner() {
+        addRegionET.threshold=0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, regionsList
@@ -304,6 +306,7 @@ class AddDoctor : AppCompatActivity() {
     }
 
     private fun setOrgsSpinner() {
+        addOrganiztionET.threshold=0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, organiztionsList
@@ -331,6 +334,7 @@ class AddDoctor : AppCompatActivity() {
     }
 
     private fun setHospitalsSpinner() {
+        addHospitalET.threshold=0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, hospitalsList

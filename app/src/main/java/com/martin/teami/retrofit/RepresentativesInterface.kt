@@ -7,8 +7,9 @@ import retrofit2.http.*
 
 interface RepresentativesInterface {
 
-    @GET(".")
-    fun getBooks(): Call<List<Item>>
+    @GET("get-items")
+    fun getItems(@Query("token") token:String,
+                 @Query("phone_id") phoneId:String): Call<ItemsResponse>
 
     @POST("pharmacies/edit/")
     fun registerPharmacy(

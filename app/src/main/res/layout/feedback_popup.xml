@@ -16,14 +16,15 @@
     <EditText
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName"
-            android:ems="10"
             android:id="@+id/feedbackNoteET" android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/feedbackRatingBar" android:layout_marginEnd="8dp"
+            app:layout_constraintTop_toBottomOf="@+id/statueTV" android:layout_marginEnd="8dp"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="8dp"
             app:layout_constraintStart_toStartOf="parent"
-            android:hint="Notes" android:gravity="top"
-    />
+            android:hint="@string/notes"
+            android:singleLine="false"
+            tools:text="klajsf lakjfklafmas lkfjalks fjalskfjalks faslkfnasmf lakfjlaksnfalk fnamsnfklasml ksacnka cmnaksnlvc nsakcmalkjcm asnkjcljak nvlsknjvlsnj vsjnvnsd vsdmv"
+            android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintVertical_bias="0.0" android:gravity="top" android:inputType="textMultiLine"/>
     <Button
             android:text="Done"
             android:layout_width="wrap_content"
@@ -34,4 +35,11 @@
             app:layout_constraintTop_toBottomOf="@+id/feedbackNoteET" android:background="@drawable/rounded_btn_shape"
             android:textColor="#ffffff" android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.0"/>
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/statueTV"
+            app:layout_constraintTop_toBottomOf="@+id/feedbackRatingBar" tools:text="excellent"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+            app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"/>
 </android.support.constraint.ConstraintLayout>

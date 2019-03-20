@@ -39,4 +39,8 @@ class Item(
             return arrayOfNulls(size)
         }
     }
+
+    override fun toString(): String {
+        return name
+    }
 }

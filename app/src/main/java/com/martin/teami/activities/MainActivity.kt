@@ -18,7 +18,9 @@ import android.support.v4.content.ContextCompat
 import android.support.annotation.ColorRes
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.PermissionChecker
+import android.support.v7.widget.LinearLayoutManager
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.Toast
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
@@ -27,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.martin.teami.R
+import com.martin.teami.adapters.DoctorsAdapter
 import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
 import com.martin.teami.utils.Consts.BASE_URL
@@ -34,6 +37,7 @@ import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.Consts.USER_LOCATION
 import com.martin.teami.utils.checkExpirationLimit
+import com.martin.teami.utils.getRefresh
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
@@ -50,21 +54,20 @@ class MainActivity : AppCompatActivity() {
     private lateinit var listener: LocationListener
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
-    private lateinit var doctorsList: List<MyDoctor>
-    private lateinit var userLocation: Location
+    private var doctorsList: List<MyDoctor>?=null
+    private var userLocation: Location? = null
     private var permissionCount = 0
     private lateinit var token: String
     private var tokenExp: Long = 0
     private var calendar: Calendar? = null
     private var running = false
+    private lateinit var adapter: DoctorsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Hawk.init(this).build()
-        imageView7.setLayerType(View.LAYER_TYPE_SOFTWARE, null)
         checkUser()
-
         locationRequest = LocationRequest()
 
         locationManager = this.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
@@ -77,27 +80,27 @@ class MainActivity : AppCompatActivity() {
 
         requestUpdates()
 
-//        getMyResources()
         addDocFab.setOnClickListener {
-            if (this::userLocation.isInitialized) {
-                    checkUser()
-                    val intent = Intent(this, AddDoctor::class.java)
-                    intent.putExtra(USER_LOCATION, userLocation)
-                    startActivity(intent)
+            if (userLocation != null) {
+                checkUser()
+                val intent = Intent(this, AddDoctor::class.java)
+                intent.putExtra(USER_LOCATION, userLocation)
+                startActivity(intent)
             } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
         }
         addPharmFab.setOnClickListener {
-            if (this::userLocation.isInitialized) {
-                    checkUser()
-                    val intent = Intent(this, AddPharmacy::class.java)
-                    intent.putExtra(USER_LOCATION, userLocation)
-                    startActivity(intent)
+            if (userLocation != null) {
+                checkUser()
+                val intent = Intent(this, AddPharmacy::class.java)
+                intent.putExtra(USER_LOCATION, userLocation)
+                startActivity(intent)
             } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
         }
         profileIV.setOnClickListener {
-                val i = Intent(this@MainActivity, ProfileActivity::class.java)
-                startActivity(i)
+            val i = Intent(this@MainActivity, ProfileActivity::class.java)
+            startActivity(i)
         }
+        adapter = DoctorsAdapter(doctorsList, userLocation)
     }
 
     private fun checkUser() {
@@ -107,6 +110,7 @@ class MainActivity : AppCompatActivity() {
             token = loginResponse.token
             tokenExp = loginResponse.expire
             checkExpirationLimit(token, tokenExp, getID(), calendar, this)
+            getMyResources()
         } else {
             val intent = Intent(this, LoginActivity::class.java)
             Hawk.deleteAll()
@@ -128,45 +132,41 @@ class MainActivity : AppCompatActivity() {
         return Settings.Secure.getString(this@MainActivity.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
-    fun checkNearestMarker(location: Location?): List<Doctor> {
-        val sortedMarkers = doctorsList
-        Collections.sort(sortedMarkers, Comparator<Doctor> { marker1, marker2 ->
-            val locationA = Location("point A")
-            locationA.latitude = marker1.latitude.toDouble()
-            locationA.longitude = marker1.longitude.toDouble()
-            val locationB = Location("point B")
-            locationB.latitude = marker2.latitude.toDouble()
-            locationB.longitude = marker2.longitude.toDouble()
-            val distanceOne = userLocation.distanceTo(locationA)
-            val distanceTwo = userLocation.distanceTo(locationB)
-            return@Comparator java.lang.Float.compare(distanceOne, distanceTwo)
-        })
-        setCardView(checkIfNearMarker(sortedMarkers))
-        return sortedMarkers
+    fun checkNearestMarker(location: Location?): List<MyDoctor>? {
+        val sortedDoctors = doctorsList
+        userLocation?.let {
+            Collections.sort(sortedDoctors, Comparator<MyDoctor> { marker1, marker2 ->
+                val locationA = Location("point A")
+                locationA.latitude = marker1.latitude.toDouble()
+                locationA.longitude = marker1.longitude.toDouble()
+                val locationB = Location("point B")
+                locationB.latitude = marker2.latitude.toDouble()
+                locationB.longitude = marker2.longitude.toDouble()
+                val distanceOne = it.distanceTo(locationA)
+                val distanceTwo = it.distanceTo(locationB)
+                return@Comparator java.lang.Float.compare(distanceOne, distanceTwo)
+            })
+        }
+        adapter.userLocation=location
+        adapter.doctors=sortedDoctors
+        doctorsList = sortedDoctors
+        if (!sortedDoctors.isNullOrEmpty())
+            doctorsRV.adapter?.notifyDataSetChanged()
+        return sortedDoctors
     }
 
-    fun checkIfNearMarker(sortedMarkers: List<Doctor>): Boolean {
-
-        val nearestPharm = Location("Nearest Doctor")
-        nearestPharm.latitude = sortedMarkers[0].latitude.toDouble()
-        nearestPharm.longitude = sortedMarkers[0].longitude.toDouble()
-        val distance = userLocation.distanceTo(nearestPharm)
-        return distance < 10
-    }
-
-    fun setCardView(isNear: Boolean) {
-        if (this::userLocation.isInitialized) {
-            if (isNear) {
-                imageView4?.setImageResource(R.drawable.ic_my_location_green_24dp)
-                detailsCV?.setOnClickListener {
-                    val intent = Intent(this, FullDetailsActivity::class.java)
-                    startActivity(intent)
-                }
-            } else {
-                imageView4?.setImageResource(R.drawable.ic_my_location_red_24dp)
-                detailsCV?.setOnClickListener(null)
-            }
-        } else imageView4?.setImageResource(R.drawable.ic_not_available)
+    fun setRV(sortedDoctors: List<MyDoctor>) {
+//            if (isNear) {
+//                imageView4?.setImageResource(R.drawable.ic_my_location_green_24dp)
+//                detailsCV?.setOnClickListener {
+//                    val intent = Intent(this, FullDetailsActivity::class.java)
+//                    startActivity(intent)
+//                }
+//            } else {
+//                imageView4?.setImageResource(R.drawable.ic_my_location_red_24dp)
+//                detailsCV?.setOnClickListener(null)
+//            }
+//        } else imageView4?.setImageResource(R.drawable.ic_not_available)
     }
 
     private fun getMyResources() {
@@ -183,8 +183,10 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call<MyResourcesResponse>, response: Response<MyResourcesResponse>) {
                 response.body()?.let {
                     doctorsList = it.Resource.doctors
-//                    if (this@MainActivity::userLocation.isInitialized)
-//                        checkNearestMarker(null)
+                    if (userLocation != null)
+                        checkNearestMarker(null)
+                    doctorsRV.adapter = adapter
+                    doctorsRV.layoutManager = LinearLayoutManager(this@MainActivity)
                 }
             }
         })
@@ -271,8 +273,8 @@ class MainActivity : AppCompatActivity() {
                     val userLat = location.latitude
                     val userLong = location.longitude
                     val userLatLng = LatLng(userLat, userLong)
-//                    if (this@MainActivity::doctorsList.isInitialized)
-//                        checkNearestMarker(it)
+                    if (doctorsList!=null)
+                        checkNearestMarker(it)
                 }
             }
 
@@ -401,5 +403,11 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         running = true
         super.onStart()
+    }
+
+    override fun onResume() {
+        getMyResources()
+        doctorsRV.adapter?.notifyDataSetChanged()
+        super.onResume()
     }
 }

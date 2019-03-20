@@ -2,13 +2,19 @@ package com.martin.teami.activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.support.constraint.ConstraintLayout
 import android.support.v7.widget.CardView
 import android.view.LayoutInflater
 import android.widget.*
 import com.martin.teami.R
 import com.martin.teami.models.Item
+import com.martin.teami.models.ItemsResponse
+import com.martin.teami.models.LoginResponse
 import com.martin.teami.retrofit.RepresentativesInterface
+import com.martin.teami.utils.Consts.BASE_URL
+import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
+import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_order.*
 import kotlinx.android.synthetic.main.order_item_layout.view.*
 import retrofit2.Callback
@@ -20,16 +26,17 @@ class OrderActivity : AppCompatActivity() {
 
     private lateinit var allItems: List<Item>
     private var itemsOrdered: ArrayList<Item> = arrayListOf()
+    private lateinit var token: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_order)
 
-        val iteems=intent.getParcelableArrayListExtra<Item>("ITEMS_ORDERED")
-        if (iteems!=null) {
+        val iteems = intent.getParcelableArrayListExtra<Item>("ITEMS_ORDERED")
+        if (iteems != null) {
             itemsOrdered = iteems
-            for(item in itemsOrdered){
-                addItem(item.name,item.id.toString(),item.name)
+            for (item in itemsOrdered) {
+                addItem(item.name, item.id.toString(), item.description)
             }
         }
 
@@ -40,30 +47,42 @@ class OrderActivity : AppCompatActivity() {
                 val constraintLayout = cardView.getChildAt(0) as ConstraintLayout
                 val editText = constraintLayout.getChildAt(1) as EditText
                 val quantity = editText.text.toString()
+                var item: Item? = null
                 val id = cardView.id
-                itemsOrdered.add(allItems[id - 1])
-                itemsOrdered.last().name = quantity
+                allItems.forEach {
+                    if (it.id == id) {
+                        item = it
+                    }
+                }
+                item?.let {
+                    itemsOrdered.add(it)
+                }
+                itemsOrdered.last().description = quantity
             }
             intent.putParcelableArrayListExtra("ITEMS_ORDERED", itemsOrdered)
             setResult(101, intent)
             this.finish()
         }
 
+        val loginResponse = Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED)
+        if (loginResponse != null) {
+            token = loginResponse.token
+        }
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://demo3577815.mockable.io/")
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
         val itemsInterface = retrofit.create(RepresentativesInterface::class.java)
-        val booksResponse = itemsInterface.getBooks()
-        booksResponse.enqueue(object : Callback<List<Item>> {
-            override fun onFailure(call: retrofit2.Call<List<Item>>, t: Throwable) {
+        val itemsResponse = itemsInterface.getItems(token, getID())
+        itemsResponse.enqueue(object : Callback<ItemsResponse> {
+            override fun onFailure(call: retrofit2.Call<ItemsResponse>, t: Throwable) {
                 Toast.makeText(this@OrderActivity, t.message, Toast.LENGTH_LONG).show()
             }
 
-            override fun onResponse(call: retrofit2.Call<List<Item>>, response: Response<List<Item>>) {
+            override fun onResponse(call: retrofit2.Call<ItemsResponse>, response: Response<ItemsResponse>) {
                 response.body()?.let {
-                    val items = it
+                    val items = it.items
                     allItems = items
                     prepareItems(items)
                 }
@@ -72,22 +91,23 @@ class OrderActivity : AppCompatActivity() {
     }
 
     private fun prepareItems(items: List<Item>) {
-        val itemNames = mutableListOf<String>()
-        items.forEach {
-            itemNames.add(it.name)
-        }
-        val arrayAdapter = ArrayAdapter<String>(this, R.layout.text_view_layout, itemNames)
+        val arrayAdapter = ArrayAdapter<Item>(this, R.layout.text_view_layout, items)
         autoCompleteTextView.setAdapter(arrayAdapter)
+        autoCompleteTextView.setOnClickListener {
+            autoCompleteTextView.showDropDown()
+        }
+        autoCompleteTextView.threshold = 0
         autoCompleteTextView.onItemClickListener =
             AdapterView.OnItemClickListener { parent, view, position, id ->
                 val textview = view as TextView
-                addItem(textview.text.toString(), items[itemNames.indexOf(textview.text)].id.toString(),null)
+                addItem(textview.text.toString(), arrayAdapter.getItem(position).id.toString(), null)
                 autoCompleteTextView.text.clear()
-                arrayAdapter.remove(textview.text.toString())
+//                arrayAdapter.remove(arrayAdapter.getItem(position))
+//                arrayAdapter.notifyDataSetChanged()
             }
     }
 
-    private fun addItem(title: String?, id: String?,quantity:String?) {
+    private fun addItem(title: String?, id: String?, quantity: String?) {
         val view = LayoutInflater.from(this).inflate(R.layout.order_item_layout, null)
         view.itemNameTV.text = title
         view.quantityET.setText(quantity)
@@ -111,5 +131,10 @@ class OrderActivity : AppCompatActivity() {
     private fun removeItem(id: String) {
         val unselected = findViewById<CardView>(id.toInt())
         itemsLinLay.removeView(unselected)
+    }
+
+
+    fun getID(): String {
+        return Settings.Secure.getString(this@OrderActivity.contentResolver, Settings.Secure.ANDROID_ID)
     }
 }

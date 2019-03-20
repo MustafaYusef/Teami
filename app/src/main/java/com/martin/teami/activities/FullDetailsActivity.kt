@@ -4,23 +4,37 @@ import android.app.Dialog
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.widget.LinearLayout
 import android.widget.Toast
 import com.martin.teami.R
-import com.martin.teami.models.Item
+import com.martin.teami.models.*
+import com.martin.teami.retrofit.RepresentativesInterface
+import com.martin.teami.utils.Consts.BASE_URL
+import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
+import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_full_details.*
 import kotlinx.android.synthetic.main.feedback_popup.*
-import kotlinx.android.synthetic.main.items_ordered.view.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class FullDetailsActivity : AppCompatActivity() {
 
     private var itemsOrdered: ArrayList<Item>? = null
+    private lateinit var doctor: MyDoctor
+    private lateinit var token: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_full_details)
+
+        val loginResponse = Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED)
+        if (loginResponse != null) {
+            token = loginResponse.token
+        }
+        doctor = intent.getParcelableExtra("DOCTOR")
+        setDoc()
 
         orderBtn.setOnClickListener {
             val intent = Intent(this, OrderActivity::class.java)
@@ -34,18 +48,32 @@ class FullDetailsActivity : AppCompatActivity() {
             val dialog = Dialog(this)
             dialog.setContentView(R.layout.feedback_popup)
             dialog.show()
-            var noteFull =""
+            dialog.feedbackRatingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+                when (rating) {
+                    1f -> dialog.statueTV.text = "bad"
+                    2f -> dialog.statueTV.text = "medium"
+                    3f -> dialog.statueTV.text = "good"
+                    4f -> dialog.statueTV.text = "very good"
+                    5f -> dialog.statueTV.text = "excellent"
+                    else -> dialog.statueTV.text = ""
+                }
+            }
+            var statusFull = dialog.statueTV.text.toString()
+            var noteFull = ""
             var ratingFull = 0f
             if (ratingFull != null && !noteFull.isNullOrEmpty() && noteFull.isNotBlank()) {
                 dialog.feedbackNoteET.setText(noteFull)
-                dialog.feedbackRatingBar.rating = ratingFull
+                dialog.feedbackRatingBar.rating = ratingFull - 1
             }
             dialog.doneFeedbackBtn.setOnClickListener {
                 val rating = dialog.feedbackRatingBar.rating
                 val note = dialog.feedbackNoteET.text.toString()
+                val status = dialog.statueTV.text.toString()
                 if (rating != null && !note.isNullOrEmpty() && note.isNotBlank()) {
-                    ratingFull = rating
+                    ratingFull = rating + 1
                     noteFull = note
+                    statusFull = status
+                    postFeedback(ratingFull,noteFull)
                     dialog.dismiss()
                 } else Toast.makeText(
                     this@FullDetailsActivity,
@@ -56,33 +84,40 @@ class FullDetailsActivity : AppCompatActivity() {
         }
     }
 
-    override fun onResume() {
-//        ordersLinLay.removeAllViews()
-//        val items = itemsOrdered
-//        if (items != null) {
-//            for (item in items) {
-//                addItem(item.name, item.itemId.toString(), item.quantity.toString())
-//            }
-//        }
-        super.onResume()
+    private fun postFeedback(rating: Float,note:String) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val feedbackRequest = FeedbackRequest(token, "doctors"
+            , doctor.id.toString()
+            ,rating.toString(),note
+            ,"visit")
+        val feedbackResponse = retrofit.create(RepresentativesInterface::class.java)
+            .postFeedback(feedbackRequest).enqueue(object :Callback<FeedbackResponse>{
+                override fun onFailure(call: Call<FeedbackResponse>, t: Throwable) {
+
+                }
+
+                override fun onResponse(call: Call<FeedbackResponse>, response: Response<FeedbackResponse>) {
+
+                }
+            })
     }
 
-    private fun addItem(title: String?, id: String?, quantity: String?) {
-//        val view = LayoutInflater.from(this).inflate(R.layout.items_ordered, null)
-//        view.itemNameTV.text = title
-//        view.quantityTV.text = quantity
-//        val laypar =
-//            LinearLayout.LayoutParams(
-//                LinearLayout.LayoutParams.MATCH_PARENT,
-//                LinearLayout.LayoutParams.WRAP_CONTENT
-//            )
-//        laypar.setMargins(8, 16, 8, 16)
-//        view.layoutParams = laypar
-//        id?.let {
-//            view.id = it.toInt()
-//        }
-//        ordersLinLay.addView(view)
-
+    private fun setDoc() {
+        docNameTV.text = doctor.name
+        specialtyTV.text = doctor.speciality.name
+        doctorNameTV.text = doctor.name
+        doctorAddrTV.text = doctor.reign.name
+        doctorStTV.text = doctor.street
+        doctorWorkTV.text = when (doctor.workTime) {
+            "p" -> "PM"
+            "a" -> "AM"
+            "b" -> "AM & PM"
+            else -> "NaN"
+        }
+        docHospitalTV.text = doctor.hospital.name
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

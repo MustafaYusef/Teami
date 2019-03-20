@@ -187,6 +187,7 @@ class AddPharmacy : AppCompatActivity() {
     }
 
     private fun setRegionsSpinner() {
+        pharmRegionET.threshold=0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, regionsList
@@ -215,6 +216,7 @@ class AddPharmacy : AppCompatActivity() {
     }
 
     private fun setOrgsSpinner() {
+        pharmOrganiztionET.threshold=0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, organiztionsList

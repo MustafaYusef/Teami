@@ -10,7 +10,6 @@ import android.view.MenuItem
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
-import android.widget.Toast
 import com.martin.teami.R
 import com.martin.teami.adapters.AreaAdapter
 import com.martin.teami.models.*
@@ -21,7 +20,7 @@ import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.checkExpirationLimit
 import com.martin.teami.utils.logoutUser
 import com.orhanobut.hawk.Hawk
-import kotlinx.android.synthetic.main.activity_about.*
+import kotlinx.android.synthetic.main.activity_profile.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,7 +38,7 @@ class ProfileActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_about)
+        setContentView(R.layout.activity_profile)
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         checkUser()
