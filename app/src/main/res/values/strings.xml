@@ -43,5 +43,9 @@
     <string name="noConnection">No Connection</string>
     <string name="forgot_password">Forgot Password?</string>
     <string name="notes">Notes</string>
+    <string name="province">Province</string>
+    <string name="block_name">Block Name</string>
+    <string name="area">Area</string>
+    <string name="speciality">Speciality</string>
 
 </resources>

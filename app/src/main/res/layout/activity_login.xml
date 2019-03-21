@@ -113,7 +113,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintVertical_bias="0.0"
                         app:layout_constraintTop_toTopOf="parent"
-                        android:textColorHint="@color/colorAccent"
+                        android:textColorHint="@color/colorPrimary"
                         android:layout_marginStart="8dp" app:layout_constraintStart_toStartOf="parent"
                         android:drawableStart="@drawable/ic_email" android:drawablePadding="4dp"
                         android:paddingStart="4dp"/>
@@ -146,7 +146,7 @@
                             android:layout_height="match_parent"
                             android:background="@android:color/transparent" android:hint="@string/passwordHint"
                             android:foregroundGravity="center_vertical"
-                            android:gravity="center_vertical" android:textColorHint="@color/colorAccent"
+                            android:gravity="center_vertical" android:textColorHint="@color/colorPrimary"
                             android:drawableStart="@drawable/ic_password" android:drawablePadding="4dp"
                             android:layout_marginStart="4dp"/>
                 </android.support.design.widget.TextInputLayout>

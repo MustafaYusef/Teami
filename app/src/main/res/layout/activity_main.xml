@@ -66,20 +66,26 @@
                     app:layout_scrollFlags="scroll|exitUntilCollapsed"
                     app:contentScrim="?attr/colorPrimary">
 
-                <LinearLayout
-                        android:orientation="vertical"
+                <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_horizontal"
-                        android:gravity="center_horizontal|top" android:layout_marginBottom="32dp">
+                        android:layout_marginBottom="32dp"
+                >
                     <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" app:srcCompat="@drawable/ic_person_white_24dp"
                             android:id="@+id/profileIV"
                             android:scaleY="1.2" android:scaleX="1.2"
-                            android:layout_gravity="start"
-                            android:padding="8dp"/>
-                </LinearLayout>
+                            android:layout_gravity="start|top" android:paddingBottom="12dp" android:paddingEnd="12dp"
+                            android:paddingStart="18dp" android:paddingTop="4dp"/>
+                    <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" app:srcCompat="@drawable/ic_logo"
+                            android:id="@+id/imageView13"
+                            android:layout_gravity="center_horizontal|center_vertical" android:scaleX="2"
+                            android:scaleY="2" android:paddingTop="8dp" android:paddingStart="12dp"
+                            android:paddingEnd="12dp" android:paddingBottom="8dp"/>
+                </FrameLayout>
             </android.support.design.widget.CollapsingToolbarLayout>
         </android.support.design.widget.AppBarLayout>
 

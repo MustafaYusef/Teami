@@ -55,7 +55,8 @@ interface RepresentativesInterface {
 
     @GET("GetHospitals")
     fun getHospitals(@Query("token") token:String,
-                @Query("phone_id") phoneId:String):Call<HospitalsResponse>
+                @Query("phone_id") phoneId:String,
+                     @Query("organisation_id") orgId: Int):Call<HospitalsResponse>
 
     @POST("AddNewDoctor")
     fun addNewDoctor(@Body doctor: Doctor):Call<AddDoctorResponse>

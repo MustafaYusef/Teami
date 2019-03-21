@@ -24,7 +24,6 @@ import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.Consts.USER_LOCATION
 import com.martin.teami.utils.checkExpirationLimit
 import com.orhanobut.hawk.Hawk
-import kotlinx.android.synthetic.main.activity_add_doctor.*
 import kotlinx.android.synthetic.main.activity_add_pharmacy.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -103,7 +102,7 @@ class AddPharmacy : AppCompatActivity() {
         addPharmPB.visibility = View.VISIBLE
         finishAddPharmBtn.visibility = View.INVISIBLE
         val name = pharmNameET.text.toString()
-        val street = pharmStreetET.text.toString()
+        val street = pharmBlockET.text.toString()
         val pharmacy = Pharmacy(
             name, street, selectedOrg.toString(), selectedRegion.toString()
             ,userLocation.latitude.toString(), userLocation.longitude.toString(), token, getID()
@@ -187,58 +186,58 @@ class AddPharmacy : AppCompatActivity() {
     }
 
     private fun setRegionsSpinner() {
-        pharmRegionET.threshold=0
+        pharmAreaET.threshold=0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, regionsList
         )
-        pharmRegionET.setAdapter(adapter)
-        pharmRegionET.setOnFocusChangeListener { v, hasFocus ->
+        pharmAreaET.setAdapter(adapter)
+        pharmAreaET.setOnFocusChangeListener { v, hasFocus ->
             v.isEnabled = true
             if (hasFocus)
-                pharmRegionET.showDropDown()
+                pharmAreaET.showDropDown()
         }
-        pharmRegionET.setOnClickListener {
+        pharmAreaET.setOnClickListener {
             it.isEnabled = true
-            pharmRegionET.showDropDown()
+            pharmAreaET.showDropDown()
         }
-        pharmRegionET.setOnItemClickListener { parent, view, position, id ->
-            pharmRegionET.isEnabled = false
-            val region:Resource=pharmRegionET.adapter.getItem(position) as Resource
+        pharmAreaET.setOnItemClickListener { parent, view, position, id ->
+            pharmAreaET.isEnabled = false
+            val region:Resource=pharmAreaET.adapter.getItem(position) as Resource
             selectedRegion = region.id
             regionRmvIV2.visibility = View.VISIBLE
         }
         regionRmvIV2.setOnClickListener {
-            pharmRegionET.isEnabled = true
-            pharmRegionET.text.clear()
+            pharmAreaET.isEnabled = true
+            pharmAreaET.text.clear()
             it.visibility = View.GONE
         }
     }
 
     private fun setOrgsSpinner() {
-        pharmOrganiztionET.threshold=0
+        pharmProvinceET.threshold=0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, organiztionsList
         )
-        pharmOrganiztionET.setAdapter(adapter)
-        pharmOrganiztionET.setOnFocusChangeListener { v, hasFocus ->
+        pharmProvinceET.setAdapter(adapter)
+        pharmProvinceET.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus)
-                pharmOrganiztionET.showDropDown()
+                pharmProvinceET.showDropDown()
         }
-        pharmOrganiztionET.setOnClickListener {
-            pharmOrganiztionET.showDropDown()
+        pharmProvinceET.setOnClickListener {
+            pharmProvinceET.showDropDown()
         }
-        pharmOrganiztionET.setOnItemClickListener { parent, view, position, id ->
-            pharmOrganiztionET.isEnabled = false
-            val org:Resource=pharmOrganiztionET.adapter.getItem(position) as Resource
+        pharmProvinceET.setOnItemClickListener { parent, view, position, id ->
+            pharmProvinceET.isEnabled = false
+            val org:Resource=pharmProvinceET.adapter.getItem(position) as Resource
             selectedOrg = org.id
             getRegion()
             orgRmvIV2.visibility = View.VISIBLE
         }
         orgRmvIV2.setOnClickListener {
-            pharmOrganiztionET.isEnabled = true
-            pharmOrganiztionET.text.clear()
+            pharmProvinceET.isEnabled = true
+            pharmProvinceET.text.clear()
             it.visibility = View.GONE
         }
 

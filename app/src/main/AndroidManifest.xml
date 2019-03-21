@@ -36,7 +36,8 @@
         </activity>
         <activity android:name=".activities.OrderActivity">
         </activity>
-        <activity android:name=".activities.FullDetailsActivity">
+        <activity android:name=".activities.FullDetailsActivity"
+        android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".activities.AddDoctor"
         android:theme="@style/AppTheme.NoActionBar">

@@ -33,7 +33,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import android.widget.TextView
 import android.view.ViewGroup
-import kotlinx.android.synthetic.main.activity_add_pharmacy.*
 
 
 class AddDoctor : AppCompatActivity() {
@@ -64,16 +63,16 @@ class AddDoctor : AppCompatActivity() {
         getOrganizations()
         getHospitals()
         setWorkSpinner()
-        addDocNameET.addTextChangedListener(object : TextWatcher {
+        docNameET.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (!s.isNullOrEmpty()) {
 
-                        addDocNameET.background = ColorDrawable(getColor(R.color.colorPrimary))
-                        addDocNameET.setTextColor(resources.getColor(R.color.background))
+                        docNameET.background = ColorDrawable(getColor(R.color.colorPrimary))
+                        docNameET.setTextColor(resources.getColor(R.color.background))
                     } else {
-                        addDocNameET.background = ColorDrawable(getColor(R.color.background))
-                        addDocNameET.setTextColor(Color.parseColor("#666666"))
+                        docNameET.background = ColorDrawable(getColor(R.color.background))
+                        docNameET.setTextColor(Color.parseColor("#666666"))
                     }
                 }
             }
@@ -110,8 +109,8 @@ class AddDoctor : AppCompatActivity() {
     private fun addDoctor() {
         addDocPB.visibility = View.VISIBLE
         finishAddBtn.visibility = View.INVISIBLE
-        val name = addDocNameET.text.toString()
-        val street = addStreetET.text.toString()
+        val name = docNameET.text.toString()
+        val street = docBlockET.text.toString()
         val work = when (selectedWork) {
             1 -> "a"
             2 -> "p"
@@ -150,7 +149,7 @@ class AddDoctor : AppCompatActivity() {
                         showMessageOK("Doctor Added Successfully!",
                             DialogInterface.OnClickListener { dialog, which ->
                                 dialog?.dismiss()
-                                addDocNameET.text.clear()
+                                docNameET.text.clear()
                             })
                     }
                 }
@@ -226,7 +225,7 @@ class AddDoctor : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val hospitalResponseCall = retrofit.create(RepresentativesInterface::class.java)
-            .getHospitals(token, getID()).enqueue(object : Callback<HospitalsResponse> {
+            .getHospitals(token, getID(),selectedOrg).enqueue(object : Callback<HospitalsResponse> {
                 override fun onFailure(call: Call<HospitalsResponse>, t: Throwable) {
                     Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
                 }
@@ -242,122 +241,124 @@ class AddDoctor : AppCompatActivity() {
     }
 
     private fun setSpecialtySpinner() {
-        addSpecialityET.threshold=0
+        docSpecialityET.threshold=0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, specialtiesList
         )
-        addSpecialityET.setAdapter(adapter)
-        addSpecialityET.setOnFocusChangeListener { v, hasFocus ->
+        docSpecialityET.setAdapter(adapter)
+        docSpecialityET.setOnFocusChangeListener { v, hasFocus ->
             v.isEnabled = true
             if (hasFocus)
-                addSpecialityET.showDropDown()
+                docSpecialityET.showDropDown()
         }
-        addSpecialityET.setOnClickListener {
+        docSpecialityET.setOnClickListener {
             it.isEnabled = true
-            addSpecialityET.showDropDown()
+            docSpecialityET.showDropDown()
         }
-        addSpecialityET.setOnItemClickListener { parent, view, position, id ->
+        docSpecialityET.setOnItemClickListener { parent, view, position, id ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                addSpecialityET.background = ColorDrawable(getColor(R.color.colorPrimary))
-                addSpecialityET.setTextColor(resources.getColor(R.color.background))
+                docSpecialityET.background = ColorDrawable(getColor(R.color.colorPrimary))
+                docSpecialityET.setTextColor(resources.getColor(R.color.background))
             }
-            val speciality:Resource=addSpecialityET.adapter.getItem(position) as Resource
+            val speciality:Resource=docSpecialityET.adapter.getItem(position) as Resource
             selectedSpeciality = speciality.id
             specialtyRmvIV.visibility = View.VISIBLE
         }
         specialtyRmvIV.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                addSpecialityET.background = ColorDrawable(getColor(R.color.background))
-                addSpecialityET.setTextColor(Color.parseColor("#666666"))
+                docSpecialityET.background = ColorDrawable(getColor(R.color.background))
+                docSpecialityET.setTextColor(Color.parseColor("#666666"))
             }
-            addSpecialityET.text.clear()
+            docSpecialityET.text.clear()
             it.visibility = View.GONE
         }
     }
 
     private fun setRegionsSpinner() {
-        addRegionET.threshold=0
+        docAreaET.threshold=0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, regionsList
         )
-        addRegionET.setAdapter(adapter)
-        addRegionET.setOnFocusChangeListener { v, hasFocus ->
+        docAreaET.setAdapter(adapter)
+        docAreaET.setOnFocusChangeListener { v, hasFocus ->
             v.isEnabled = true
             if (hasFocus)
-                addRegionET.showDropDown()
+                docAreaET.showDropDown()
         }
-        addRegionET.setOnClickListener {
+        docAreaET.setOnClickListener {
             it.isEnabled = true
-            addRegionET.showDropDown()
+            docAreaET.showDropDown()
         }
-        addRegionET.setOnItemClickListener { parent, view, position, id ->
-            addRegionET.isEnabled = false
-            val region:Resource=addRegionET.adapter.getItem(position) as Resource
+        docAreaET.setOnItemClickListener { parent, view, position, id ->
+            docAreaET.isEnabled = false
+            val region:Resource=docAreaET.adapter.getItem(position) as Resource
             selectedRegion = region.id
             regionRmvIV.visibility = View.VISIBLE
         }
         regionRmvIV.setOnClickListener {
-            addRegionET.isEnabled = true
-            addRegionET.text.clear()
+            docAreaET.isEnabled = true
+            docAreaET.text.clear()
             it.visibility = View.GONE
         }
     }
 
     private fun setOrgsSpinner() {
-        addOrganiztionET.threshold=0
+        docProvET.threshold=0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, organiztionsList
         )
-        addOrganiztionET.setAdapter(adapter)
-        addOrganiztionET.setOnFocusChangeListener { v, hasFocus ->
+        docProvET.setAdapter(adapter)
+        docProvET.setOnFocusChangeListener { v, hasFocus ->
             if (hasFocus)
-                addOrganiztionET.showDropDown()
+                docProvET.showDropDown()
         }
-        addOrganiztionET.setOnClickListener {
-            addOrganiztionET.showDropDown()
+        docProvET.setOnClickListener {
+            it.isEnabled = true
+            docProvET.showDropDown()
         }
-        addOrganiztionET.setOnItemClickListener { parent, view, position, id ->
-            addOrganiztionET.isEnabled = false
-            val org:Resource=addOrganiztionET.adapter.getItem(position) as Resource
+        docProvET.setOnItemClickListener { parent, view, position, id ->
+            docProvET.isEnabled = false
+            val org:Resource=docProvET.adapter.getItem(position) as Resource
             selectedOrg = org.id
             getRegion()
+            getHospitals()
             orgRmvIV.visibility = View.VISIBLE
         }
         orgRmvIV.setOnClickListener {
-            addOrganiztionET.isEnabled = true
-            addOrganiztionET.text.clear()
+            docProvET.isEnabled = true
+            docProvET.text.clear()
             it.visibility = View.GONE
         }
     }
 
     private fun setHospitalsSpinner() {
-        addHospitalET.threshold=0
+        docHospiET.threshold=0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, hospitalsList
         )
-        addHospitalET.setAdapter(adapter)
-        addHospitalET.setOnFocusChangeListener { v, hasFocus ->
+        docHospiET.setAdapter(adapter)
+        docHospiET.setOnFocusChangeListener { v, hasFocus ->
             v.isEnabled = true
             if (hasFocus)
-                addHospitalET.showDropDown()
+                docHospiET.showDropDown()
         }
-        addHospitalET.setOnClickListener {
+        docHospiET.setOnClickListener {
             it.isEnabled = true
-            addHospitalET.showDropDown()
+            docHospiET.showDropDown()
         }
-        addHospitalET.setOnItemClickListener { parent, view, position, id ->
-            addHospitalET.isEnabled = false
-            val hospital:Resource=addHospitalET.adapter.getItem(position) as Resource
+        docHospiET.setOnItemClickListener { parent, view, position, id ->
+            docHospiET.isEnabled = false
+            val hospital:Resource=docHospiET.adapter.getItem(position) as Resource
             selectedHospital = hospital.id
             hospitalRmvIV.visibility = View.VISIBLE
         }
         hospitalRmvIV.setOnClickListener {
-            addHospitalET.isEnabled = true
-            addHospitalET.text.clear()
+            docHospiET.isEnabled = true
+            docHospiET.text.clear()
             it.visibility = View.GONE
         }
     }

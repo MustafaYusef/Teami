@@ -81,25 +81,24 @@
                 app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
                 app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
                 android:layout_marginTop="8dp"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent" app:cardCornerRadius="16dp">
             <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" app:srcCompat="@drawable/ic_address_black"
-                        android:id="@+id/imageView8" app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="8dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"/>
-                <View android:layout_width="4dp" android:layout_height="0dp"
-                      android:background="@color/colorPrimary"
+                <View android:layout_width="70dp" android:layout_height="0dp"
+                      android:background="@drawable/ic_gradient_red"
                       app:layout_constraintTop_toTopOf="parent"
                       app:layout_constraintBottom_toBottomOf="parent"
-                      android:layout_marginStart="8dp" app:layout_constraintStart_toEndOf="@+id/imageView8"
                       android:id="@+id/view3"
-                      android:layout_marginBottom="8dp" android:layout_marginTop="8dp"/>
+                      app:layout_constraintStart_toStartOf="parent"/>
+                <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" app:srcCompat="@drawable/ic_area_bg"
+                        android:id="@+id/imageView8" app:layout_constraintStart_toStartOf="@+id/view3"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="@+id/view3"
+                />
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/doctorNameTV"
@@ -145,7 +144,7 @@
                 android:layout_marginTop="8dp"
                 app:layout_constraintTop_toBottomOf="@+id/addressCV" app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp" android:visibility="invisible">
+                android:layout_marginEnd="8dp" android:visibility="invisible" app:cardCornerRadius="16dp">
             <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
@@ -191,25 +190,26 @@
                 android:layout_marginTop="8dp"
                 app:layout_constraintTop_toBottomOf="@+id/addressCV" app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp">
+                android:layout_marginEnd="8dp" app:cardCornerRadius="16dp">
             <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" app:srcCompat="@drawable/ic_clock_black"
-                        android:id="@+id/clockIV" app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="8dp"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" android:scaleX="0.8" android:scaleY="0.8"/>
-                <View android:layout_width="4dp" android:layout_height="0dp"
-                      android:background="@color/colorPrimary"
+                <View android:layout_width="70dp" android:layout_height="0dp"
+                      android:background="@drawable/ic_gradient_red"
                       app:layout_constraintTop_toTopOf="parent"
                       app:layout_constraintBottom_toBottomOf="parent"
-                      android:layout_marginStart="8dp" app:layout_constraintStart_toEndOf="@+id/clockIV"
                       android:id="@+id/line2"
-                      android:layout_marginBottom="8dp" android:layout_marginTop="8dp"/>
+                      app:layout_constraintStart_toStartOf="parent"/>
+                <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" app:srcCompat="@drawable/ic_clock_white"
+                        android:id="@+id/clockIV" app:layout_constraintStart_toStartOf="@+id/line2"
+                        app:layout_constraintBottom_toBottomOf="@+id/line2"
+                        app:layout_constraintTop_toTopOf="@+id/line2"
+                        app:layout_constraintEnd_toEndOf="@+id/line2" android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp" android:layout_marginBottom="8dp"
+                        android:layout_marginTop="8dp"/>
                 <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/doctorWorkTV"

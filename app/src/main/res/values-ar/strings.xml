@@ -26,7 +26,6 @@
     <string name="type">النوع</string>
     <string name="send_email">ارسال ايميل</string>
     <string name="street">الشارع</string>
-    <string name="hospital">المستشفى</string>
     <string name="region">المنطقة</string>
     <string name="specialty">الأختصاص</string>
     <string name="add">إضافة</string>
@@ -41,4 +40,6 @@
     <string name="newDoc">طبيب جديد</string>
     <string name="noConnection">لا يوجد اتصال</string>
     <string name="forgot_password">نسيت كلمة المرور؟</string>
+    <string name="notes">ملاحظات</string>
+    <string name="speciality">الاختصاص</string>
 </resources>

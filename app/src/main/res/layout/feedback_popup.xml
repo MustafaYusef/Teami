@@ -35,6 +35,14 @@
             app:layout_constraintTop_toBottomOf="@+id/feedbackNoteET" android:background="@drawable/rounded_btn_shape"
             android:textColor="#ffffff" android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.0"/>
+    <ProgressBar
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/fbProgressBar" app:layout_constraintEnd_toEndOf="@+id/doneFeedbackBtn"
+            app:layout_constraintStart_toStartOf="@+id/doneFeedbackBtn"
+            app:layout_constraintBottom_toBottomOf="@+id/doneFeedbackBtn"
+            app:layout_constraintTop_toTopOf="@+id/doneFeedbackBtn" android:visibility="gone"/>
     <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

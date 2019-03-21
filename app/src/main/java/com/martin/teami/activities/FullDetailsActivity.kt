@@ -1,15 +1,18 @@
 package com.martin.teami.activities
 
 import android.app.Dialog
+import android.content.DialogInterface
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import com.martin.teami.R
 import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
 import com.martin.teami.utils.Consts.BASE_URL
 import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
+import com.martin.teami.utils.showMessageOK
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_full_details.*
 import kotlinx.android.synthetic.main.feedback_popup.*
@@ -24,6 +27,7 @@ class FullDetailsActivity : AppCompatActivity() {
     private var itemsOrdered: ArrayList<Item>? = null
     private lateinit var doctor: MyDoctor
     private lateinit var token: String
+    private lateinit var fbDialog: Dialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +50,7 @@ class FullDetailsActivity : AppCompatActivity() {
 
         feedbackBtn.setOnClickListener {
             val dialog = Dialog(this)
+            fbDialog = dialog
             dialog.setContentView(R.layout.feedback_popup)
             dialog.show()
             dialog.feedbackRatingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
@@ -66,6 +71,8 @@ class FullDetailsActivity : AppCompatActivity() {
                 dialog.feedbackRatingBar.rating = ratingFull - 1
             }
             dialog.doneFeedbackBtn.setOnClickListener {
+                dialog.fbProgressBar.visibility = View.VISIBLE
+                dialog.doneFeedbackBtn.visibility = View.INVISIBLE
                 val rating = dialog.feedbackRatingBar.rating
                 val note = dialog.feedbackNoteET.text.toString()
                 val status = dialog.statueTV.text.toString()
@@ -73,8 +80,7 @@ class FullDetailsActivity : AppCompatActivity() {
                     ratingFull = rating + 1
                     noteFull = note
                     statusFull = status
-                    postFeedback(ratingFull,noteFull)
-                    dialog.dismiss()
+                    postFeedback(ratingFull, noteFull)
                 } else Toast.makeText(
                     this@FullDetailsActivity,
                     "Please, fill all the fields!",
@@ -84,23 +90,31 @@ class FullDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun postFeedback(rating: Float,note:String) {
+    private fun postFeedback(rating: Float, note: String) {
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val feedbackRequest = FeedbackRequest(token, "doctors"
+        val feedbackRequest = FeedbackRequest(
+            token, "doctors"
             , doctor.id.toString()
-            ,rating.toString(),note
-            ,"visit")
+            , rating.toString(), note
+            , "visit"
+        )
         val feedbackResponse = retrofit.create(RepresentativesInterface::class.java)
-            .postFeedback(feedbackRequest).enqueue(object :Callback<FeedbackResponse>{
+            .postFeedback(feedbackRequest).enqueue(object : Callback<FeedbackResponse> {
                 override fun onFailure(call: Call<FeedbackResponse>, t: Throwable) {
 
                 }
 
                 override fun onResponse(call: Call<FeedbackResponse>, response: Response<FeedbackResponse>) {
-
+                    if (fbDialog.isShowing) {
+                        fbDialog.fbProgressBar.visibility= View.GONE
+                        fbDialog.doneFeedbackBtn.visibility= View.VISIBLE
+                        fbDialog.dismiss()
+                    }
+                    showMessageOK(this@FullDetailsActivity, "Feedback Successfully Posted!", ""
+                        , DialogInterface.OnClickListener { dialog, which -> dialog?.dismiss() })
                 }
             })
     }
