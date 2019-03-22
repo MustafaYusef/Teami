@@ -58,7 +58,7 @@
                             android:paddingEnd="32dp"
                             android:hint="@string/name" android:layout_marginTop="8dp"
                             android:layout_marginBottom="16dp" android:textColor="#666666"
-                            android:textColorHint="#999999" android:fontFamily="@font/cairo"/>
+                            android:textColorHint="#999999" android:fontFamily="@font/cairo" android:textSize="16sp"/>
                 </LinearLayout>
 
             </android.support.design.widget.CollapsingToolbarLayout>
@@ -112,7 +112,7 @@
                             app:layout_constraintStart_toEndOf="@+id/breakerCV"
                             android:background="@drawable/edittext_normal" android:paddingEnd="32dp"
                             android:hint="@string/province" android:foregroundGravity="center_horizontal"
-                            android:fontFamily="@font/cairo"/>
+                            android:fontFamily="@font/cairo" android:textSize="16sp"/>
                     <AutoCompleteTextView
                             android:layout_width="0dp"
                             android:layout_height="32dp"
@@ -126,7 +126,7 @@
                             android:foregroundGravity="center_horizontal"
                             app:layout_constraintStart_toEndOf="@+id/breakerCV"
                             android:background="@drawable/edittext_normal" android:paddingEnd="32dp"
-                            android:hint="@string/area" android:fontFamily="@font/cairo"/>
+                            android:hint="@string/area" android:fontFamily="@font/cairo" android:textSize="16sp"/>
                     <ImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" app:srcCompat="@drawable/ic_cancel_red_24dp"
@@ -159,7 +159,8 @@
                             android:hint="@string/block_name" android:paddingStart="8dp"
                             android:paddingEnd="32dp"
                             app:layout_constraintStart_toEndOf="@+id/breakerCV" android:layout_marginBottom="16dp"
-                            app:layout_constraintBottom_toBottomOf="parent" android:fontFamily="@font/cairo"/>
+                            app:layout_constraintBottom_toBottomOf="parent" android:fontFamily="@font/cairo"
+                            android:textSize="16sp"/>
                 </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>
         </android.support.constraint.ConstraintLayout>

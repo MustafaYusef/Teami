@@ -71,7 +71,7 @@ class AddDoctor : AppCompatActivity() {
                         docNameET.background = ColorDrawable(getColor(R.color.colorPrimary))
                         docNameET.setTextColor(resources.getColor(R.color.background))
                     } else {
-                        docNameET.background = ColorDrawable(getColor(R.color.background))
+                        docNameET.background = getDrawable(R.drawable.edittext_normal)
                         docNameET.setTextColor(Color.parseColor("#666666"))
                     }
                 }
@@ -267,7 +267,7 @@ class AddDoctor : AppCompatActivity() {
         }
         specialtyRmvIV.setOnClickListener {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                docSpecialityET.background = ColorDrawable(getColor(R.color.background))
+                docSpecialityET.background = getDrawable(R.drawable.edittext_normal)
                 docSpecialityET.setTextColor(Color.parseColor("#666666"))
             }
             docSpecialityET.text.clear()

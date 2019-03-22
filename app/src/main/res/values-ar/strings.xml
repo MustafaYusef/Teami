@@ -57,4 +57,5 @@
     <string name="am">صباحي</string>
     <string name="pm">مسائي</string>
     <string name="both">الاثنان</string>
+    <string name="quantity">الكمية</string>
 </resources>

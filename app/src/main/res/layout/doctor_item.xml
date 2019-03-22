@@ -53,7 +53,7 @@
                 android:layout_height="0dp" android:id="@+id/docInfoCV"
                 android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
                 android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
-                app:cardBackgroundColor="@color/colorAccent" app:cardCornerRadius="4dp"
+                app:cardBackgroundColor="@color/darkRedT" app:cardCornerRadius="4dp"
                 app:cardElevation="2dp" app:contentPaddingLeft="3dp" app:contentPaddingRight="3dp"
                 app:layout_constraintStart_toEndOf="@+id/distanceTV" android:layout_marginStart="16dp">
             <android.support.constraint.ConstraintLayout

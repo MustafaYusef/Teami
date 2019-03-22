@@ -63,7 +63,7 @@ class AddPharmacy : AppCompatActivity() {
                         pharmNameET.background = ColorDrawable(getColor(R.color.colorPrimary))
                         pharmNameET.setTextColor(resources.getColor(R.color.background))
                     } else {
-                        pharmNameET.background = ColorDrawable(getColor(R.color.background))
+                        pharmNameET.background = getDrawable(R.drawable.edittext_normal)
                         pharmNameET.setTextColor(Color.parseColor("#666666"))
                     }
                 }
