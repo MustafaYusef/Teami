@@ -123,12 +123,11 @@ class AddPharmacy : AppCompatActivity() {
                     addPharmPB.visibility = View.GONE
                     finishAddPharmBtn.visibility = View.VISIBLE
                     if (response.body()?.pharmacy_id != null) {
-                        showMessageOK("Pharmacy Added Successfully!",object :DialogInterface.OnClickListener{
-                            override fun onClick(dialog: DialogInterface?, which: Int) {
+                        showMessageOK(getString(R.string.pharm_added),
+                            DialogInterface.OnClickListener { dialog, which ->
                                 dialog?.dismiss()
                                 pharmNameET.text.clear()
-                            }
-                        })
+                            })
                     }
 //                    else {
 //                        val converter = retrofit.responseBodyConverter<ErrorResponse>(

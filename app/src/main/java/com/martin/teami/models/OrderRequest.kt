@@ -4,5 +4,8 @@ class OrderRequest(
 var token:String,
 var phone_id:String,
 var activity_id:String,
-var items: List<Item>
+var item_id: List<Int>,
+var quantity:List<Float>,
+var resource_type:String,
+var resource_id:Int
 )

@@ -15,7 +15,7 @@
     <string name="pharmacies">Pharmacies</string>
     <string name="permissionMessage">You need to allow permissions to use this app</string>
     <string name="permissionsTitle">Permissions Needed</string>
-    <string name="doneRegisteration">Done</string>
+    <string name="done">Done</string>
     <string name="errorRegisteration">Error!</string>
     <string name="okDialog">OK</string>
     <string name="cancelDialog">Cancel</string>
@@ -30,7 +30,6 @@
     <string name="hospital">Hospital</string>
     <string name="region">Region</string>
     <string name="specialty">Specialty</string>
-    <string name="work">Work</string>
     <string name="add">ADD</string>
     <string name="organization">Organization</string>
     <string name="name">Name</string>
@@ -47,5 +46,17 @@
     <string name="block_name">Block Name</string>
     <string name="area">Area</string>
     <string name="speciality">Speciality</string>
-
+    <string name="fill_all_fields">Please, fill all the fields!</string>
+    <string name="feedback_success">Feedback Successfully Posted!</string>
+    <string name="feedback">Feedback</string>
+    <string name="order">Order</string>
+    <string name="distanceKM">%1$d KM</string>
+    <string name="distanceM">%1$d M</string>
+    <string name="doctor_added_successfully">Doctor Added Successfully!</string>
+    <string name="pharm_added">Pharmacy Added Successfully!</string>
+    <string name="am">AM</string>
+    <string name="pm">PM</string>
+    <string name="both">Both</string>
+    <string name="work">Work</string>
+    <string name="quantity">Quantity</string>
 </resources>

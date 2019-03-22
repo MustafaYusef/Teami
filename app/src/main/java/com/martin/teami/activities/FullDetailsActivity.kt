@@ -83,7 +83,7 @@ class FullDetailsActivity : AppCompatActivity() {
                     postFeedback(ratingFull, noteFull)
                 } else Toast.makeText(
                     this@FullDetailsActivity,
-                    "Please, fill all the fields!",
+                    getString(R.string.fill_all_fields),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -113,7 +113,7 @@ class FullDetailsActivity : AppCompatActivity() {
                         fbDialog.doneFeedbackBtn.visibility= View.VISIBLE
                         fbDialog.dismiss()
                     }
-                    showMessageOK(this@FullDetailsActivity, "Feedback Successfully Posted!", ""
+                    showMessageOK(this@FullDetailsActivity, getString(R.string.feedback_success), ""
                         , DialogInterface.OnClickListener { dialog, which -> dialog?.dismiss() })
                 }
             })

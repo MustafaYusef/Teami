@@ -14,7 +14,7 @@
     <string name="pharmacies">الصيدليات</string>
     <string name="permissionMessage">يجب السماح بالأذونات لإستعمال هذا التطبيق</string>
     <string name="permissionsTitle">تفعيل الإذونات</string>
-    <string name="doneRegisteration">تم</string>
+    <string name="done">تم</string>
     <string name="errorRegisteration">خطأ</string>
     <string name="okDialog">موافق</string>
     <string name="cancelDialog">إلغاء</string>
@@ -42,4 +42,19 @@
     <string name="forgot_password">نسيت كلمة المرور؟</string>
     <string name="notes">ملاحظات</string>
     <string name="speciality">الاختصاص</string>
+    <string name="hospital">المستشفى</string>
+    <string name="province">المحافظة</string>
+    <string name="block_name">المربع</string>
+    <string name="area">المنطقة</string>
+    <string name="fill_all_fields">الرجاء ملئ كل الحقول</string>
+    <string name="feedback_success">تمت اضافة التقرير</string>
+    <string name="feedback">تسجيل تقرير</string>
+    <string name="order">تسجيل طلب</string>
+    <string name="distanceKM">%1$d كم</string>
+    <string name="distanceM">%1$d م</string>
+    <string name="doctor_added_successfully">تمت اضافة الطبيب</string>
+    <string name="pharm_added">تمت اضافة الصيدلية</string>
+    <string name="am">صباحي</string>
+    <string name="pm">مسائي</string>
+    <string name="both">الاثنان</string>
 </resources>

@@ -146,7 +146,7 @@ class AddDoctor : AppCompatActivity() {
                     addDocPB.visibility = View.GONE
                     finishAddBtn.visibility = View.VISIBLE
                     if (response.body()?.doctor_id != null) {
-                        showMessageOK("Doctor Added Successfully!",
+                        showMessageOK(getString(R.string.doctor_added_successfully),
                             DialogInterface.OnClickListener { dialog, which ->
                                 dialog?.dismiss()
                                 docNameET.text.clear()
@@ -365,10 +365,10 @@ class AddDoctor : AppCompatActivity() {
 
     private fun setWorkSpinner() {
         val workArray = mutableListOf<CharSequence>()
-        workArray.add("Work")
-        workArray.add("AM")
-        workArray.add("PM")
-        workArray.add("Both")
+        workArray.add(getString(R.string.work))
+        workArray.add(getString(R.string.am))
+        workArray.add(getString(R.string.pm))
+        workArray.add(getString(R.string.both))
         val adapter = object : ArrayAdapter<CharSequence>(
             this,
             R.layout.support_simple_spinner_dropdown_item, workArray

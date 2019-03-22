@@ -20,7 +20,7 @@ class DoctorsAdapter(var doctors: List<MyDoctor>?, var userLocation: Location?) 
         return DoctorsViewHolder(view)
     }
 
-    override fun getItemCount() = doctors?.size?:0
+    override fun getItemCount() = doctors?.size ?: 0
 
     override fun onBindViewHolder(viewHolder: DoctorsViewHolder, position: Int) {
         viewHolder.setArea(doctors?.get(position))
@@ -29,12 +29,15 @@ class DoctorsAdapter(var doctors: List<MyDoctor>?, var userLocation: Location?) 
     inner class DoctorsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
 
         fun checkIfNearMarker(doctor: MyDoctor): Boolean {
-            val nearestDoc = Location("Nearest Doctor")
-            nearestDoc.latitude = doctor.latitude.toDouble()
-            nearestDoc.longitude = doctor.longitude.toDouble()
+            val docLocation = Location("Nearest Doctor")
+            docLocation.latitude = doctor.latitude.toDouble()
+            docLocation.longitude = doctor.longitude.toDouble()
 
             userLocation?.let {
-                val distance = it.distanceTo(nearestDoc)
+                val distance = it.distanceTo(docLocation)
+                if (distance >= 1000) {
+                    view.distanceTV.text = view.context.getString(R.string.distanceKM,distance*1000)
+                } else view.distanceTV.text=view.context.getString(R.string.distanceM,distance)
                 return distance < 1000
             }
             return false
@@ -57,7 +60,7 @@ class DoctorsAdapter(var doctors: List<MyDoctor>?, var userLocation: Location?) 
                     view.imageView4?.setImageResource(R.drawable.ic_my_location_green_24dp)
                     view.detailsCV?.setOnClickListener {
                         val intent = Intent(view.context, FullDetailsActivity::class.java)
-                        intent.putExtra("DOCTOR",doctor)
+                        intent.putExtra("DOCTOR", doctor)
                         view.context.startActivity(intent)
                     }
                 } else {
