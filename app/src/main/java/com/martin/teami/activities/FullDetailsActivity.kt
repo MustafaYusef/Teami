@@ -53,6 +53,7 @@ class FullDetailsActivity : AppCompatActivity() {
             val dialog = Dialog(this)
             fbDialog = dialog
             dialog.setContentView(R.layout.feedback_popup)
+            dialog.window.setBackgroundDrawableResource(android.R.color.transparent)
             dialog.show()
             dialog.feedbackRatingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
                 when (rating) {
@@ -86,7 +87,7 @@ class FullDetailsActivity : AppCompatActivity() {
                     this@FullDetailsActivity,
                     getString(R.string.fill_all_fields),
                     Toast.LENGTH_LONG
-                ).show()
+                )
             }
         }
     }
@@ -123,7 +124,6 @@ class FullDetailsActivity : AppCompatActivity() {
     private fun setDoc() {
         docNameTV.text = resource.name
         specialtyTV.text = resource.speciality
-        resourceNameTV.text = resource.name
         doctorAddrTV.text = resource.reign
         doctorStTV.text = resource.street
         doctorWorkTV.text = when (resource.workTime) {
