@@ -35,7 +35,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintBottom_toTopOf="@+id/specialtyTV"
-                    android:textSize="24sp" android:textColor="@color/background"
+                    android:textSize="22sp" android:textColor="@color/background"
                     android:fontFamily="@font/cairo_bold"
                     tools:text="Jaafar Alaa" app:layout_constraintTop_toBottomOf="@+id/imageView2"
                     app:layout_constraintHorizontal_bias="0.5"
@@ -45,7 +45,7 @@
                     android:layout_height="wrap_content" android:id="@+id/specialtyTV"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:textSize="18sp"
+                    android:textSize="16sp"
                     android:textColor="@color/background" android:fontFamily="@font/cairo_light" tools:text="Heart"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/docNameTV" app:layout_constraintHorizontal_bias="0.5"
@@ -96,7 +96,7 @@
                             android:fontFamily="@font/cairo_semibold"
                             android:textColor="#505050"
                             app:layout_constraintBottom_toTopOf="@+id/doctorStTV"
-                            android:textSize="18sp" android:layout_marginTop="8dp"
+                            android:textSize="16sp" android:layout_marginTop="8dp"
                             app:layout_constraintTop_toTopOf="parent"/>
                     <TextView
                             android:layout_width="wrap_content"
@@ -106,7 +106,7 @@
                             android:fontFamily="@font/cairo_semibold"
                             android:textColor="#505050"
                             app:layout_constraintBottom_toTopOf="@+id/docHospitalTV"
-                            app:layout_constraintTop_toBottomOf="@+id/doctorAddrTV" android:textSize="18sp"
+                            app:layout_constraintTop_toBottomOf="@+id/doctorAddrTV" android:textSize="16sp"
                     />
                     <TextView
                             android:layout_width="wrap_content"
@@ -115,7 +115,7 @@
                             android:layout_marginStart="8dp" app:layout_constraintStart_toEndOf="@+id/view3"
                             android:textColor="#505050" android:fontFamily="@font/cairo_semibold"
                             app:layout_constraintTop_toBottomOf="@+id/doctorStTV"
-                            tools:text="Hospital" android:textSize="18sp" android:layout_marginBottom="8dp"/>
+                            tools:text="Hospital" android:textSize="16sp" android:layout_marginBottom="8dp"/>
                 </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>
             <android.support.v7.widget.CardView
@@ -200,7 +200,7 @@
                             android:fontFamily="@font/cairo_semibold"
                             android:textColor="#505050"
                             app:layout_constraintTop_toTopOf="parent"
-                            app:layout_constraintBottom_toBottomOf="parent" android:textSize="18sp"/>
+                            app:layout_constraintBottom_toBottomOf="parent" android:textSize="16sp"/>
                 </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>
             <Button

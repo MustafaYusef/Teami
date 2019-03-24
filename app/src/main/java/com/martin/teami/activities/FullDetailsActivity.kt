@@ -24,7 +24,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class FullDetailsActivity : AppCompatActivity() {
 
-    private var itemsOrdered: ArrayList<Item>? = null
     private lateinit var resource: MyResources
     private lateinit var token: String
     private lateinit var fbDialog: Dialog
@@ -38,57 +37,59 @@ class FullDetailsActivity : AppCompatActivity() {
             token = loginResponse.token
         }
         resource = intent.getParcelableExtra("RESOURCE")
+
         setDoc()
 
         orderBtn.setOnClickListener {
             val intent = Intent(this, OrderActivity::class.java)
-            if (itemsOrdered != null) {
-                intent.putParcelableArrayListExtra("ITEMS_ORDERED", itemsOrdered)
-            }
             intent.putExtra("RESOURCE",resource)
-            startActivityForResult(intent, 101)
+            startActivity(intent)
         }
 
         feedbackBtn.setOnClickListener {
-            val dialog = Dialog(this)
-            fbDialog = dialog
-            dialog.setContentView(R.layout.feedback_popup)
-            dialog.window.setBackgroundDrawableResource(android.R.color.transparent)
-            dialog.show()
-            dialog.feedbackRatingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-                when (rating) {
-                    1f -> dialog.statueTV.text = getString(R.string.bad)
-                    2f -> dialog.statueTV.text = getString(R.string.medium)
-                    3f -> dialog.statueTV.text = getString(R.string.good)
-                    4f -> dialog.statueTV.text = getString(R.string.very_good)
-                    5f -> dialog.statueTV.text = getString(R.string.excellent)
-                    else -> dialog.statueTV.text = ""
-                }
+            initFeedback()
+        }
+    }
+
+    private fun initFeedback() {
+        val dialog = Dialog(this)
+        fbDialog = dialog
+        dialog.setContentView(R.layout.feedback_popup)
+        dialog.window.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.show()
+        dialog.feedbackRatingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
+            when (rating) {
+                1f -> dialog.statueTV.text = getString(R.string.bad)
+                2f -> dialog.statueTV.text = getString(R.string.medium)
+                3f -> dialog.statueTV.text = getString(R.string.good)
+                4f -> dialog.statueTV.text = getString(R.string.very_good)
+                5f -> dialog.statueTV.text = getString(R.string.excellent)
+                else -> dialog.statueTV.text = ""
             }
-            var statusFull = dialog.statueTV.text.toString()
-            var noteFull = ""
-            var ratingFull = 0f
-            if (ratingFull != null && !noteFull.isNullOrEmpty() && noteFull.isNotBlank()) {
-                dialog.feedbackNoteET.setText(noteFull)
-                dialog.feedbackRatingBar.rating = ratingFull - 1
-            }
-            dialog.doneFeedbackBtn.setOnClickListener {
-                dialog.fbProgressBar.visibility = View.VISIBLE
-                dialog.doneFeedbackBtn.visibility = View.INVISIBLE
-                val rating = dialog.feedbackRatingBar.rating
-                val note = dialog.feedbackNoteET.text.toString()
-                val status = dialog.statueTV.text.toString()
-                if (rating != null && !note.isNullOrEmpty() && note.isNotBlank()) {
-                    ratingFull = rating + 1
-                    noteFull = note
-                    statusFull = status
-                    postFeedback(ratingFull, noteFull)
-                } else Toast.makeText(
-                    this@FullDetailsActivity,
-                    getString(R.string.fill_all_fields),
-                    Toast.LENGTH_LONG
-                )
-            }
+        }
+        var statusFull = dialog.statueTV.text.toString()
+        var noteFull = ""
+        var ratingFull = 0f
+        if (ratingFull != null && !noteFull.isNullOrEmpty() && noteFull.isNotBlank()) {
+            dialog.feedbackNoteET.setText(noteFull)
+            dialog.feedbackRatingBar.rating = ratingFull - 1
+        }
+        dialog.doneFeedbackBtn.setOnClickListener {
+            dialog.fbProgressBar.visibility = View.VISIBLE
+            dialog.doneFeedbackBtn.visibility = View.INVISIBLE
+            val rating = dialog.feedbackRatingBar.rating
+            val note = dialog.feedbackNoteET.text.toString()
+            val status = dialog.statueTV.text.toString()
+            if (rating != null && !note.isNullOrEmpty() && note.isNotBlank()) {
+                ratingFull = rating + 1
+                noteFull = note
+                statusFull = status
+                postFeedback(ratingFull, noteFull)
+            } else Toast.makeText(
+                this@FullDetailsActivity,
+                getString(R.string.fill_all_fields),
+                Toast.LENGTH_LONG
+            )
         }
     }
 
@@ -133,15 +134,5 @@ class FullDetailsActivity : AppCompatActivity() {
             else -> "NaN"
         }
         docHospitalTV.text = resource.hospital
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            101 -> {
-                itemsOrdered = data?.getParcelableArrayListExtra<Item>("ITEMS_ORDERED")
-            }
-            else -> return
-        }
-        super.onActivityResult(requestCode, resultCode, data)
     }
 }

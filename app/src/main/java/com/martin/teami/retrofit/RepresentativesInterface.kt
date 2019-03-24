@@ -72,5 +72,5 @@ interface RepresentativesInterface {
     fun postFeedback(@Body feedbackRequest: FeedbackRequest):Call<FeedbackResponse>
 
     @POST("post-order")
-    fun postOrder(@Body orderRequest:OrderRequest ):Call<FeedbackResponse>
+    fun postOrder(@Body orderRequest:OrderRequest ):Call<OrderResponse>
 }

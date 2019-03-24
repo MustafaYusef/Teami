@@ -15,6 +15,7 @@ import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_order.*
 import kotlinx.android.synthetic.main.order_item_layout.view.*
+import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
@@ -29,14 +30,6 @@ class OrderActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_order)
-
-        val iteems = intent.getParcelableArrayListExtra<Item>("ITEMS_ORDERED")
-        if (iteems != null) {
-            for (item in iteems) {
-                addItem(item.name, item.id.toString(), item.description)
-                itemsOrdered.add(ItemsOrdered(item.id,item.description.toFloat()))
-            }
-        }
 
         doneOrderFAB.setOnClickListener {
             itemsOrdered.clear()
@@ -53,12 +46,10 @@ class OrderActivity : AppCompatActivity() {
                     }
                 }
                 item?.let {
-                    itemsOrdered.add(ItemsOrdered(it.id,it.description.toFloat()))
+                    itemsOrdered.add(ItemsOrdered(it.id, it.description.toFloat()))
                 }
                 itemsOrdered.last().quantity = quantity.toFloat()
             }
-            intent.putParcelableArrayListExtra("ITEMS_ORDERED", itemsOrdered)
-            setResult(101, intent)
             postOrder()
         }
 
@@ -66,6 +57,10 @@ class OrderActivity : AppCompatActivity() {
         if (loginResponse != null) {
             token = loginResponse.token
         }
+        getItems()
+    }
+
+    private fun getItems() {
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -89,13 +84,22 @@ class OrderActivity : AppCompatActivity() {
     }
 
     private fun postOrder() {
-        val retrofit=Retrofit.Builder()
+        val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val resource:MyResources= intent.getParcelableExtra("RESOURCE")
-        val orderRequest=OrderRequest(token,getID(),"1",itemsOrdered,"doctors",resource.id)
-        val orderCallback=retrofit.create(RepresentativesInterface::class.java).postOrder(orderRequest)
+        val resource: MyResources = intent.getParcelableExtra("RESOURCE")
+        val orderRequest = OrderRequest(token, getID(), itemsOrdered, resource.resourceType, resource.id)
+        val orderCallback = retrofit.create(RepresentativesInterface::class.java).postOrder(orderRequest)
+            .enqueue(object : Callback<OrderResponse> {
+                override fun onFailure(call: Call<OrderResponse>, t: Throwable) {
+
+                }
+
+                override fun onResponse(call: Call<OrderResponse>, response: Response<OrderResponse>) {
+
+                }
+            })
     }
 
     private fun prepareItems(items: List<Item>) {

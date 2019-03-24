@@ -65,4 +65,14 @@
     <string name="good">good</string>
     <string name="very_good">very good</string>
     <string name="excellent">excellent</string>
+    <string name="name_empty">Name Field Cannot Be Empty</string>
+    <string name="org_empty">Organization Field Cannot Be Empty</string>
+    <string name="region_empty">Region Field Cannot Be Empty</string>
+    <string name="block_empty">Block Field Cannot Be Empty</string>
+    <string name="speciality_empty">Speciality Field Cannot Be Empty</string>
+    <string name="hospital_empty">Hospital Field Cannot Be Empty</string>
+    <string name="work_empty">Please Choose Work Time</string>
+    <string name="email_empty">Email Field Cannot Be Empty</string>
+    <string name="email_not_valid">Email Is Not Valid</string>
+    <string name="password_empty">Password Field Cannot Be Empty</string>
 </resources>

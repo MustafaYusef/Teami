@@ -9,7 +9,7 @@
 
     <string name="login">دخول</string>
     <string name="emailHint">البريد الالكتروني</string>
-    <string name="passwordHint">الرقم السري</string>
+    <string name="passwordHint">كلمة المرور</string>
     <string name="register_location">تسجيل زيارة</string>
     <string name="pharmacies">الصيدليات</string>
     <string name="permissionMessage">يجب السماح بالأذونات لإستعمال هذا التطبيق</string>
@@ -64,4 +64,14 @@
     <string name="good">جيد</string>
     <string name="very_good">جيد جدا</string>
     <string name="excellent">ممتاز</string>
+    <string name="name_empty">حقل الاسم لا يمكن ان يكون فارغاً</string>
+    <string name="org_empty">حقل المحافظة لا يمكن ان يكون فارغاً</string>
+    <string name="region_empty">حقل المنطقة لا يمكن ان يكون فارغاً</string>
+    <string name="block_empty">حقل المربع لا يمكن ان يكون فارغاً</string>
+    <string name="speciality_empty">حقل الاختصاص لا يمكن ان يكون فارغاً</string>
+    <string name="hospital_empty">حقل المستشفى لا يمكن ان يكون فارغاً</string>
+    <string name="work_empty">الرجاء اختيار وقت العمل</string>
+    <string name="email_empty">حقل البريد لا يمكن ان يكون فارغاً</string>
+    <string name="email_not_valid">البريد ليس صحيحاً</string>
+    <string name="password_empty">حقل كلمة المرور لا يمكن ان يكون فارغاً</string>
 </resources>

@@ -7,6 +7,7 @@ import android.provider.Settings
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
+import com.martin.teami.R
 import com.martin.teami.models.LoginRequest
 import com.martin.teami.models.LoginResponse
 import com.martin.teami.retrofit.RepresentativesInterface
@@ -14,7 +15,6 @@ import com.martin.teami.utils.Consts.BASE_URL
 import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.orhanobut.hawk.Hawk
-import com.wajahatkarim3.easyvalidation.core.view_ktx.nonEmpty
 import com.wajahatkarim3.easyvalidation.core.view_ktx.validEmail
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
@@ -36,12 +36,32 @@ class LoginActivity : AppCompatActivity() {
             .FLAG_ACTIVITY_NO_HISTORY or Intent
             .FLAG_ACTIVITY_NEW_TASK or Intent
             .FLAG_ACTIVITY_CLEAR_TASK
-        initLogin()
+        loginBtn.setOnClickListener {
+            if (setValidation())
+                initLogin()
+        }
         forgotPasswordTV.setOnClickListener {
             val intent = Intent(this, ForgotPasswordActivity::class.java)
             startActivity(intent)
         }
         Hawk.init(this).build()
+    }
+
+    private fun setValidation(): Boolean {
+        when {
+            emailET.text.isNullOrBlank() && emailET.text.isEmpty() -> {
+                Toast.makeText(this@LoginActivity, getString(R.string.email_empty), Toast.LENGTH_LONG).show()
+                return false
+            }
+            !emailET.validEmail()->{
+                Toast.makeText(this@LoginActivity, getString(R.string.email_not_valid), Toast.LENGTH_LONG).show()
+                return false
+            }
+            passwordET.text.isNullOrBlank() && passwordET.text.isEmpty() -> {
+                Toast.makeText(this@LoginActivity, getString(R.string.password_empty), Toast.LENGTH_LONG).show()
+                return false
+            } else -> return true
+        }
     }
 
     private fun initLogin() {
@@ -50,28 +70,27 @@ class LoginActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val loginInterface = retrofit.create(RepresentativesInterface::class.java)
-        loginBtn.setOnClickListener {
-            loginProgressBar.visibility = View.VISIBLE
-            it.visibility = View.GONE
-            val loginRequest = LoginRequest(emailET.text.toString(), passwordET.text.toString(), getID())
-            val loginResponseCall = loginInterface.getToken(loginRequest)
-            loginResponseCall.enqueue(object : Callback<LoginResponse> {
-                override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                    loginProgressBar.visibility = View.GONE
-                    it.visibility = View.VISIBLE
-                    Toast.makeText(this@LoginActivity, t.message, Toast.LENGTH_LONG).show()
-                }
+        loginProgressBar.visibility = View.VISIBLE
+        loginBtn.visibility = View.GONE
+        val loginRequest = LoginRequest(emailET.text.toString(), passwordET.text.toString(), getID())
+        val loginResponseCall = loginInterface.getToken(loginRequest)
+        loginResponseCall.enqueue(object : Callback<LoginResponse> {
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                loginProgressBar.visibility = View.GONE
+                loginBtn.visibility = View.VISIBLE
+                Toast.makeText(this@LoginActivity, t.message, Toast.LENGTH_LONG).show()
+            }
 
-                override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                    loginProgressBar.visibility = View.GONE
-                    it.visibility = View.VISIBLE
-                    val loginResponse = response.body()
-                    val intent = Intent(this@LoginActivity, MainActivity::class.java)
-                    Hawk.put(LOGIN_RESPONSE_SHARED, loginResponse)
-                    Hawk.put(LOGIN_TIME, Calendar.getInstance(TimeZone.getDefault()))
-                    if (!loginResponse?.token.isNullOrEmpty()) {
-                        startActivity(intent)
-                    }
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                loginProgressBar.visibility = View.GONE
+                loginBtn.visibility = View.VISIBLE
+                val loginResponse = response.body()
+                val intent = Intent(this@LoginActivity, MainActivity::class.java)
+                Hawk.put(LOGIN_RESPONSE_SHARED, loginResponse)
+                Hawk.put(LOGIN_TIME, Calendar.getInstance(TimeZone.getDefault()))
+                if (!loginResponse?.token.isNullOrEmpty()) {
+                    startActivity(intent)
+                }
 //                    else {
 //                        val converter = retrofit.responseBodyConverter<ErrorResponse>(
 //                            ErrorResponse::class.java,
@@ -80,10 +99,10 @@ class LoginActivity : AppCompatActivity() {
 //                        val errors = converter.convert(response.errorBody())
 //                        Toast.makeText(this@LoginActivity, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
 //                    }
-                }
+            }
 
-            })
-        }
+        })
+
     }
 
     fun getID(): String {

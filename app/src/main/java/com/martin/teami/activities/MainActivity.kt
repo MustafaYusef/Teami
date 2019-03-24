@@ -19,7 +19,9 @@ import android.support.annotation.ColorRes
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.PermissionChecker
 import android.support.v7.widget.LinearLayoutManager
+import android.view.View
 import android.widget.Toast
+import com.getbase.floatingactionbutton.FloatingActionsMenu
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -76,7 +78,18 @@ class MainActivity : AppCompatActivity() {
         getLastKnowLocation()
 
         requestUpdates()
+pink_icon.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.OnFloatingActionsMenuUpdateListener{
+    override fun onMenuExpanded() {
+        dimView.visibility= View.VISIBLE
+        dimView.setOnClickListener {
+            pink_icon.collapse()
+        }
+    }
 
+    override fun onMenuCollapsed() {
+        dimView.visibility= View.GONE
+    }
+})
         addDocFab.setOnClickListener {
             if (userLocation != null) {
                 checkUser()

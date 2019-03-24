@@ -33,6 +33,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import android.widget.TextView
 import android.view.ViewGroup
+import com.martin.teami.utils.afterTextChanged
+import com.wajahatkarim3.easyvalidation.core.view_ktx.nonEmpty
 
 
 class AddDoctor : AppCompatActivity() {
@@ -47,7 +49,7 @@ class AddDoctor : AppCompatActivity() {
     private lateinit var userLocation: Location
     private var selectedSpeciality = -1
     private var selectedHospital = -1
-    private var selectedOrg = 0
+    private var selectedOrg = -1
     private var selectedRegion = -1
     private var selectedWork = -1
 
@@ -56,33 +58,60 @@ class AddDoctor : AppCompatActivity() {
         setContentView(R.layout.activity_add_doctor)
         checkUser()
         finishAddBtn.setOnClickListener {
-            addDoctor()
+            if (setValidation())
+                addDoctor()
         }
         getSpeciatly()
         getRegion()
         getOrganizations()
         getHospitals()
         setWorkSpinner()
-        docNameET.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (!s.isNullOrEmpty()) {
+        docNameET.afterTextChanged {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!it.isEmpty()) {
 
-                        docNameET.background = ColorDrawable(getColor(R.color.colorPrimary))
-                        docNameET.setTextColor(resources.getColor(R.color.background))
-                    } else {
-                        docNameET.background = getDrawable(R.drawable.edittext_normal)
-                        docNameET.setTextColor(Color.parseColor("#666666"))
-                    }
+                    docNameET.background = ColorDrawable(getColor(R.color.colorPrimary))
+                    docNameET.setTextColor(resources.getColor(R.color.background))
+                } else {
+                    docNameET.background = getDrawable(R.drawable.edittext_normal)
+                    docNameET.setTextColor(Color.parseColor("#666666"))
                 }
             }
+        }
+    }
 
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    private fun setValidation(): Boolean {
+        when {
+            docNameET.text.isNullOrBlank()&&docNameET.text.isEmpty() -> {
+                Toast.makeText(this@AddDoctor, getString(R.string.name_empty), Toast.LENGTH_LONG).show()
+                return false
             }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            selectedSpeciality<1 -> {
+                Toast.makeText(this@AddDoctor, getString(R.string.speciality_empty), Toast.LENGTH_LONG).show()
+                return false
             }
-        })
+            selectedOrg<1 -> {
+                Toast.makeText(this@AddDoctor, getString(R.string.org_empty), Toast.LENGTH_LONG).show()
+                return false
+            }
+            selectedRegion<1 -> {
+                Toast.makeText(this@AddDoctor, getString(R.string.region_empty), Toast.LENGTH_LONG).show()
+                return false
+            }
+            docBlockET.text.isNullOrBlank()&&docBlockET.text.isEmpty() -> {
+                Toast.makeText(this@AddDoctor, getString(R.string.block_empty), Toast.LENGTH_LONG).show()
+                return false
+            }
+            selectedHospital<1 -> {
+                Toast.makeText(this@AddDoctor, getString(R.string.hospital_empty), Toast.LENGTH_LONG).show()
+                return false
+            }
+            selectedWork<1 -> {
+                Toast.makeText(this@AddDoctor, getString(R.string.work_empty), Toast.LENGTH_LONG).show()
+                return false
+            }
+            else -> return true
+        }
     }
 
     private fun checkUser() {
@@ -167,7 +196,10 @@ class AddDoctor : AppCompatActivity() {
                     Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
                 }
 
-                override fun onResponse(call: Call<SpecialityResponse>, response: Response<SpecialityResponse>) {
+                override fun onResponse(
+                    call: Call<SpecialityResponse>,
+                    response: Response<SpecialityResponse>
+                ) {
                     val specialityResponse = response.body()
                     specialityResponse?.let {
                         specialtiesList = it.specialities
@@ -209,7 +241,10 @@ class AddDoctor : AppCompatActivity() {
                     Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
                 }
 
-                override fun onResponse(call: Call<OrganizationResponse>, response: Response<OrganizationResponse>) {
+                override fun onResponse(
+                    call: Call<OrganizationResponse>,
+                    response: Response<OrganizationResponse>
+                ) {
                     val organizationResponse = response.body()
                     organizationResponse?.let {
                         organiztionsList = it.organization
@@ -225,7 +260,7 @@ class AddDoctor : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val hospitalResponseCall = retrofit.create(RepresentativesInterface::class.java)
-            .getHospitals(token, getID(),selectedOrg).enqueue(object : Callback<HospitalsResponse> {
+            .getHospitals(token, getID(), selectedOrg).enqueue(object : Callback<HospitalsResponse> {
                 override fun onFailure(call: Call<HospitalsResponse>, t: Throwable) {
                     Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
                 }
@@ -241,7 +276,7 @@ class AddDoctor : AppCompatActivity() {
     }
 
     private fun setSpecialtySpinner() {
-        docSpecialityET.threshold=0
+        docSpecialityET.threshold = 0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, specialtiesList
@@ -261,7 +296,7 @@ class AddDoctor : AppCompatActivity() {
                 docSpecialityET.background = ColorDrawable(getColor(R.color.colorPrimary))
                 docSpecialityET.setTextColor(resources.getColor(R.color.background))
             }
-            val speciality:Resource=docSpecialityET.adapter.getItem(position) as Resource
+            val speciality: Resource = docSpecialityET.adapter.getItem(position) as Resource
             selectedSpeciality = speciality.id
             specialtyRmvIV.visibility = View.VISIBLE
         }
@@ -270,13 +305,14 @@ class AddDoctor : AppCompatActivity() {
                 docSpecialityET.background = getDrawable(R.drawable.edittext_normal)
                 docSpecialityET.setTextColor(Color.parseColor("#666666"))
             }
+            selectedSpeciality=-1
             docSpecialityET.text.clear()
             it.visibility = View.GONE
         }
     }
 
     private fun setRegionsSpinner() {
-        docAreaET.threshold=0
+        docAreaET.threshold = 0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, regionsList
@@ -293,7 +329,7 @@ class AddDoctor : AppCompatActivity() {
         }
         docAreaET.setOnItemClickListener { parent, view, position, id ->
             docAreaET.isEnabled = false
-            val region:Resource=docAreaET.adapter.getItem(position) as Resource
+            val region: Resource = docAreaET.adapter.getItem(position) as Resource
             selectedRegion = region.id
             regionRmvIV.visibility = View.VISIBLE
         }
@@ -301,11 +337,12 @@ class AddDoctor : AppCompatActivity() {
             docAreaET.isEnabled = true
             docAreaET.text.clear()
             it.visibility = View.GONE
+            selectedRegion=-1
         }
     }
 
     private fun setOrgsSpinner() {
-        docProvET.threshold=0
+        docProvET.threshold = 0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, organiztionsList
@@ -321,7 +358,7 @@ class AddDoctor : AppCompatActivity() {
         }
         docProvET.setOnItemClickListener { parent, view, position, id ->
             docProvET.isEnabled = false
-            val org:Resource=docProvET.adapter.getItem(position) as Resource
+            val org: Resource = docProvET.adapter.getItem(position) as Resource
             selectedOrg = org.id
             getRegion()
             getHospitals()
@@ -331,11 +368,13 @@ class AddDoctor : AppCompatActivity() {
             docProvET.isEnabled = true
             docProvET.text.clear()
             it.visibility = View.GONE
+            selectedOrg=-1
+            getRegion()
         }
     }
 
     private fun setHospitalsSpinner() {
-        docHospiET.threshold=0
+        docHospiET.threshold = 0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, hospitalsList
@@ -352,7 +391,7 @@ class AddDoctor : AppCompatActivity() {
         }
         docHospiET.setOnItemClickListener { parent, view, position, id ->
             docHospiET.isEnabled = false
-            val hospital:Resource=docHospiET.adapter.getItem(position) as Resource
+            val hospital: Resource = docHospiET.adapter.getItem(position) as Resource
             selectedHospital = hospital.id
             hospitalRmvIV.visibility = View.VISIBLE
         }
@@ -360,6 +399,7 @@ class AddDoctor : AppCompatActivity() {
             docHospiET.isEnabled = true
             docHospiET.text.clear()
             it.visibility = View.GONE
+            selectedHospital=-1
         }
     }
 

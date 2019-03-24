@@ -51,7 +51,8 @@ class AddPharmacy : AppCompatActivity() {
         setContentView(R.layout.activity_add_pharmacy)
         checkUser()
         finishAddPharmBtn.setOnClickListener {
-            addPharm()
+            if (setValidation())
+                addPharm()
         }
         getRegion()
         getOrganizations()
@@ -75,6 +76,27 @@ class AddPharmacy : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
             }
         })
+    }
+
+    private fun setValidation(): Boolean {
+        when {
+            pharmNameET.text.isNullOrBlank() && pharmNameET.text.isEmpty() -> {
+                Toast.makeText(this@AddPharmacy, getString(R.string.name_empty), Toast.LENGTH_LONG).show()
+                return false
+            }
+            selectedOrg < 1 -> {
+                Toast.makeText(this@AddPharmacy, getString(R.string.org_empty), Toast.LENGTH_LONG).show()
+                return false
+            }
+            selectedRegion < 1 -> {
+                Toast.makeText(this@AddPharmacy, getString(R.string.region_empty), Toast.LENGTH_LONG).show()
+                return false
+            }
+            pharmBlockET.text.isNullOrBlank() && pharmBlockET.text.isEmpty() -> {
+                Toast.makeText(this@AddPharmacy, getString(R.string.block_empty), Toast.LENGTH_LONG).show()
+                return false
+            } else -> return true
+        }
     }
 
     private fun checkUser() {
@@ -105,7 +127,7 @@ class AddPharmacy : AppCompatActivity() {
         val street = pharmBlockET.text.toString()
         val pharmacy = Pharmacy(
             name, street, selectedOrg.toString(), selectedRegion.toString()
-            ,userLocation.latitude.toString(), userLocation.longitude.toString(), token, getID()
+            , userLocation.latitude.toString(), userLocation.longitude.toString(), token, getID()
         )
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
@@ -185,7 +207,7 @@ class AddPharmacy : AppCompatActivity() {
     }
 
     private fun setRegionsSpinner() {
-        pharmAreaET.threshold=0
+        pharmAreaET.threshold = 0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, regionsList
@@ -202,7 +224,7 @@ class AddPharmacy : AppCompatActivity() {
         }
         pharmAreaET.setOnItemClickListener { parent, view, position, id ->
             pharmAreaET.isEnabled = false
-            val region:Resource=pharmAreaET.adapter.getItem(position) as Resource
+            val region: Resource = pharmAreaET.adapter.getItem(position) as Resource
             selectedRegion = region.id
             regionRmvIV2.visibility = View.VISIBLE
         }
@@ -214,7 +236,7 @@ class AddPharmacy : AppCompatActivity() {
     }
 
     private fun setOrgsSpinner() {
-        pharmProvinceET.threshold=0
+        pharmProvinceET.threshold = 0
         val adapter = ArrayAdapter(
             this,
             R.layout.support_simple_spinner_dropdown_item, organiztionsList
@@ -229,7 +251,7 @@ class AddPharmacy : AppCompatActivity() {
         }
         pharmProvinceET.setOnItemClickListener { parent, view, position, id ->
             pharmProvinceET.isEnabled = false
-            val org:Resource=pharmProvinceET.adapter.getItem(position) as Resource
+            val org: Resource = pharmProvinceET.adapter.getItem(position) as Resource
             selectedOrg = org.id
             getRegion()
             orgRmvIV2.visibility = View.VISIBLE
