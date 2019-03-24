@@ -50,8 +50,8 @@
     <string name="feedback_success">Feedback Successfully Posted!</string>
     <string name="feedback">Feedback</string>
     <string name="order">Order</string>
-    <string name="distanceKM">%1$d KM</string>
-    <string name="distanceM">%1$d M</string>
+    <string name="distanceKM">%1$.1f KM</string>
+    <string name="distanceM">%1$.1f M</string>
     <string name="doctor_added_successfully">Doctor Added Successfully!</string>
     <string name="pharm_added">Pharmacy Added Successfully!</string>
     <string name="am">AM</string>
@@ -59,4 +59,10 @@
     <string name="both">Both</string>
     <string name="work">Work</string>
     <string name="quantity">Quantity</string>
+    <string name="pharmacy">Pharmacy</string>
+    <string name="bad">bad</string>
+    <string name="medium">medium</string>
+    <string name="good">good</string>
+    <string name="very_good">very good</string>
+    <string name="excellent">excellent</string>
 </resources>

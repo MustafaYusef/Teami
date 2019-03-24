@@ -50,12 +50,18 @@
     <string name="feedback_success">تمت اضافة التقرير</string>
     <string name="feedback">تسجيل تقرير</string>
     <string name="order">تسجيل طلب</string>
-    <string name="distanceKM">%1$d كم</string>
-    <string name="distanceM">%1$d م</string>
+    <string name="distanceKM">%1$.1f كم</string>
+    <string name="distanceM">%1$.1f م</string>
     <string name="doctor_added_successfully">تمت اضافة الطبيب</string>
     <string name="pharm_added">تمت اضافة الصيدلية</string>
     <string name="am">صباحي</string>
     <string name="pm">مسائي</string>
     <string name="both">الاثنان</string>
     <string name="quantity">الكمية</string>
+    <string name="pharmacy">صيدلية</string>
+    <string name="bad">سيء</string>
+    <string name="medium">متوسط</string>
+    <string name="good">جيد</string>
+    <string name="very_good">جيد جدا</string>
+    <string name="excellent">ممتاز</string>
 </resources>

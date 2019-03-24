@@ -1,5 +1,5 @@
 package com.martin.teami.models
 
 class MyResourcesResponse(
-    var Resource:MyResources
+    var Resource:List<MyResources>
 )

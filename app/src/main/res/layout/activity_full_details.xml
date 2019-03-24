@@ -101,7 +101,7 @@
                 />
                 <TextView
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:id="@+id/doctorNameTV"
+                        android:layout_height="wrap_content" android:id="@+id/resourceNameTV"
                         android:layout_marginStart="8dp"
                         tools:text="Jaafar Alaa" app:layout_constraintStart_toEndOf="@+id/view3"
                         android:fontFamily="@font/cairo_semibold" android:textColor="#505050"
@@ -114,7 +114,7 @@
                         tools:text="Bayaa" app:layout_constraintStart_toEndOf="@+id/view3"
                         android:fontFamily="@font/cairo_semibold"
                         android:textColor="#505050"
-                        app:layout_constraintTop_toBottomOf="@+id/doctorNameTV"
+                        app:layout_constraintTop_toBottomOf="@+id/resourceNameTV"
                         app:layout_constraintBottom_toTopOf="@+id/doctorStTV"
                         android:textSize="18sp"/>
                 <TextView

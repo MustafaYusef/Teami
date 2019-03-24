@@ -8,9 +8,7 @@ import android.support.v7.widget.CardView
 import android.view.LayoutInflater
 import android.widget.*
 import com.martin.teami.R
-import com.martin.teami.models.Item
-import com.martin.teami.models.ItemsResponse
-import com.martin.teami.models.LoginResponse
+import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
 import com.martin.teami.utils.Consts.BASE_URL
 import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
@@ -25,7 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class OrderActivity : AppCompatActivity() {
 
     private lateinit var allItems: List<Item>
-    private var itemsOrdered: ArrayList<Item> = arrayListOf()
+    private var itemsOrdered: ArrayList<ItemsOrdered> = arrayListOf()
     private lateinit var token: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,9 +32,9 @@ class OrderActivity : AppCompatActivity() {
 
         val iteems = intent.getParcelableArrayListExtra<Item>("ITEMS_ORDERED")
         if (iteems != null) {
-            itemsOrdered = iteems
-            for (item in itemsOrdered) {
+            for (item in iteems) {
                 addItem(item.name, item.id.toString(), item.description)
+                itemsOrdered.add(ItemsOrdered(item.id,item.description.toFloat()))
             }
         }
 
@@ -55,13 +53,13 @@ class OrderActivity : AppCompatActivity() {
                     }
                 }
                 item?.let {
-                    itemsOrdered.add(it)
+                    itemsOrdered.add(ItemsOrdered(it.id,it.description.toFloat()))
                 }
-                itemsOrdered.last().description = quantity
+                itemsOrdered.last().quantity = quantity.toFloat()
             }
             intent.putParcelableArrayListExtra("ITEMS_ORDERED", itemsOrdered)
             setResult(101, intent)
-            this.finish()
+            postOrder()
         }
 
         val loginResponse = Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED)
@@ -88,6 +86,16 @@ class OrderActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    private fun postOrder() {
+        val retrofit=Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val resource:MyResources= intent.getParcelableExtra("RESOURCE")
+        val orderRequest=OrderRequest(token,getID(),"1",itemsOrdered,"doctors",resource.id)
+        val orderCallback=retrofit.create(RepresentativesInterface::class.java).postOrder(orderRequest)
     }
 
     private fun prepareItems(items: List<Item>) {

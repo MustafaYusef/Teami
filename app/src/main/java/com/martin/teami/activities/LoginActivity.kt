@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
 import android.view.View
+import android.widget.EditText
 import android.widget.Toast
 import com.martin.teami.models.LoginRequest
 import com.martin.teami.models.LoginResponse
@@ -13,6 +14,8 @@ import com.martin.teami.utils.Consts.BASE_URL
 import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.orhanobut.hawk.Hawk
+import com.wajahatkarim3.easyvalidation.core.view_ktx.nonEmpty
+import com.wajahatkarim3.easyvalidation.core.view_ktx.validEmail
 import kotlinx.android.synthetic.main.activity_login.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -20,7 +23,6 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
-import com.martin.teami.models.ErrorResponse
 
 
 class LoginActivity : AppCompatActivity() {
@@ -29,7 +31,6 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(com.martin.teami.R.layout.activity_login)
-
         intent.flags = Intent
             .FLAG_ACTIVITY_CLEAR_TOP or Intent
             .FLAG_ACTIVITY_NO_HISTORY or Intent

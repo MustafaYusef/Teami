@@ -25,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class FullDetailsActivity : AppCompatActivity() {
 
     private var itemsOrdered: ArrayList<Item>? = null
-    private lateinit var doctor: MyDoctor
+    private lateinit var resource: MyResources
     private lateinit var token: String
     private lateinit var fbDialog: Dialog
 
@@ -37,7 +37,7 @@ class FullDetailsActivity : AppCompatActivity() {
         if (loginResponse != null) {
             token = loginResponse.token
         }
-        doctor = intent.getParcelableExtra("DOCTOR")
+        resource = intent.getParcelableExtra("RESOURCE")
         setDoc()
 
         orderBtn.setOnClickListener {
@@ -45,6 +45,7 @@ class FullDetailsActivity : AppCompatActivity() {
             if (itemsOrdered != null) {
                 intent.putParcelableArrayListExtra("ITEMS_ORDERED", itemsOrdered)
             }
+            intent.putExtra("RESOURCE",resource)
             startActivityForResult(intent, 101)
         }
 
@@ -55,11 +56,11 @@ class FullDetailsActivity : AppCompatActivity() {
             dialog.show()
             dialog.feedbackRatingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
                 when (rating) {
-                    1f -> dialog.statueTV.text = "bad"
-                    2f -> dialog.statueTV.text = "medium"
-                    3f -> dialog.statueTV.text = "good"
-                    4f -> dialog.statueTV.text = "very good"
-                    5f -> dialog.statueTV.text = "excellent"
+                    1f -> dialog.statueTV.text = getString(R.string.bad)
+                    2f -> dialog.statueTV.text = getString(R.string.medium)
+                    3f -> dialog.statueTV.text = getString(R.string.good)
+                    4f -> dialog.statueTV.text = getString(R.string.very_good)
+                    5f -> dialog.statueTV.text = getString(R.string.excellent)
                     else -> dialog.statueTV.text = ""
                 }
             }
@@ -96,8 +97,8 @@ class FullDetailsActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val feedbackRequest = FeedbackRequest(
-            token, "doctors"
-            , doctor.id.toString()
+            token, resource.resourceType
+            , resource.id.toString()
             , rating.toString(), note
             , "visit"
         )
@@ -120,18 +121,18 @@ class FullDetailsActivity : AppCompatActivity() {
     }
 
     private fun setDoc() {
-        docNameTV.text = doctor.name
-        specialtyTV.text = doctor.speciality.name
-        doctorNameTV.text = doctor.name
-        doctorAddrTV.text = doctor.reign.name
-        doctorStTV.text = doctor.street
-        doctorWorkTV.text = when (doctor.workTime) {
+        docNameTV.text = resource.name
+        specialtyTV.text = resource.speciality
+        resourceNameTV.text = resource.name
+        doctorAddrTV.text = resource.reign
+        doctorStTV.text = resource.street
+        doctorWorkTV.text = when (resource.workTime) {
             "p" -> "PM"
             "a" -> "AM"
             "b" -> "AM & PM"
             else -> "NaN"
         }
-        docHospitalTV.text = doctor.hospital.name
+        docHospitalTV.text = resource.hospital
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
