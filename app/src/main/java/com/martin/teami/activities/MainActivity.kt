@@ -5,12 +5,8 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
-import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
@@ -22,12 +18,6 @@ import android.support.v7.widget.LinearLayoutManager
 import android.view.View
 import android.widget.Toast
 import com.getbase.floatingactionbutton.FloatingActionsMenu
-import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.common.api.ResolvableApiException
-import com.google.android.gms.location.*
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.martin.teami.R
 import com.martin.teami.adapters.ResourcesAdapter
 import com.martin.teami.models.*
@@ -36,6 +26,7 @@ import com.martin.teami.utils.Consts.BASE_URL
 import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.Consts.USER_LOCATION
+import com.martin.teami.utils.LocationUtils
 import com.martin.teami.utils.checkExpirationLimit
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main.*
@@ -49,56 +40,46 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var locationManager: LocationManager
-    private lateinit var listener: LocationListener
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-    private lateinit var locationRequest: LocationRequest
-    private var resourcesList: List<MyResources>?=null
+    private var resourcesList: List<MyResources>? = null
     private var userLocation: Location? = null
-    private var permissionCount = 0
     private lateinit var token: String
     private var tokenExp: Long = 0
     private var calendar: Calendar? = null
-    private var running = false
     private lateinit var adapter: ResourcesAdapter
+    private lateinit var locationUtils: LocationUtils
+    private var permissionCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Hawk.init(this).build()
         checkUser()
-        locationRequest = LocationRequest()
+        locationUtils = LocationUtils(this@MainActivity)
+        locationUtils.initLocation()
+        userLocation=locationUtils.userLocation
+        pink_icon.setOnFloatingActionsMenuUpdateListener(object :
+            FloatingActionsMenu.OnFloatingActionsMenuUpdateListener {
+            override fun onMenuExpanded() {
+                dimView.visibility = View.VISIBLE
+                dimView.setOnClickListener {
+                    pink_icon.collapse()
+                }
+            }
 
-        locationManager = this.getSystemService(AppCompatActivity.LOCATION_SERVICE) as LocationManager
-
-        initListener()
-
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this)
-
-        getLastKnowLocation()
-
-        requestUpdates()
-pink_icon.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.OnFloatingActionsMenuUpdateListener{
-    override fun onMenuExpanded() {
-        dimView.visibility= View.VISIBLE
-        dimView.setOnClickListener {
-            pink_icon.collapse()
-        }
-    }
-
-    override fun onMenuCollapsed() {
-        dimView.visibility= View.GONE
-    }
-})
+            override fun onMenuCollapsed() {
+                dimView.visibility = View.GONE
+            }
+        })
         addDocFab.setOnClickListener {
+            userLocation=locationUtils.userLocation
             if (userLocation != null) {
                 checkUser()
                 val intent = Intent(this, AddDoctor::class.java)
-                intent.putExtra(USER_LOCATION, userLocation)
                 startActivity(intent)
             } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
         }
         addPharmFab.setOnClickListener {
+            userLocation=locationUtils.userLocation
             if (userLocation != null) {
                 checkUser()
                 val intent = Intent(this, AddPharmacy::class.java)
@@ -110,6 +91,7 @@ pink_icon.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.On
             val i = Intent(this@MainActivity, ProfileActivity::class.java)
             startActivity(i)
         }
+        userLocation=locationUtils.userLocation
         adapter = ResourcesAdapter(resourcesList, userLocation)
     }
 
@@ -144,6 +126,7 @@ pink_icon.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.On
 
     fun checkNearestMarker(location: Location?): List<MyResources>? {
         val sortedDoctors = resourcesList
+        userLocation=locationUtils.userLocation
         userLocation?.let {
             Collections.sort(sortedDoctors, Comparator<MyResources> { marker1, marker2 ->
                 val locationA = Location("point A")
@@ -157,8 +140,9 @@ pink_icon.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.On
                 return@Comparator java.lang.Float.compare(distanceOne, distanceTwo)
             })
         }
-        adapter.userLocation=location
-        adapter.resources=sortedDoctors
+        userLocation=locationUtils.userLocation
+        adapter.userLocation = userLocation
+        adapter.resources = sortedDoctors
         resourcesList = sortedDoctors
         if (!sortedDoctors.isNullOrEmpty())
             doctorsRV.adapter?.notifyDataSetChanged()
@@ -193,6 +177,7 @@ pink_icon.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.On
             override fun onResponse(call: Call<MyResourcesResponse>, response: Response<MyResourcesResponse>) {
                 response.body()?.let {
                     resourcesList = it.Resource
+                    userLocation=locationUtils.userLocation
                     if (userLocation != null)
                         checkNearestMarker(null)
                     doctorsRV.adapter = adapter
@@ -217,85 +202,10 @@ pink_icon.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.On
                                 Manifest.permission.ACCESS_COARSE_LOCATION
                             ) != PackageManager.PERMISSION_GRANTED
                         )
-                        else requestUpdates()
+                        else locationUtils.requestUpdates()
                     }
-                    Activity.RESULT_CANCELED -> initGPS()
+                    Activity.RESULT_CANCELED -> locationUtils.initGPS()
                 }
-            }
-        }
-    }
-
-    private fun initGPS() {
-        val builder = LocationSettingsRequest.Builder()
-            .addLocationRequest(locationRequest)
-        locationRequest.interval = 16000
-        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        locationRequest.maxWaitTime = 32000
-
-        val result = LocationServices.getSettingsClient(this@MainActivity)
-            .checkLocationSettings(builder.build())
-
-        result.addOnCompleteListener(object : OnCompleteListener<LocationSettingsResponse> {
-            override fun onComplete(task: Task<LocationSettingsResponse>) {
-                try {
-                    var response = task.getResult(ApiException::class.java)
-                    // All location settings are satisfied. The client can initialize location
-                    // requests here.
-                } catch (exception: ApiException) {
-                    when (exception.statusCode) {
-                        LocationSettingsStatusCodes.RESOLUTION_REQUIRED ->
-                            // Location settings are not satisfied. But could be fixed by showing the
-                            // user a dialog.
-                            try {
-                                // Cast to a resolvable exception.
-                                val resolvable = exception as ResolvableApiException
-                                // Show the dialog by calling startResolutionForResult(),
-                                // and check the result in onActivityResult().
-                                resolvable.startResolutionForResult(
-                                    this@MainActivity,
-                                    100
-                                )
-                            } catch (
-                                e: IntentSender.SendIntentException
-                            ) {
-                                // Ignore the error.
-                            } catch (e: ClassCastException) {
-                                // Ignore, should be an impossible error.
-                            }
-                        LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE ->
-                            // Location settings are not satisfied. However, we have no way to fix the
-                            // settings so we won't show the dialog.
-                            return
-                    }
-                }
-            }
-        })
-    }
-
-    private fun initListener() {
-        listener = object : LocationListener {
-            override fun onLocationChanged(location: Location?) {
-                fusedLocationProviderClient =
-                    LocationServices.getFusedLocationProviderClient(this@MainActivity)
-                getLastKnowLocation()
-                location?.let {
-                    userLocation = it
-                    val userLat = location.latitude
-                    val userLong = location.longitude
-                    val userLatLng = LatLng(userLat, userLong)
-                    if (resourcesList!=null)
-                        checkNearestMarker(it)
-                }
-            }
-
-            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-            }
-
-            override fun onProviderEnabled(provider: String?) {
-            }
-
-            override fun onProviderDisabled(provider: String?) {
-                initGPS()
             }
         }
     }
@@ -308,7 +218,7 @@ pink_icon.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.On
                             && grantResults[1] == PackageManager.PERMISSION_GRANTED
                             && grantResults[2] == PackageManager.PERMISSION_GRANTED)
                 ) {
-                    getLastKnowLocation()
+                    locationUtils.getLastKnowLocation()
                 } else {
                     if (permissionCount > 0) {
                         if (!ActivityCompat.shouldShowRequestPermissionRationale(
@@ -318,7 +228,7 @@ pink_icon.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.On
                         ) {
                             showMessageOKCancel(getString(R.string.permissionsTitle),
                                 getString(R.string.permissionMessage),
-                                DialogInterface.OnClickListener { dialog, which -> requestUpdates() },
+                                DialogInterface.OnClickListener { dialog, which -> locationUtils.requestUpdates() },
                                 DialogInterface.OnClickListener { dialog, which ->
                                     this.finish()
                                 })
@@ -332,53 +242,6 @@ pink_icon.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.On
             }
             else -> return
         }
-    }
-
-    private fun requestUpdates() {
-        if (PermissionChecker.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && PermissionChecker.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                requestPermissions(
-                    arrayOf(
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.INTERNET
-                    )
-                    , 10
-                )
-            }
-        }
-    }
-
-    private fun getLastKnowLocation() {
-        if (PermissionChecker.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && PermissionChecker.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestUpdates()
-            return
-        }
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5f, listener)
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, listener)
-        locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 5000, 5f, listener)
-        if (fusedLocationProviderClient.locationAvailability.isSuccessful)
-            fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
-                val location = task.result
-                val name = this.intent.getStringExtra("NAME")
-                location?.let {
-                    userLocation = it
-                }
-            }
     }
 
     private fun showMessageOK(title: String, message: String, okListener: DialogInterface.OnClickListener) {
@@ -405,19 +268,19 @@ pink_icon.setOnFloatingActionsMenuUpdateListener(object : FloatingActionsMenu.On
             .show()
     }
 
-    override fun onStop() {
-        running = false
-        super.onStop()
-    }
-
-    override fun onStart() {
-        running = true
-        super.onStart()
-    }
-
     override fun onResume() {
         getMyResources()
         doctorsRV.adapter?.notifyDataSetChanged()
         super.onResume()
+    }
+
+    override fun onStop() {
+        locationUtils.stopLocation()
+        super.onStop()
+    }
+
+    override fun onRestart() {
+       locationUtils.getLastKnowLocation()
+        super.onRestart()
     }
 }

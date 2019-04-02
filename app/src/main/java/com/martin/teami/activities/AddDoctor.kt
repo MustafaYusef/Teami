@@ -1,17 +1,21 @@
 package com.martin.teami.activities
 
+import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v4.content.PermissionChecker
 import android.support.v7.app.AppCompatActivity
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -19,10 +23,7 @@ import android.widget.Toast
 import com.martin.teami.R
 import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
-import com.martin.teami.utils.Consts
 import com.martin.teami.utils.Consts.BASE_URL
-import com.martin.teami.utils.Consts.USER_LOCATION
-import com.martin.teami.utils.checkExpirationLimit
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_add_doctor.*
 import retrofit2.Call
@@ -33,8 +34,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import android.widget.TextView
 import android.view.ViewGroup
-import com.martin.teami.utils.afterTextChanged
-import com.wajahatkarim3.easyvalidation.core.view_ktx.nonEmpty
+import com.martin.teami.utils.*
 
 
 class AddDoctor : AppCompatActivity() {
@@ -52,11 +52,15 @@ class AddDoctor : AppCompatActivity() {
     private var selectedOrg = -1
     private var selectedRegion = -1
     private var selectedWork = -1
+    private lateinit var locationUtils: LocationUtils
+    private var permissionCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_doctor)
         checkUser()
+        locationUtils = LocationUtils(this@AddDoctor)
+        locationUtils.initLocation()
         finishAddBtn.setOnClickListener {
             if (setValidation())
                 addDoctor()
@@ -82,31 +86,31 @@ class AddDoctor : AppCompatActivity() {
 
     private fun setValidation(): Boolean {
         when {
-            docNameET.text.isNullOrBlank()&&docNameET.text.isEmpty() -> {
+            docNameET.text.isNullOrBlank() && docNameET.text.isEmpty() -> {
                 Toast.makeText(this@AddDoctor, getString(R.string.name_empty), Toast.LENGTH_LONG).show()
                 return false
             }
-            selectedSpeciality<1 -> {
+            selectedSpeciality < 1 -> {
                 Toast.makeText(this@AddDoctor, getString(R.string.speciality_empty), Toast.LENGTH_LONG).show()
                 return false
             }
-            selectedOrg<1 -> {
+            selectedOrg < 1 -> {
                 Toast.makeText(this@AddDoctor, getString(R.string.org_empty), Toast.LENGTH_LONG).show()
                 return false
             }
-            selectedRegion<1 -> {
+            selectedRegion < 1 -> {
                 Toast.makeText(this@AddDoctor, getString(R.string.region_empty), Toast.LENGTH_LONG).show()
                 return false
             }
-            docBlockET.text.isNullOrBlank()&&docBlockET.text.isEmpty() -> {
+            docBlockET.text.isNullOrBlank() && docBlockET.text.isEmpty() -> {
                 Toast.makeText(this@AddDoctor, getString(R.string.block_empty), Toast.LENGTH_LONG).show()
                 return false
             }
-            selectedHospital<1 -> {
+            selectedHospital < 1 -> {
                 Toast.makeText(this@AddDoctor, getString(R.string.hospital_empty), Toast.LENGTH_LONG).show()
                 return false
             }
-            selectedWork<1 -> {
+            selectedWork < 1 -> {
                 Toast.makeText(this@AddDoctor, getString(R.string.work_empty), Toast.LENGTH_LONG).show()
                 return false
             }
@@ -117,7 +121,6 @@ class AddDoctor : AppCompatActivity() {
     private fun checkUser() {
         val loginResponse = Hawk.get<LoginResponse>(Consts.LOGIN_RESPONSE_SHARED)
         calendar = Hawk.get(Consts.LOGIN_TIME)
-        userLocation = intent.getParcelableExtra(USER_LOCATION)
         if (loginResponse != null) {
             token = loginResponse.token
             tokenExp = loginResponse.expire
@@ -136,53 +139,75 @@ class AddDoctor : AppCompatActivity() {
     }
 
     private fun addDoctor() {
-        addDocPB.visibility = View.VISIBLE
-        finishAddBtn.visibility = View.INVISIBLE
-        val name = docNameET.text.toString()
-        val street = docBlockET.text.toString()
-        val work = when (selectedWork) {
-            1 -> "a"
-            2 -> "p"
-            3 -> "b"
-            else -> "NaN"
-        }
-        val doctor = Doctor(
-            name,
-            street,
-            selectedOrg.toString(),
-            selectedSpeciality.toString(),
-            selectedRegion.toString(),
-            selectedHospital.toString(),
-            userLocation.latitude.toString(),
-            userLocation.longitude.toString(),
-            work,
-            token,
-            getID()
-        )
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_URL)
-            .build()
-        val addDoctorResponseCall = retrofit.create(RepresentativesInterface::class.java)
-            .addNewDoctor(doctor).enqueue(object : Callback<AddDoctorResponse> {
-                override fun onFailure(call: Call<AddDoctorResponse>, t: Throwable) {
-                    addDocPB.visibility = View.GONE
-                    finishAddBtn.visibility = View.VISIBLE
-                    Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
-                }
+        var location = locationUtils.userLocation
+        if (location != null) {
+            userLocation = location
 
-                override fun onResponse(call: Call<AddDoctorResponse>, response: Response<AddDoctorResponse>) {
-                    addDocPB.visibility = View.GONE
-                    finishAddBtn.visibility = View.VISIBLE
-                    if (response.body()?.doctor_id != null) {
-                        showMessageOK(getString(R.string.doctor_added_successfully),
-                            DialogInterface.OnClickListener { dialog, which ->
-                                dialog?.dismiss()
-                                docNameET.text.clear()
-                            })
+            addDocPB.visibility = View.VISIBLE
+            finishAddBtn.visibility = View.INVISIBLE
+            val name = docNameET.text.toString()
+            val street = docBlockET.text.toString()
+            val work = when (selectedWork) {
+                1 -> "a"
+                2 -> "p"
+                3 -> "b"
+                else -> "NaN"
+            }
+            val doctor = Doctor(
+                name,
+                street,
+                selectedOrg.toString(),
+                selectedSpeciality.toString(),
+                selectedRegion.toString(),
+                selectedHospital.toString(),
+                userLocation.latitude.toString(),
+                userLocation.longitude.toString(),
+                work,
+                token,
+                getID()
+            )
+            val retrofit = Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(BASE_URL)
+                .build()
+            val addDoctorResponseCall = retrofit.create(RepresentativesInterface::class.java)
+                .addNewDoctor(doctor).enqueue(object : Callback<AddDoctorResponse> {
+                    override fun onFailure(call: Call<AddDoctorResponse>, t: Throwable) {
+                        addDocPB.visibility = View.GONE
+                        finishAddBtn.visibility = View.VISIBLE
+                        Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
                     }
-                }
-            })
+
+                    override fun onResponse(call: Call<AddDoctorResponse>, response: Response<AddDoctorResponse>) {
+                        addDocPB.visibility = View.GONE
+                        finishAddBtn.visibility = View.VISIBLE
+                        if (response.body()?.doctor_id != null) {
+                            showMessageOK(getString(R.string.doctor_added_successfully),
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    dialog?.dismiss()
+                                    docNameET.text.clear()
+                                })
+                        } else if (response.code() == 406) {
+                            val converter = retrofit.responseBodyConverter<ErrorResponse>(
+                                ErrorResponse::class.java,
+                                arrayOfNulls<Annotation>(0)
+                            )
+                            val errors = converter.convert(response.errorBody())
+                            Toast.makeText(this@AddDoctor, errors?.error, Toast.LENGTH_SHORT).show()
+                        } else if (response.code() == 400) {
+                            val converter = retrofit.responseBodyConverter<ErrorResponseArray>(
+                                ErrorResponseArray::class.java,
+                                arrayOfNulls<Annotation>(0)
+                            )
+                            val errors = converter.convert(response.errorBody())
+                            Toast.makeText(this@AddDoctor, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                })
+        } else {
+            Toast.makeText(this@AddDoctor, "Location Unavailable", Toast.LENGTH_LONG).show()
+            return
+        }
     }
 
     private fun getSpeciatly() {
@@ -305,7 +330,7 @@ class AddDoctor : AppCompatActivity() {
                 docSpecialityET.background = getDrawable(R.drawable.edittext_normal)
                 docSpecialityET.setTextColor(Color.parseColor("#666666"))
             }
-            selectedSpeciality=-1
+            selectedSpeciality = -1
             docSpecialityET.text.clear()
             it.visibility = View.GONE
         }
@@ -337,7 +362,7 @@ class AddDoctor : AppCompatActivity() {
             docAreaET.isEnabled = true
             docAreaET.text.clear()
             it.visibility = View.GONE
-            selectedRegion=-1
+            selectedRegion = -1
         }
     }
 
@@ -368,7 +393,7 @@ class AddDoctor : AppCompatActivity() {
             docProvET.isEnabled = true
             docProvET.text.clear()
             it.visibility = View.GONE
-            selectedOrg=-1
+            selectedOrg = -1
             getRegion()
         }
     }
@@ -399,7 +424,7 @@ class AddDoctor : AppCompatActivity() {
             docHospiET.isEnabled = true
             docHospiET.text.clear()
             it.visibility = View.GONE
-            selectedHospital=-1
+            selectedHospital = -1
         }
     }
 
@@ -456,11 +481,78 @@ class AddDoctor : AppCompatActivity() {
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            100 -> {
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        if (PermissionChecker.checkSelfPermission(
+                                this,
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                            ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                                this,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            ) != PackageManager.PERMISSION_GRANTED
+                        )
+                        else locationUtils.requestUpdates()
+                    }
+                    Activity.RESULT_CANCELED -> locationUtils.initGPS()
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            10 -> {
+                if ((grantResults.isNotEmpty()
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                            && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                            && grantResults[2] == PackageManager.PERMISSION_GRANTED)
+                ) {
+                    locationUtils.getLastKnowLocation()
+                } else {
+                    if (permissionCount > 0) {
+                        if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                                this,
+                                Manifest.permission.WRITE_CONTACTS
+                            )
+                        ) {
+                            showMessageOKCancel(this@AddDoctor,getString(R.string.permissionsTitle),
+                                getString(R.string.permissionMessage),
+                                DialogInterface.OnClickListener { dialog, which -> locationUtils.requestUpdates() },
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    this.finish()
+                                })
+                            return
+                        }
+                    } else {
+                        permissionCount++
+                    }
+                }
+                return
+            }
+            else -> return
+        }
+    }
+
     private fun showMessageOK(title: String, okListener: DialogInterface.OnClickListener) {
         AlertDialog.Builder(this@AddDoctor)
             .setTitle(title)
             .setPositiveButton(getString(R.string.okDialog), okListener)
             .create()
             .show()
+    }
+
+
+    override fun onStop() {
+        locationUtils.stopLocation()
+        super.onStop()
+    }
+
+    override fun onRestart() {
+        locationUtils.getLastKnowLocation()
+        super.onRestart()
     }
 }

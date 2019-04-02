@@ -19,7 +19,6 @@ class ResourcesAdapter(var resources: List<MyResources>?, var userLocation: Loca
             LayoutInflater.from(parent.context).inflate(R.layout.resource_item, parent, false)
         return DoctorsViewHolder(view)
     }
-
     override fun getItemCount() = resources?.size ?: 0
 
     override fun onBindViewHolder(viewHolder: DoctorsViewHolder, position: Int) {
@@ -50,7 +49,7 @@ class ResourcesAdapter(var resources: List<MyResources>?, var userLocation: Loca
                 view.resourceStreetTV.text = it.street
                 if (it.resourceType == "doctors")
                     view.resourceHospitalTV.text = it.hospital
-                else view.resourceHospitalTV.text=view.context.getString(R.string.pharmacy)
+                else view.resourceHospitalTV.text = view.context.getString(R.string.pharmacy)
                 setCardView(resource)
             }
         }

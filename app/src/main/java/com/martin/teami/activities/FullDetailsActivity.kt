@@ -38,11 +38,11 @@ class FullDetailsActivity : AppCompatActivity() {
         }
         resource = intent.getParcelableExtra("RESOURCE")
 
-        setDoc()
+        setResource()
 
         orderBtn.setOnClickListener {
             val intent = Intent(this, OrderActivity::class.java)
-            intent.putExtra("RESOURCE",resource)
+            intent.putExtra("RESOURCE", resource)
             startActivity(intent)
         }
 
@@ -112,8 +112,8 @@ class FullDetailsActivity : AppCompatActivity() {
 
                 override fun onResponse(call: Call<FeedbackResponse>, response: Response<FeedbackResponse>) {
                     if (fbDialog.isShowing) {
-                        fbDialog.fbProgressBar.visibility= View.GONE
-                        fbDialog.doneFeedbackBtn.visibility= View.VISIBLE
+                        fbDialog.fbProgressBar.visibility = View.GONE
+                        fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
                         fbDialog.dismiss()
                     }
                     showMessageOK(this@FullDetailsActivity, getString(R.string.feedback_success), ""
@@ -122,17 +122,25 @@ class FullDetailsActivity : AppCompatActivity() {
             })
     }
 
-    private fun setDoc() {
+    private fun setResource() {
         docNameTV.text = resource.name
-        specialtyTV.text = resource.speciality
         doctorAddrTV.text = resource.reign
         doctorStTV.text = resource.street
-        doctorWorkTV.text = when (resource.workTime) {
-            "p" -> "PM"
-            "a" -> "AM"
-            "b" -> "AM & PM"
-            else -> "NaN"
+        if (resource.resourceType == "doctors") {
+            specialtyTV.text = resource.speciality
+            docHospitalTV.text = resource.hospital
+            doctorWorkTV.text = when (resource.workTime) {
+                "p" -> "PM"
+                "a" -> "AM"
+                "b" -> "AM & PM"
+                else -> "NaN"
+            }
+        } else {
+            docHospitalTV.visibility = View.GONE
+            workHoursCV.visibility = View.GONE
+            specialtyTV.visibility = View.GONE
+
         }
-        docHospitalTV.text = resource.hospital
+
     }
 }

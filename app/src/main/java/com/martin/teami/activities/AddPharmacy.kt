@@ -1,8 +1,11 @@
 package com.martin.teami.activities
 
+import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.location.Location
@@ -10,6 +13,9 @@ import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.ContextCompat
+import android.support.v4.content.PermissionChecker
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -22,7 +28,9 @@ import com.martin.teami.utils.Consts.BASE_URL
 import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.Consts.USER_LOCATION
+import com.martin.teami.utils.LocationUtils
 import com.martin.teami.utils.checkExpirationLimit
+import com.martin.teami.utils.showMessageOKCancel
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_add_pharmacy.*
 import retrofit2.Call
@@ -36,24 +44,25 @@ class AddPharmacy : AppCompatActivity() {
     private lateinit var token: String
     private var tokenExp: Long = 0
     private var calendar: Calendar? = null
-    private lateinit var specialtiesList: List<Resource>
     private lateinit var organiztionsList: List<Resource>
     private lateinit var regionsList: List<Resource>
-    private lateinit var hospitalsList: List<Resource>
     private lateinit var userLocation: Location
-    private var selectedSpeciality = -1
-    private var selectedHospital = -1
     private var selectedOrg = 0
     private var selectedRegion = -1
+    private lateinit var locationUtils: LocationUtils
+    private var permissionCount=0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_pharmacy)
         checkUser()
+        locationUtils = LocationUtils(this@AddPharmacy)
+        locationUtils.initLocation()
         finishAddPharmBtn.setOnClickListener {
             if (setValidation())
                 addPharm()
         }
+
         getRegion()
         getOrganizations()
         pharmNameET.addTextChangedListener(object : TextWatcher {
@@ -95,7 +104,8 @@ class AddPharmacy : AppCompatActivity() {
             pharmBlockET.text.isNullOrBlank() && pharmBlockET.text.isEmpty() -> {
                 Toast.makeText(this@AddPharmacy, getString(R.string.block_empty), Toast.LENGTH_LONG).show()
                 return false
-            } else -> return true
+            }
+            else -> return true
         }
     }
 
@@ -121,48 +131,58 @@ class AddPharmacy : AppCompatActivity() {
     }
 
     private fun addPharm() {
-        addPharmPB.visibility = View.VISIBLE
-        finishAddPharmBtn.visibility = View.INVISIBLE
-        val name = pharmNameET.text.toString()
-        val street = pharmBlockET.text.toString()
-        val pharmacy = Pharmacy(
-            name, street, selectedOrg.toString(), selectedRegion.toString()
-            , userLocation.latitude.toString(), userLocation.longitude.toString(), token, getID()
-        )
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_URL)
-            .build()
-        val addPharmacyResponseCall = retrofit.create(RepresentativesInterface::class.java)
-            .addNewPharmacy(pharmacy).enqueue(object : Callback<AddPharmacyResponse> {
-                override fun onFailure(call: Call<AddPharmacyResponse>, t: Throwable) {
-                    addPharmPB.visibility = View.GONE
-                    finishAddPharmBtn.visibility = View.VISIBLE
-                    Toast.makeText(this@AddPharmacy, t.message, Toast.LENGTH_LONG).show()
-                }
+        var location = locationUtils.userLocation
+        if (location != null) {
+            userLocation = location
 
-                override fun onResponse(call: Call<AddPharmacyResponse>, response: Response<AddPharmacyResponse>) {
-                    addPharmPB.visibility = View.GONE
-                    finishAddPharmBtn.visibility = View.VISIBLE
-                    if (response.body()?.pharmacy_id != null) {
-                        showMessageOK(getString(R.string.pharm_added),
-                            DialogInterface.OnClickListener { dialog, which ->
-                                dialog?.dismiss()
-                                pharmNameET.text.clear()
-                            })
+            addPharmPB.visibility = View.VISIBLE
+            finishAddPharmBtn.visibility = View.INVISIBLE
+            val name = pharmNameET.text.toString()
+            val street = pharmBlockET.text.toString()
+            val pharmacy = Pharmacy(
+                name, street, selectedOrg.toString(), selectedRegion.toString()
+                , userLocation.latitude.toString(), userLocation.longitude.toString(), token, getID()
+            )
+            val retrofit = Retrofit.Builder()
+                .addConverterFactory(GsonConverterFactory.create())
+                .baseUrl(BASE_URL)
+                .build()
+            val addPharmacyResponseCall = retrofit.create(RepresentativesInterface::class.java)
+                .addNewPharmacy(pharmacy).enqueue(object : Callback<AddPharmacyResponse> {
+                    override fun onFailure(call: Call<AddPharmacyResponse>, t: Throwable) {
+                        addPharmPB.visibility = View.GONE
+                        finishAddPharmBtn.visibility = View.VISIBLE
+                        Toast.makeText(this@AddPharmacy, t.message, Toast.LENGTH_LONG).show()
                     }
-//                    else {
-//                        val converter = retrofit.responseBodyConverter<ErrorResponse>(
-//                            ErrorResponse::class.java,
-//                            arrayOfNulls<Annotation>(0)
-//                        )
-//                        val errors = converter.convert(response.errorBody())
-//                        Toast.makeText(this@AddPharmacy, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
-//                    }
-                }
-            })
-    }
 
+                    override fun onResponse(call: Call<AddPharmacyResponse>, response: Response<AddPharmacyResponse>) {
+                        addPharmPB.visibility = View.GONE
+                        finishAddPharmBtn.visibility = View.VISIBLE
+                        if (response.body()?.pharmacy_id != null) {
+                            showMessageOK(getString(R.string.pharm_added),
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    dialog?.dismiss()
+                                    pharmNameET.text.clear()
+                                })
+                        } else if (response.code() == 406) {
+                            val converter = retrofit.responseBodyConverter<ErrorResponse>(
+                                ErrorResponse::class.java,
+                                arrayOfNulls<Annotation>(0)
+                            )
+                            val errors = converter.convert(response.errorBody())
+                            Toast.makeText(this@AddPharmacy, errors?.error, Toast.LENGTH_SHORT).show()
+                        } else if (response.code() == 400) {
+                            val converter = retrofit.responseBodyConverter<ErrorResponseArray>(
+                                ErrorResponseArray::class.java,
+                                arrayOfNulls<Annotation>(0)
+                            )
+                            val errors = converter.convert(response.errorBody())
+                            Toast.makeText(this@AddPharmacy, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                })
+        }
+    }
 
     private fun getRegion() {
         val retrofit = Retrofit.Builder()
@@ -229,6 +249,7 @@ class AddPharmacy : AppCompatActivity() {
             regionRmvIV2.visibility = View.VISIBLE
         }
         regionRmvIV2.setOnClickListener {
+            selectedRegion = -1
             pharmAreaET.isEnabled = true
             pharmAreaET.text.clear()
             it.visibility = View.GONE
@@ -257,6 +278,7 @@ class AddPharmacy : AppCompatActivity() {
             orgRmvIV2.visibility = View.VISIBLE
         }
         orgRmvIV2.setOnClickListener {
+            selectedOrg = -1
             pharmProvinceET.isEnabled = true
             pharmProvinceET.text.clear()
             it.visibility = View.GONE
@@ -268,11 +290,78 @@ class AddPharmacy : AppCompatActivity() {
         return Settings.Secure.getString(this@AddPharmacy.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            100 -> {
+                when (resultCode) {
+                    Activity.RESULT_OK -> {
+                        if (PermissionChecker.checkSelfPermission(
+                                this,
+                                Manifest.permission.ACCESS_FINE_LOCATION
+                            ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                                this,
+                                Manifest.permission.ACCESS_COARSE_LOCATION
+                            ) != PackageManager.PERMISSION_GRANTED
+                        )
+                        else locationUtils.requestUpdates()
+                    }
+                    Activity.RESULT_CANCELED -> locationUtils.initGPS()
+                }
+            }
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            10 -> {
+                if ((grantResults.isNotEmpty()
+                            && grantResults[0] == PackageManager.PERMISSION_GRANTED
+                            && grantResults[1] == PackageManager.PERMISSION_GRANTED
+                            && grantResults[2] == PackageManager.PERMISSION_GRANTED)
+                ) {
+                    locationUtils.getLastKnowLocation()
+                } else {
+                    if (permissionCount > 0) {
+                        if (!ActivityCompat.shouldShowRequestPermissionRationale(
+                                this,
+                                Manifest.permission.WRITE_CONTACTS
+                            )
+                        ) {
+                            showMessageOKCancel(this@AddPharmacy,getString(R.string.permissionsTitle),
+                                getString(R.string.permissionMessage),
+                                DialogInterface.OnClickListener { dialog, which -> locationUtils.requestUpdates() },
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    this.finish()
+                                })
+                            return
+                        }
+                    } else {
+                        permissionCount++
+                    }
+                }
+                return
+            }
+            else -> return
+        }
+    }
+
     private fun showMessageOK(title: String, okListener: DialogInterface.OnClickListener) {
         AlertDialog.Builder(this@AddPharmacy)
             .setTitle(title)
             .setPositiveButton(getString(R.string.okDialog), okListener)
             .create()
             .show()
+    }
+
+    override fun onStop() {
+        locationUtils.stopLocation()
+        super.onStop()
+    }
+
+    override fun onRestart() {
+        locationUtils.getLastKnowLocation()
+        super.onRestart()
     }
 }
