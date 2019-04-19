@@ -5,7 +5,10 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.Settings
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.martin.teami.R
 import com.martin.teami.models.*
@@ -27,6 +30,10 @@ class FullDetailsActivity : AppCompatActivity() {
     private lateinit var resource: MyResources
     private lateinit var token: String
     private lateinit var fbDialog: Dialog
+    private var selectedStatus = -1
+    private lateinit var allItems: List<Item>
+    private lateinit var selectedReminder: Item
+    private lateinit var selectedCall: Item
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,63 +53,171 @@ class FullDetailsActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        feedbackBtn.setOnClickListener {
-            initFeedback()
-        }
+        if (resource.resourceType == "doctors")
+            feedbackBtn.setOnClickListener {
+                getItems()
+            }
+        else feedbackBtn.visibility = View.GONE
     }
 
-    private fun initFeedback() {
+    private fun getStatus() {
+        val retrofit = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL)
+            .build()
+        retrofit.create(RepresentativesInterface::class.java).getStatus(token, getID())
+            .enqueue(object : Callback<StatusResponse> {
+                override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
+                    Toast.makeText(this@FullDetailsActivity, getString(R.string.error_loading), Toast.LENGTH_LONG)
+                        .show()
+                }
+
+                override fun onResponse(call: Call<StatusResponse>, response: Response<StatusResponse>) {
+                    initFeedback(response.body())
+                }
+            })
+    }
+
+    private fun initFeedback(status: StatusResponse?) {
         val dialog = Dialog(this)
         fbDialog = dialog
         dialog.setContentView(R.layout.feedback_popup)
         dialog.window.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
-        dialog.feedbackRatingBar.setOnRatingBarChangeListener { ratingBar, rating, fromUser ->
-            when (rating) {
-                1f -> dialog.statueTV.text = getString(R.string.bad)
-                2f -> dialog.statueTV.text = getString(R.string.medium)
-                3f -> dialog.statueTV.text = getString(R.string.good)
-                4f -> dialog.statueTV.text = getString(R.string.very_good)
-                5f -> dialog.statueTV.text = getString(R.string.excellent)
-                else -> dialog.statueTV.text = ""
-            }
+        prepareItems()
+        val statusList = status?.status as ArrayList<StatusResource>
+        val adapter = ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, statusList)
+        dialog.status.setAdapter(adapter)
+        dialog.status.threshold = 0
+        dialog.status.setOnFocusChangeListener { v, hasFocus ->
+            v.isEnabled = true
+            if (hasFocus)
+                dialog.status.showDropDown()
         }
-        var statusFull = dialog.statueTV.text.toString()
-        var noteFull = ""
-        var ratingFull = 0f
-        if (ratingFull != null && !noteFull.isNullOrEmpty() && noteFull.isNotBlank()) {
-            dialog.feedbackNoteET.setText(noteFull)
-            dialog.feedbackRatingBar.rating = ratingFull - 1
+        dialog.status.setOnClickListener {
+            it.isEnabled = true
+            dialog.status.showDropDown()
         }
+        dialog.status.setOnItemClickListener { parent, view, position, id ->
+            dialog.status.isEnabled = false
+            val stat: StatusResource = dialog.status.adapter.getItem(position) as StatusResource
+            selectedStatus = stat.id
+            dialog.statusRmvBtn.visibility = View.VISIBLE
+        }
+        dialog.statusRmvBtn.setOnClickListener {
+            dialog.status.isEnabled = true
+            dialog.status.text.clear()
+            it.visibility = View.GONE
+            selectedStatus = -1
+        }
+        var noteFull: String
         dialog.doneFeedbackBtn.setOnClickListener {
             dialog.fbProgressBar.visibility = View.VISIBLE
             dialog.doneFeedbackBtn.visibility = View.INVISIBLE
-            val rating = dialog.feedbackRatingBar.rating
             val note = dialog.feedbackNoteET.text.toString()
-            val status = dialog.statueTV.text.toString()
-            if (rating != null && !note.isNullOrEmpty() && note.isNotBlank()) {
-                ratingFull = rating + 1
+            if (selectedStatus != -1 && !note.isEmpty() && note.isNotBlank()) {
                 noteFull = note
-                statusFull = status
-                postFeedback(ratingFull, noteFull)
-            } else Toast.makeText(
-                this@FullDetailsActivity,
-                getString(R.string.fill_all_fields),
-                Toast.LENGTH_LONG
-            )
+                postFeedback(selectedStatus, noteFull)
+            } else {
+                Toast.makeText(
+                    this@FullDetailsActivity,
+                    getString(R.string.fill_all_fields),
+                    Toast.LENGTH_LONG
+                ).show()
+                dialog.fbProgressBar.visibility = View.GONE
+                dialog.doneFeedbackBtn.visibility = View.VISIBLE
+            }
         }
     }
 
-    private fun postFeedback(rating: Float, note: String) {
+    private fun getItems() {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val itemsInterface = retrofit.create(RepresentativesInterface::class.java)
+        val itemsResponse = itemsInterface.getItems(token, getID())
+        itemsResponse.enqueue(object : Callback<ItemsResponse> {
+            override fun onFailure(call: retrofit2.Call<ItemsResponse>, t: Throwable) {
+                Toast.makeText(this@FullDetailsActivity, t.message, Toast.LENGTH_LONG).show()
+            }
+
+            override fun onResponse(call: retrofit2.Call<ItemsResponse>, response: Response<ItemsResponse>) {
+                response.body()?.let {
+                    allItems = it.items
+                    getStatus()
+                }
+            }
+        })
+    }
+
+    private fun prepareItems() {
+        val arrayAdapter = ArrayAdapter<Item>(this, R.layout.text_view_layout, allItems)
+        fbDialog.reminderTV.setAdapter(arrayAdapter)
+        fbDialog.callTV.setAdapter(arrayAdapter)
+        fbDialog.reminderTV.setOnClickListener {
+            fbDialog.reminderTV.showDropDown()
+        }
+        fbDialog.reminderRmvBtn.setOnClickListener {
+            fbDialog.reminderTV.isEnabled = true
+            fbDialog.reminderTV.text.clear()
+            it.visibility = View.GONE
+            selectedStatus = -1
+        }
+        fbDialog.callRmvBtn.setOnClickListener {
+            fbDialog.callTV.isEnabled = true
+            fbDialog.callTV.text.clear()
+            it.visibility = View.GONE
+            selectedStatus = -1
+        }
+        fbDialog.reminderTV.setOnFocusChangeListener { v, hasFocus ->
+            v.isEnabled = true
+            if (hasFocus)
+                fbDialog.reminderTV.showDropDown()
+        }
+        fbDialog.callTV.setOnFocusChangeListener { v, hasFocus ->
+            v.isEnabled = true
+            if (hasFocus)
+                fbDialog.callTV.showDropDown()
+        }
+        fbDialog.callTV.setOnClickListener {
+            fbDialog.callTV.showDropDown()
+        }
+        fbDialog.reminderTV.threshold = 0
+        fbDialog.callTV.threshold = 0
+        fbDialog.reminderTV.onItemClickListener =
+            AdapterView.OnItemClickListener { parent, view, position, id ->
+                selectedReminder = fbDialog.reminderTV.adapter.getItem(position) as Item
+                fbDialog.reminderRmvBtn.visibility = View.VISIBLE
+            }
+
+        fbDialog.callTV.onItemClickListener =
+            AdapterView.OnItemClickListener { parent, view, position, id ->
+                selectedCall = fbDialog.callTV.adapter.getItem(position) as Item
+                fbDialog.callRmvBtn.visibility = View.VISIBLE
+
+            }
+    }
+
+    private fun postFeedback(statusId: Int, note: String) {
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val feedbackRequest = FeedbackRequest(
-            token, resource.resourceType
-            , resource.id.toString()
-            , rating.toString(), note
-            , "visit"
+            token,
+            getID(),
+            resource.resourceType
+            ,
+            resource.id.toString()
+            ,
+            statusId.toString(),
+            note
+            ,
+            "visit",
+            "${selectedReminder.companyName}_${selectedReminder.name}",
+            "${selectedCall.companyName}_${selectedCall.name}"
         )
         val feedbackResponse = retrofit.create(RepresentativesInterface::class.java)
             .postFeedback(feedbackRequest).enqueue(object : Callback<FeedbackResponse> {
@@ -111,13 +226,31 @@ class FullDetailsActivity : AppCompatActivity() {
                 }
 
                 override fun onResponse(call: Call<FeedbackResponse>, response: Response<FeedbackResponse>) {
-                    if (fbDialog.isShowing) {
-                        fbDialog.fbProgressBar.visibility = View.GONE
-                        fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
-                        fbDialog.dismiss()
+                    fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
+                    fbDialog.fbProgressBar.visibility = View.GONE
+                    if (response.body()?.activity?.id != null) {
+                        if (fbDialog.isShowing) {
+                            fbDialog.fbProgressBar.visibility = View.GONE
+                            fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
+                            fbDialog.dismiss()
+                        }
+                        showMessageOK(this@FullDetailsActivity, getString(R.string.feedback_success), ""
+                            , DialogInterface.OnClickListener { dialog, which -> dialog?.dismiss() })
+                    } else if (response.code() == 406) {
+                        val converter = retrofit.responseBodyConverter<ErrorResponse>(
+                            ErrorResponse::class.java,
+                            arrayOfNulls<Annotation>(0)
+                        )
+                        val errors = converter.convert(response.errorBody())
+                        Toast.makeText(this@FullDetailsActivity, errors?.error, Toast.LENGTH_SHORT).show()
+                    } else if (response.code() == 400 || response.code() == 422) {
+                        val converter = retrofit.responseBodyConverter<ErrorResponseArray>(
+                            ErrorResponseArray::class.java,
+                            arrayOfNulls<Annotation>(0)
+                        )
+                        val errors = converter.convert(response.errorBody())
+                        Toast.makeText(this@FullDetailsActivity, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
                     }
-                    showMessageOK(this@FullDetailsActivity, getString(R.string.feedback_success), ""
-                        , DialogInterface.OnClickListener { dialog, which -> dialog?.dismiss() })
                 }
             })
     }
@@ -141,6 +274,9 @@ class FullDetailsActivity : AppCompatActivity() {
             specialtyTV.visibility = View.GONE
 
         }
+    }
 
+    fun getID(): String {
+        return Settings.Secure.getString(this@FullDetailsActivity.contentResolver, Settings.Secure.ANDROID_ID)
     }
 }

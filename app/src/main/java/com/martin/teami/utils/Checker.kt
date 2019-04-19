@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkInfo
 import android.os.AsyncTask
+import android.provider.Settings
 import android.widget.Toast
 import com.martin.teami.activities.LoginActivity
 import com.martin.teami.models.*
@@ -22,6 +23,32 @@ import java.io.IOException
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.util.*
+
+private lateinit var token: String
+private var tokenExp: Long = 0
+private var calendar: Calendar? = null
+
+fun checkUser(context: Activity):LoginResponse? {
+    val loginResponse = Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED)
+    calendar = Hawk.get(Consts.LOGIN_TIME)
+    if (loginResponse != null) {
+        token = loginResponse.token
+        tokenExp = loginResponse.expire
+        checkExpirationLimit(token, tokenExp, getID(context), calendar, context)
+        return loginResponse
+    } else {
+        val intent = Intent(context, LoginActivity::class.java)
+        Hawk.deleteAll()
+        intent.flags = Intent
+            .FLAG_ACTIVITY_CLEAR_TOP or Intent
+            .FLAG_ACTIVITY_NO_HISTORY or Intent
+            .FLAG_ACTIVITY_NEW_TASK or Intent
+            .FLAG_ACTIVITY_CLEAR_TASK
+        context.finish()
+        context.startActivity(intent)
+        return null
+    }
+}
 
 fun checkExpirationLimit(token: String, tokenSecs: Long, phoneId: String, calendar: Calendar?, activity: Activity) {
     val currentCalendar = Calendar.getInstance(TimeZone.getDefault())
@@ -110,28 +137,6 @@ fun logoutUser(activity: Activity, token: String, phoneId: String) {
     })
 }
 
-internal class InternetCheck(private val mConsumer: Consumer) : AsyncTask<Void, Void, Boolean>() {
-    interface Consumer {
-        fun accept(internet: Boolean?)
-    }
-
-    init {
-        execute()
-    }
-
-    override fun doInBackground(vararg voids: Void): Boolean? {
-        try {
-            val sock = Socket()
-            sock.connect(InetSocketAddress("8.8.8.8", 53), 1500)
-            sock.close()
-            return true
-        } catch (e: IOException) {
-            return false
-        }
-
-    }
-
-    override fun onPostExecute(internet: Boolean?) {
-        mConsumer.accept(internet)
-    }
+fun getID(context: Context): String {
+    return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
 }

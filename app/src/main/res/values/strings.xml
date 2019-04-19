@@ -75,4 +75,7 @@
     <string name="email_empty">Email Field Cannot Be Empty</string>
     <string name="email_not_valid">Email Is Not Valid</string>
     <string name="password_empty">Password Field Cannot Be Empty</string>
+    <string name="error_loading">Something Went Wrong :(</string>
+    <string name="not_near">You\'re not near this place</string>
+    <string name="something_happened">Something happened :(</string>
 </resources>

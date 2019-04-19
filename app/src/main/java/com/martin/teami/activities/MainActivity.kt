@@ -22,12 +22,11 @@ import com.martin.teami.R
 import com.martin.teami.adapters.ResourcesAdapter
 import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
+import com.martin.teami.utils.*
 import com.martin.teami.utils.Consts.BASE_URL
 import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.Consts.USER_LOCATION
-import com.martin.teami.utils.LocationUtils
-import com.martin.teami.utils.checkExpirationLimit
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main.*
 import retrofit2.Call
@@ -40,12 +39,11 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
 
-    private var resourcesList: List<MyResources>? = null
+    var resourcesList: List<MyResources>? = null
     private var userLocation: Location? = null
     private lateinit var token: String
     private var tokenExp: Long = 0
-    private var calendar: Calendar? = null
-    private lateinit var adapter: ResourcesAdapter
+    lateinit var adapter: ResourcesAdapter
     private lateinit var locationUtils: LocationUtils
     private var permissionCount = 0
 
@@ -53,7 +51,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Hawk.init(this).build()
-        checkUser()
+        val loginResponse=checkUser(this)
+        if(loginResponse!=null){
+            token=loginResponse.token
+            tokenExp=loginResponse.expire
+        }
         locationUtils = LocationUtils(this@MainActivity)
         locationUtils.initLocation()
         userLocation=locationUtils.userLocation
@@ -73,7 +75,7 @@ class MainActivity : AppCompatActivity() {
         addDocFab.setOnClickListener {
             userLocation=locationUtils.userLocation
             if (userLocation != null) {
-                checkUser()
+                checkUser(this)
                 val intent = Intent(this, AddDoctor::class.java)
                 startActivity(intent)
             } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
@@ -81,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         addPharmFab.setOnClickListener {
             userLocation=locationUtils.userLocation
             if (userLocation != null) {
-                checkUser()
+                checkUser(this)
                 val intent = Intent(this, AddPharmacy::class.java)
                 intent.putExtra(USER_LOCATION, userLocation)
                 startActivity(intent)
@@ -93,35 +95,15 @@ class MainActivity : AppCompatActivity() {
         }
         userLocation=locationUtils.userLocation
         adapter = ResourcesAdapter(resourcesList, userLocation)
-    }
-
-    private fun checkUser() {
-        val loginResponse = Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED)
-        calendar = Hawk.get(LOGIN_TIME)
-        if (loginResponse != null) {
-            token = loginResponse.token
-            tokenExp = loginResponse.expire
-            checkExpirationLimit(token, tokenExp, getID(), calendar, this)
+        getMyResources()
+        resourcesRefresh.setOnRefreshListener {
             getMyResources()
-        } else {
-            val intent = Intent(this, LoginActivity::class.java)
-            Hawk.deleteAll()
-            intent.flags = Intent
-                .FLAG_ACTIVITY_CLEAR_TOP or Intent
-                .FLAG_ACTIVITY_NO_HISTORY or Intent
-                .FLAG_ACTIVITY_NEW_TASK or Intent
-                .FLAG_ACTIVITY_CLEAR_TASK
-            finish()
-            startActivity(intent)
+            emptyListLayout.visibility=View.INVISIBLE
         }
     }
 
     private fun fetchColor(@ColorRes color: Int): Int {
         return ContextCompat.getColor(this, color)
-    }
-
-    fun getID(): String {
-        return Settings.Secure.getString(this@MainActivity.contentResolver, Settings.Secure.ANDROID_ID)
     }
 
     fun checkNearestMarker(location: Location?): List<MyResources>? {
@@ -163,30 +145,37 @@ class MainActivity : AppCompatActivity() {
 //        } else imageView4?.setImageResource(R.drawable.ic_not_available)
     }
 
-    private fun getMyResources() {
+    fun getMyResources() {
+        resourcesRefresh.isRefreshing=true
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_URL)
             .build()
         val resourcesInterface = retrofit.create(RepresentativesInterface::class.java)
-        resourcesInterface.getMyResources(token, getID()).enqueue(object : Callback<MyResourcesResponse> {
+        resourcesInterface.getMyResources(token, getID(this)).enqueue(object : Callback<MyResourcesResponse> {
             override fun onFailure(call: Call<MyResourcesResponse>, t: Throwable) {
                 Toast.makeText(this@MainActivity, t.message, Toast.LENGTH_LONG).show()
+                resourcesRefresh.isRefreshing=false
+                emptyListLayout.visibility=View.VISIBLE
+                doctorsRV.visibility=View.INVISIBLE
             }
 
             override fun onResponse(call: Call<MyResourcesResponse>, response: Response<MyResourcesResponse>) {
+                resourcesRefresh.isRefreshing=false
                 response.body()?.let {
+                    emptyListLayout.visibility=View.INVISIBLE
+                    doctorsRV.visibility=View.VISIBLE
                     resourcesList = it.Resource
                     userLocation=locationUtils.userLocation
                     if (userLocation != null)
                         checkNearestMarker(null)
                     doctorsRV.adapter = adapter
                     doctorsRV.layoutManager = LinearLayoutManager(this@MainActivity)
+                    adapter.notifyDataSetChanged()
                 }
             }
         })
     }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -210,6 +199,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (requestCode) {
             10 -> {
@@ -226,7 +216,7 @@ class MainActivity : AppCompatActivity() {
                                 Manifest.permission.WRITE_CONTACTS
                             )
                         ) {
-                            showMessageOKCancel(getString(R.string.permissionsTitle),
+                            showMessageOKCancel(this@MainActivity,getString(R.string.permissionsTitle),
                                 getString(R.string.permissionMessage),
                                 DialogInterface.OnClickListener { dialog, which -> locationUtils.requestUpdates() },
                                 DialogInterface.OnClickListener { dialog, which ->
@@ -242,30 +232,6 @@ class MainActivity : AppCompatActivity() {
             }
             else -> return
         }
-    }
-
-    private fun showMessageOK(title: String, message: String, okListener: DialogInterface.OnClickListener) {
-        AlertDialog.Builder(this@MainActivity)
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton(getString(R.string.okDialog), okListener)
-            .create()
-            .show()
-    }
-
-    private fun showMessageOKCancel(
-        title: String,
-        message: String,
-        okListener: DialogInterface.OnClickListener,
-        cancelListener: DialogInterface.OnClickListener
-    ) {
-        AlertDialog.Builder(this)
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton(getString(R.string.okDialog), okListener)
-            .setNegativeButton(getString(R.string.cancelDialog), cancelListener)
-            .create()
-            .show()
     }
 
     override fun onResume() {

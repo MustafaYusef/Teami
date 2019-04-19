@@ -22,26 +22,22 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.gms.tasks.Task
 import com.martin.teami.R
+import com.martin.teami.activities.MainActivity
 import com.martin.teami.adapters.ResourcesAdapter
 import com.martin.teami.models.*
+import kotlinx.android.synthetic.main.activity_main.*
 import java.util.*
 
 
 class LocationUtils(var context: Context) {
 
-    private var activity=context as Activity
+    private var activity = context as Activity
     private lateinit var locationManager: LocationManager
     private lateinit var listener: LocationListener
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var locationRequest: LocationRequest
-    private var resourcesList: List<MyResources>? = null
+
     var userLocation: Location? = null
-    private var permissionCount = 0
-    private lateinit var token: String
-    private var tokenExp: Long = 0
-    private var calendar: Calendar? = null
-    private var running = false
-    private lateinit var adapter: ResourcesAdapter
 
     fun initLocation() {
 
@@ -65,9 +61,9 @@ class LocationUtils(var context: Context) {
     fun initGPS() {
         val builder = LocationSettingsRequest.Builder()
             .addLocationRequest(locationRequest)
-        locationRequest.interval = 5000
+        locationRequest.interval = 3000
         locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        locationRequest.maxWaitTime = 10000
+        locationRequest.maxWaitTime = 7000
 
         val result = LocationServices.getSettingsClient(context)
             .checkLocationSettings(builder.build())
@@ -121,6 +117,14 @@ class LocationUtils(var context: Context) {
                     val userLong = location.longitude
                     val userLatLng = LatLng(userLat, userLong)
                 }
+                if (activity is MainActivity) {
+                    if ((activity as MainActivity).resourcesList == null) {
+                        (activity as MainActivity).getMyResources()
+                    }else {
+                        (activity as MainActivity).adapter.notifyDataSetChanged()
+                        (activity as MainActivity).checkNearestMarker(location)
+                    }
+                }
             }
 
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
@@ -169,6 +173,7 @@ class LocationUtils(var context: Context) {
             requestUpdates()
             return
         }
+
         locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5f, listener)
         locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, listener)
         locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 5000, 5f, listener)
@@ -182,30 +187,7 @@ class LocationUtils(var context: Context) {
             }
     }
 
-    fun stopLocation(){
+    fun stopLocation() {
         locationManager.removeUpdates(listener)
-    }
-    private fun showMessageOK(title: String, message: String, okListener: DialogInterface.OnClickListener) {
-        AlertDialog.Builder(context)
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton(context.getString(R.string.okDialog), okListener)
-            .create()
-            .show()
-    }
-
-    private fun showMessageOKCancel(
-        title: String,
-        message: String,
-        okListener: DialogInterface.OnClickListener,
-        cancelListener: DialogInterface.OnClickListener
-    ) {
-        AlertDialog.Builder(context)
-            .setTitle(title)
-            .setMessage(message)
-            .setPositiveButton(context.getString(R.string.okDialog), okListener)
-            .setNegativeButton(context.getString(R.string.cancelDialog), cancelListener)
-            .create()
-            .show()
     }
 }

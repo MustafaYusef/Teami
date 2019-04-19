@@ -144,7 +144,7 @@
                                     <ImageView
                                             android:layout_width="wrap_content"
                                             android:layout_height="wrap_content"
-                                            app:srcCompat="@drawable/ic_doctor_black"
+                                            app:srcCompat="@drawable/ic_doctor"
                                             android:id="@+id/imageView14"
                                             android:layout_marginTop="8dp"
                                             app:layout_constraintTop_toBottomOf="@+id/imageView12"

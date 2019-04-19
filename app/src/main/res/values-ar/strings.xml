@@ -74,4 +74,7 @@
     <string name="email_empty">حقل البريد لا يمكن ان يكون فارغاً</string>
     <string name="email_not_valid">البريد ليس صحيحاً</string>
     <string name="password_empty">حقل كلمة المرور لا يمكن ان يكون فارغاً</string>
+    <string name="error_loading">حدث خطأ :(</string>
+    <string name="not_near">لست بالقرب من هذا المكان</string>
+    <string name="something_happened">حدث خطأ :(</string>
 </resources>

@@ -1,5 +1,5 @@
 package com.martin.teami.models
 
 class StatusResponse(
-    var status:List<Resource>
+    var status:List<StatusResource>
 )

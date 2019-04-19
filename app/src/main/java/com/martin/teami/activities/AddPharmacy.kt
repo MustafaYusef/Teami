@@ -30,6 +30,7 @@ import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.Consts.USER_LOCATION
 import com.martin.teami.utils.LocationUtils
 import com.martin.teami.utils.checkExpirationLimit
+import com.martin.teami.utils.showMessageOK
 import com.martin.teami.utils.showMessageOKCancel
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_add_pharmacy.*
@@ -159,7 +160,7 @@ class AddPharmacy : AppCompatActivity() {
                         addPharmPB.visibility = View.GONE
                         finishAddPharmBtn.visibility = View.VISIBLE
                         if (response.body()?.pharmacy_id != null) {
-                            showMessageOK(getString(R.string.pharm_added),
+                            showMessageOK(this@AddPharmacy,getString(R.string.pharm_added),"",
                                 DialogInterface.OnClickListener { dialog, which ->
                                     dialog?.dismiss()
                                     pharmNameET.text.clear()
@@ -345,14 +346,6 @@ class AddPharmacy : AppCompatActivity() {
             }
             else -> return
         }
-    }
-
-    private fun showMessageOK(title: String, okListener: DialogInterface.OnClickListener) {
-        AlertDialog.Builder(this@AddPharmacy)
-            .setTitle(title)
-            .setPositiveButton(getString(R.string.okDialog), okListener)
-            .create()
-            .show()
     }
 
     override fun onStop() {

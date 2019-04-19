@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:title="Add Pharmacy" android:icon="@drawable/ic_pharmacy" android:id="@+id/addPharmacyFab"/>
-    <item android:title="Add Doctor" android:icon="@drawable/ic_doctor_black" android:id="@+id/addDoctorFab"/>
+    <item android:title="Add Doctor" android:icon="@drawable/ic_doctor" android:id="@+id/addDoctorFab"/>
 </menu>

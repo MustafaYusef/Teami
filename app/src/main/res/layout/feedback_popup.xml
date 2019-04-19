@@ -3,7 +3,7 @@
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="wrap_content"
+        android:layout_width="250dp"
         android:layout_height="wrap_content" app:cardCornerRadius="16dp" android:layout_gravity="center_horizontal"
         app:cardElevation="0dp">
     <android.support.constraint.ConstraintLayout
@@ -11,27 +11,34 @@
             android:layout_height="match_parent"
     >
 
-        <RatingBar
+        <AutoCompleteTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content" android:id="@+id/status"
+                android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+                android:hint="Status" android:gravity="center|center_horizontal"/>
+        <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" android:id="@+id/feedbackRatingBar"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="8dp" android:layout_marginTop="16dp"
-                app:layout_constraintTop_toTopOf="parent"
-                android:stepSize="1" android:numStars="5"/>
+                android:layout_height="wrap_content" app:srcCompat="@drawable/ic_cancel_red_24dp"
+                android:id="@+id/statusRmvBtn"
+                app:layout_constraintEnd_toEndOf="@+id/status"
+                app:layout_constraintTop_toTopOf="@+id/status" app:layout_constraintBottom_toBottomOf="@+id/status"
+                android:visibility="gone"/>
         <EditText
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:id="@+id/feedbackNoteET"
-                app:layout_constraintTop_toBottomOf="@+id/statueTV" android:layout_marginEnd="8dp"
+                android:layout_marginEnd="8dp"
                 app:layout_constraintEnd_toEndOf="parent" android:layout_marginStart="8dp"
                 app:layout_constraintStart_toStartOf="parent"
                 android:hint="@string/notes"
                 android:singleLine="false"
                 tools:text="klajsf lakjfklafmas lkfjalks fjalskfjalks faslkfnasmf lakfjlaksnfalk fnamsnfklasml ksacnka cmnaksnlvc nsakcmalkjcm asnkjcljak nvlsknjvlsnj vsjnvnsd vsdmv"
-                android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintVertical_bias="0.0" android:gravity="top" android:inputType="textMultiLine"
-                android:fontFamily="@font/cairo"/>
+                android:gravity="top" android:inputType="textMultiLine"
+                android:fontFamily="@font/cairo"
+                app:layout_constraintTop_toBottomOf="@+id/callTV" android:layout_marginTop="8dp"
+                android:background="@drawable/edittext_normal" android:padding="8dp"/>
         <Button
                 android:text="@string/done"
                 android:layout_width="wrap_content"
@@ -52,13 +59,36 @@
                 app:layout_constraintStart_toStartOf="@+id/doneFeedbackBtn"
                 app:layout_constraintBottom_toBottomOf="@+id/doneFeedbackBtn"
                 app:layout_constraintTop_toTopOf="@+id/doneFeedbackBtn" android:visibility="gone"/>
-        <TextView
-                android:layout_width="wrap_content"
+        <AutoCompleteTextView
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:id="@+id/statueTV"
-                app:layout_constraintTop_toBottomOf="@+id/feedbackRatingBar" tools:text="excellent"
+                android:id="@+id/reminderTV"
+                android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/status"
                 app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
                 app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-                android:fontFamily="@font/cairo"/>
+                android:hint="Reminder Product" android:gravity="center"/>
+        <AutoCompleteTextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/callTV"
+                android:layout_marginTop="8dp" app:layout_constraintTop_toBottomOf="@+id/reminderTV"
+                app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
+                app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
+                android:hint="Call Product" android:gravity="center"/>
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" app:srcCompat="@drawable/ic_cancel_red_24dp"
+                android:id="@+id/reminderRmvBtn"
+                app:layout_constraintEnd_toEndOf="@+id/reminderTV"
+                app:layout_constraintTop_toTopOf="@+id/reminderTV"
+                app:layout_constraintBottom_toBottomOf="@+id/reminderTV"
+                android:visibility="gone"/>
+        <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" app:srcCompat="@drawable/ic_cancel_red_24dp"
+                android:id="@+id/callRmvBtn"
+                app:layout_constraintEnd_toEndOf="@+id/callTV"
+                app:layout_constraintTop_toTopOf="@+id/callTV" app:layout_constraintBottom_toBottomOf="@+id/callTV"
+                android:visibility="gone"/>
     </android.support.constraint.ConstraintLayout>
 </android.support.v7.widget.CardView>
