@@ -24,14 +24,11 @@ import android.widget.Toast
 import com.martin.teami.R
 import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
+import com.martin.teami.utils.*
 import com.martin.teami.utils.Consts.BASE_URL
 import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.Consts.USER_LOCATION
-import com.martin.teami.utils.LocationUtils
-import com.martin.teami.utils.checkExpirationLimit
-import com.martin.teami.utils.showMessageOK
-import com.martin.teami.utils.showMessageOKCancel
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_add_pharmacy.*
 import retrofit2.Call
@@ -42,8 +39,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 
 class AddPharmacy : AppCompatActivity() {
-    private lateinit var token: String
-    private var tokenExp: Long = 0
+
+    private var token: String?=null
+    private var tokenExp: Long? = 0
+    private var loginResponse: LoginResponse?=null
     private var calendar: Calendar? = null
     private lateinit var organiztionsList: List<Resource>
     private lateinit var regionsList: List<Resource>
@@ -56,11 +55,16 @@ class AddPharmacy : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_pharmacy)
-        checkUser()
+        loginResponse= checkUser(this)
+        if(loginResponse!=null){
+            token=loginResponse?.token
+            tokenExp=loginResponse?.expire
+        }
         locationUtils = LocationUtils(this@AddPharmacy)
         locationUtils.initLocation()
         finishAddPharmBtn.setOnClickListener {
-            if (setValidation())
+            loginResponse= checkUser(this)
+            if (setValidation()&&loginResponse!=null)
                 addPharm()
         }
 
@@ -110,27 +114,6 @@ class AddPharmacy : AppCompatActivity() {
         }
     }
 
-    private fun checkUser() {
-        val loginResponse = Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED)
-        calendar = Hawk.get(LOGIN_TIME)
-        userLocation = intent.getParcelableExtra(USER_LOCATION)
-        if (loginResponse != null) {
-            token = loginResponse.token
-            tokenExp = loginResponse.expire
-            checkExpirationLimit(token, tokenExp, getID(), calendar, this)
-        } else {
-            val intent = Intent(this, LoginActivity::class.java)
-            Hawk.deleteAll()
-            intent.flags = Intent
-                .FLAG_ACTIVITY_CLEAR_TOP or Intent
-                .FLAG_ACTIVITY_NO_HISTORY or Intent
-                .FLAG_ACTIVITY_NEW_TASK or Intent
-                .FLAG_ACTIVITY_CLEAR_TASK
-            finish()
-            startActivity(intent)
-        }
-    }
-
     private fun addPharm() {
         var location = locationUtils.userLocation
         if (location != null) {
@@ -140,48 +123,52 @@ class AddPharmacy : AppCompatActivity() {
             finishAddPharmBtn.visibility = View.INVISIBLE
             val name = pharmNameET.text.toString()
             val street = pharmBlockET.text.toString()
-            val pharmacy = Pharmacy(
-                name, street, selectedOrg.toString(), selectedRegion.toString()
-                , userLocation.latitude.toString(), userLocation.longitude.toString(), token, getID()
-            )
+            val pharmacy = token?.let {
+                Pharmacy(
+                    name, street, selectedOrg.toString(), selectedRegion.toString()
+                    , userLocation.latitude.toString(), userLocation.longitude.toString(), it, getID()
+                )
+            }
             val retrofit = Retrofit.Builder()
                 .addConverterFactory(GsonConverterFactory.create())
                 .baseUrl(BASE_URL)
                 .build()
-            val addPharmacyResponseCall = retrofit.create(RepresentativesInterface::class.java)
-                .addNewPharmacy(pharmacy).enqueue(object : Callback<AddPharmacyResponse> {
-                    override fun onFailure(call: Call<AddPharmacyResponse>, t: Throwable) {
-                        addPharmPB.visibility = View.GONE
-                        finishAddPharmBtn.visibility = View.VISIBLE
-                        Toast.makeText(this@AddPharmacy, t.message, Toast.LENGTH_LONG).show()
-                    }
-
-                    override fun onResponse(call: Call<AddPharmacyResponse>, response: Response<AddPharmacyResponse>) {
-                        addPharmPB.visibility = View.GONE
-                        finishAddPharmBtn.visibility = View.VISIBLE
-                        if (response.body()?.pharmacy_id != null) {
-                            showMessageOK(this@AddPharmacy,getString(R.string.pharm_added),"",
-                                DialogInterface.OnClickListener { dialog, which ->
-                                    dialog?.dismiss()
-                                    pharmNameET.text.clear()
-                                })
-                        } else if (response.code() == 406) {
-                            val converter = retrofit.responseBodyConverter<ErrorResponse>(
-                                ErrorResponse::class.java,
-                                arrayOfNulls<Annotation>(0)
-                            )
-                            val errors = converter.convert(response.errorBody())
-                            Toast.makeText(this@AddPharmacy, errors?.error, Toast.LENGTH_SHORT).show()
-                        } else if (response.code() == 400) {
-                            val converter = retrofit.responseBodyConverter<ErrorResponseArray>(
-                                ErrorResponseArray::class.java,
-                                arrayOfNulls<Annotation>(0)
-                            )
-                            val errors = converter.convert(response.errorBody())
-                            Toast.makeText(this@AddPharmacy, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
+            val addPharmacyResponseCall = pharmacy?.let {
+                retrofit.create(RepresentativesInterface::class.java)
+                    .addNewPharmacy(it).enqueue(object : Callback<AddPharmacyResponse> {
+                        override fun onFailure(call: Call<AddPharmacyResponse>, t: Throwable) {
+                            addPharmPB.visibility = View.GONE
+                            finishAddPharmBtn.visibility = View.VISIBLE
+                            Toast.makeText(this@AddPharmacy, t.message, Toast.LENGTH_LONG).show()
                         }
-                    }
-                })
+
+                        override fun onResponse(call: Call<AddPharmacyResponse>, response: Response<AddPharmacyResponse>) {
+                            addPharmPB.visibility = View.GONE
+                            finishAddPharmBtn.visibility = View.VISIBLE
+                            if (response.body()?.pharmacy_id != null) {
+                                showMessageOK(this@AddPharmacy,getString(R.string.pharm_added),"",
+                                    DialogInterface.OnClickListener { dialog, which ->
+                                        dialog?.dismiss()
+                                        pharmNameET.text.clear()
+                                    })
+                            } else if (response.code() == 406) {
+                                val converter = retrofit.responseBodyConverter<ErrorResponse>(
+                                    ErrorResponse::class.java,
+                                    arrayOfNulls<Annotation>(0)
+                                )
+                                val errors = converter.convert(response.errorBody())
+                                Toast.makeText(this@AddPharmacy, errors?.error, Toast.LENGTH_SHORT).show()
+                            } else if (response.code() == 400) {
+                                val converter = retrofit.responseBodyConverter<ErrorResponseArray>(
+                                    ErrorResponseArray::class.java,
+                                    arrayOfNulls<Annotation>(0)
+                                )
+                                val errors = converter.convert(response.errorBody())
+                                Toast.makeText(this@AddPharmacy, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    })
+            }
         }
     }
 
@@ -190,20 +177,22 @@ class AddPharmacy : AppCompatActivity() {
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val regionResponseCall = retrofit.create(RepresentativesInterface::class.java)
-            .getRegion(token, getID(), selectedOrg).enqueue(object : Callback<RegionResponse> {
-                override fun onFailure(call: Call<RegionResponse>, t: Throwable) {
-                    Toast.makeText(this@AddPharmacy, t.message, Toast.LENGTH_LONG).show()
-                }
-
-                override fun onResponse(call: Call<RegionResponse>, response: Response<RegionResponse>) {
-                    val regionResponse = response.body()
-                    regionResponse?.let {
-                        regionsList = regionResponse.reigns
-                        setRegionsSpinner()
+        val regionResponseCall = token?.let {
+            retrofit.create(RepresentativesInterface::class.java)
+                .getRegion(it, getID(), selectedOrg).enqueue(object : Callback<RegionResponse> {
+                    override fun onFailure(call: Call<RegionResponse>, t: Throwable) {
+                        Toast.makeText(this@AddPharmacy, t.message, Toast.LENGTH_LONG).show()
                     }
-                }
-            })
+
+                    override fun onResponse(call: Call<RegionResponse>, response: Response<RegionResponse>) {
+                        val regionResponse = response.body()
+                        regionResponse?.let {
+                            regionsList = regionResponse.reigns
+                            setRegionsSpinner()
+                        }
+                    }
+                })
+        }
     }
 
     private fun getOrganizations() {
@@ -211,20 +200,22 @@ class AddPharmacy : AppCompatActivity() {
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val organizationResponseCall = retrofit.create(RepresentativesInterface::class.java)
-            .getOrgs(token, getID()).enqueue(object : Callback<OrganizationResponse> {
-                override fun onFailure(call: Call<OrganizationResponse>, t: Throwable) {
-                    Toast.makeText(this@AddPharmacy, t.message, Toast.LENGTH_LONG).show()
-                }
-
-                override fun onResponse(call: Call<OrganizationResponse>, response: Response<OrganizationResponse>) {
-                    val organizationResponse = response.body()
-                    organizationResponse?.let {
-                        organiztionsList = it.organization
-                        setOrgsSpinner()
+        val organizationResponseCall = token?.let {
+            retrofit.create(RepresentativesInterface::class.java)
+                .getOrgs(it, getID()).enqueue(object : Callback<OrganizationResponse> {
+                    override fun onFailure(call: Call<OrganizationResponse>, t: Throwable) {
+                        Toast.makeText(this@AddPharmacy, t.message, Toast.LENGTH_LONG).show()
                     }
-                }
-            })
+
+                    override fun onResponse(call: Call<OrganizationResponse>, response: Response<OrganizationResponse>) {
+                        val organizationResponse = response.body()
+                        organizationResponse?.let {
+                            organiztionsList = it.organization
+                            setOrgsSpinner()
+                        }
+                    }
+                })
+        }
     }
 
     private fun setRegionsSpinner() {

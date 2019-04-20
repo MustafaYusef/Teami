@@ -49,6 +49,11 @@ interface RepresentativesInterface {
     @GET("get-status")
     fun getStatus(@Query("token") token:String,
                   @Query("phone_id") phoneId:String):Call<StatusResponse>
+
+    @GET("GetPharmacyStatus")
+    fun getPharmStatus(@Query("token") token:String,
+                  @Query("phone_id") phoneId:String):Call<PharmStatusResponse>
+
     @GET("GetOrganisations")
     fun getOrgs(@Query("token") token:String,
                 @Query("phone_id") phoneId:String):Call<OrganizationResponse>

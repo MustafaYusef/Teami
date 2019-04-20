@@ -77,4 +77,6 @@
     <string name="error_loading">حدث خطأ :(</string>
     <string name="not_near">لست بالقرب من هذا المكان</string>
     <string name="something_happened">حدث خطأ :(</string>
+    <string name="order_successful">تمت اضافة الطلب بنجاح</string>
+    <string name="item_name">اسم المادة</string>
 </resources>

@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -39,8 +40,8 @@ import com.martin.teami.utils.*
 
 class AddDoctor : AppCompatActivity() {
 
-    private lateinit var token: String
-    private var tokenExp: Long = 0
+    private var token: String?=null
+    private var tokenExp: Long? = 0
     private var calendar: Calendar? = null
     private lateinit var specialtiesList: List<Resource>
     private lateinit var organiztionsList: List<Resource>
@@ -54,15 +55,21 @@ class AddDoctor : AppCompatActivity() {
     private var selectedWork = -1
     private lateinit var locationUtils: LocationUtils
     private var permissionCount = 0
+    private var loginResponse: LoginResponse?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_doctor)
-        checkUser()
+        loginResponse = checkUser(this)
+        if (loginResponse != null) {
+            token = loginResponse?.token
+            tokenExp = loginResponse?.expire
+        }
         locationUtils = LocationUtils(this@AddDoctor)
         locationUtils.initLocation()
         finishAddBtn.setOnClickListener {
-            if (setValidation())
+            loginResponse = checkUser(this)
+            if (setValidation() && loginResponse != null)
                 addDoctor()
         }
         getSpeciatly()
@@ -115,26 +122,6 @@ class AddDoctor : AppCompatActivity() {
                 return false
             }
             else -> return true
-        }
-    }
-
-    private fun checkUser() {
-        val loginResponse = Hawk.get<LoginResponse>(Consts.LOGIN_RESPONSE_SHARED)
-        calendar = Hawk.get(Consts.LOGIN_TIME)
-        if (loginResponse != null) {
-            token = loginResponse.token
-            tokenExp = loginResponse.expire
-            checkExpirationLimit(token, tokenExp, getID(), calendar, this)
-        } else {
-            val intent = Intent(this, LoginActivity::class.java)
-            Hawk.deleteAll()
-            intent.flags = Intent
-                .FLAG_ACTIVITY_CLEAR_TOP or Intent
-                .FLAG_ACTIVITY_NO_HISTORY or Intent
-                .FLAG_ACTIVITY_NEW_TASK or Intent
-                .FLAG_ACTIVITY_CLEAR_TASK
-            finish()
-            startActivity(intent)
         }
     }
 
@@ -215,23 +202,25 @@ class AddDoctor : AppCompatActivity() {
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val specialityResponseCall = retrofit.create(RepresentativesInterface::class.java)
-            .getSpecialty(token, getID()).enqueue(object : Callback<SpecialityResponse> {
-                override fun onFailure(call: Call<SpecialityResponse>, t: Throwable) {
-                    Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
-                }
-
-                override fun onResponse(
-                    call: Call<SpecialityResponse>,
-                    response: Response<SpecialityResponse>
-                ) {
-                    val specialityResponse = response.body()
-                    specialityResponse?.let {
-                        specialtiesList = it.specialities
-                        setSpecialtySpinner()
+        val specialityResponseCall = token?.let {
+            retrofit.create(RepresentativesInterface::class.java)
+                .getSpecialty(it, getID()).enqueue(object : Callback<SpecialityResponse> {
+                    override fun onFailure(call: Call<SpecialityResponse>, t: Throwable) {
+                        Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
                     }
-                }
-            })
+
+                    override fun onResponse(
+                        call: Call<SpecialityResponse>,
+                        response: Response<SpecialityResponse>
+                    ) {
+                        val specialityResponse = response.body()
+                        specialityResponse?.let {
+                            specialtiesList = it.specialities
+                            setSpecialtySpinner()
+                        }
+                    }
+                })
+        }
     }
 
     private fun getRegion() {
@@ -239,20 +228,22 @@ class AddDoctor : AppCompatActivity() {
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val regionResponseCall = retrofit.create(RepresentativesInterface::class.java)
-            .getRegion(token, getID(), selectedOrg).enqueue(object : Callback<RegionResponse> {
-                override fun onFailure(call: Call<RegionResponse>, t: Throwable) {
-                    Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
-                }
-
-                override fun onResponse(call: Call<RegionResponse>, response: Response<RegionResponse>) {
-                    val regionResponse = response.body()
-                    regionResponse?.let {
-                        regionsList = regionResponse.reigns
-                        setRegionsSpinner()
+        val regionResponseCall = token?.let {
+            retrofit.create(RepresentativesInterface::class.java)
+                .getRegion(it, getID(), selectedOrg).enqueue(object : Callback<RegionResponse> {
+                    override fun onFailure(call: Call<RegionResponse>, t: Throwable) {
+                        Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
                     }
-                }
-            })
+
+                    override fun onResponse(call: Call<RegionResponse>, response: Response<RegionResponse>) {
+                        val regionResponse = response.body()
+                        regionResponse?.let {
+                            regionsList = regionResponse.reigns
+                            setRegionsSpinner()
+                        }
+                    }
+                })
+        }
     }
 
     private fun getOrganizations() {
@@ -260,23 +251,25 @@ class AddDoctor : AppCompatActivity() {
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val organizationResponseCall = retrofit.create(RepresentativesInterface::class.java)
-            .getOrgs(token, getID()).enqueue(object : Callback<OrganizationResponse> {
-                override fun onFailure(call: Call<OrganizationResponse>, t: Throwable) {
-                    Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
-                }
-
-                override fun onResponse(
-                    call: Call<OrganizationResponse>,
-                    response: Response<OrganizationResponse>
-                ) {
-                    val organizationResponse = response.body()
-                    organizationResponse?.let {
-                        organiztionsList = it.organization
-                        setOrgsSpinner()
+        val organizationResponseCall = token?.let {
+            retrofit.create(RepresentativesInterface::class.java)
+                .getOrgs(it, getID()).enqueue(object : Callback<OrganizationResponse> {
+                    override fun onFailure(call: Call<OrganizationResponse>, t: Throwable) {
+                        Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
                     }
-                }
-            })
+
+                    override fun onResponse(
+                        call: Call<OrganizationResponse>,
+                        response: Response<OrganizationResponse>
+                    ) {
+                        val organizationResponse = response.body()
+                        organizationResponse?.let {
+                            organiztionsList = it.organization
+                            setOrgsSpinner()
+                        }
+                    }
+                })
+        }
     }
 
     private fun getHospitals() {
@@ -284,20 +277,22 @@ class AddDoctor : AppCompatActivity() {
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val hospitalResponseCall = retrofit.create(RepresentativesInterface::class.java)
-            .getHospitals(token, getID(), selectedOrg).enqueue(object : Callback<HospitalsResponse> {
-                override fun onFailure(call: Call<HospitalsResponse>, t: Throwable) {
-                    Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
-                }
-
-                override fun onResponse(call: Call<HospitalsResponse>, response: Response<HospitalsResponse>) {
-                    val hospitalResponse = response.body()
-                    hospitalResponse?.let {
-                        hospitalsList = it.hospitals
-                        setHospitalsSpinner()
+        val hospitalResponseCall = token?.let {
+            retrofit.create(RepresentativesInterface::class.java)
+                .getHospitals(it, getID(), selectedOrg).enqueue(object : Callback<HospitalsResponse> {
+                    override fun onFailure(call: Call<HospitalsResponse>, t: Throwable) {
+                        Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
                     }
-                }
-            })
+
+                    override fun onResponse(call: Call<HospitalsResponse>, response: Response<HospitalsResponse>) {
+                        val hospitalResponse = response.body()
+                        hospitalResponse?.let {
+                            hospitalsList = it.hospitals
+                            setHospitalsSpinner()
+                        }
+                    }
+                })
+        }
     }
 
     private fun setSpecialtySpinner() {
@@ -519,7 +514,7 @@ class AddDoctor : AppCompatActivity() {
                                 Manifest.permission.WRITE_CONTACTS
                             )
                         ) {
-                            showMessageOKCancel(this@AddDoctor,getString(R.string.permissionsTitle),
+                            showMessageOKCancel(this@AddDoctor, getString(R.string.permissionsTitle),
                                 getString(R.string.permissionMessage),
                                 DialogInterface.OnClickListener { dialog, which -> locationUtils.requestUpdates() },
                                 DialogInterface.OnClickListener { dialog, which ->

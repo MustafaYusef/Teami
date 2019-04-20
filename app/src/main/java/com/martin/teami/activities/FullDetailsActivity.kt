@@ -15,6 +15,7 @@ import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
 import com.martin.teami.utils.Consts.BASE_URL
 import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
+import com.martin.teami.utils.checkUser
 import com.martin.teami.utils.showMessageOK
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_full_details.*
@@ -28,7 +29,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 class FullDetailsActivity : AppCompatActivity() {
 
     private lateinit var resource: MyResources
-    private lateinit var token: String
+    private var token: String? = null
+    private var tokenExp: Long? = 0
+    private var loginResponse: LoginResponse? = null
     private lateinit var fbDialog: Dialog
     private var selectedStatus = -1
     private lateinit var allItems: List<Item>
@@ -39,9 +42,10 @@ class FullDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_full_details)
 
-        val loginResponse = Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED)
+        loginResponse = checkUser(this)
         if (loginResponse != null) {
-            token = loginResponse.token
+            token = loginResponse?.token
+            tokenExp = loginResponse?.expire
         }
         resource = intent.getParcelableExtra("RESOURCE")
 
@@ -52,12 +56,40 @@ class FullDetailsActivity : AppCompatActivity() {
             intent.putExtra("RESOURCE", resource)
             startActivity(intent)
         }
-
-        if (resource.resourceType == "doctors")
-            feedbackBtn.setOnClickListener {
-                getItems()
+        if(resource.resourceType!="doctors")
+            resourceIcon.setImageResource(R.drawable.ic_pharmacy)
+        feedbackBtn.setOnClickListener {
+            loginResponse = checkUser(this)
+            if (loginResponse != null) {
+                if (resource.resourceType == "doctors") {
+                    getItems(0)
+                } else {
+                    getItems(1)
+                }
             }
-        else feedbackBtn.visibility = View.GONE
+        }
+    }
+
+    private fun getPharmacyStatus() {
+        val retrofit = Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(BASE_URL)
+            .build()
+        token?.let {
+            retrofit.create(RepresentativesInterface::class.java).getPharmStatus(it, getID())
+                .enqueue(object : Callback<PharmStatusResponse> {
+                    override fun onFailure(call: Call<PharmStatusResponse>, t: Throwable) {
+                        fbBtnProgressBar.visibility=View.GONE
+                        feedbackBtn.visibility=View.VISIBLE
+                        Toast.makeText(this@FullDetailsActivity, getString(R.string.error_loading), Toast.LENGTH_LONG)
+                            .show()
+                    }
+
+                    override fun onResponse(call: Call<PharmStatusResponse>, response: Response<PharmStatusResponse>) {
+                        initFeedback(response.body()?.PharmacyStatus)
+                    }
+                })
+        }
     }
 
     private fun getStatus() {
@@ -65,27 +97,33 @@ class FullDetailsActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_URL)
             .build()
-        retrofit.create(RepresentativesInterface::class.java).getStatus(token, getID())
-            .enqueue(object : Callback<StatusResponse> {
-                override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
-                    Toast.makeText(this@FullDetailsActivity, getString(R.string.error_loading), Toast.LENGTH_LONG)
-                        .show()
-                }
+        token?.let {
+            retrofit.create(RepresentativesInterface::class.java).getStatus(it, getID())
+                .enqueue(object : Callback<StatusResponse> {
+                    override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
+                        fbBtnProgressBar.visibility=View.GONE
+                        feedbackBtn.visibility=View.VISIBLE
+                        Toast.makeText(this@FullDetailsActivity, getString(R.string.error_loading), Toast.LENGTH_LONG)
+                            .show()
+                    }
 
-                override fun onResponse(call: Call<StatusResponse>, response: Response<StatusResponse>) {
-                    initFeedback(response.body())
-                }
-            })
+                    override fun onResponse(call: Call<StatusResponse>, response: Response<StatusResponse>) {
+                        initFeedback(response.body()?.status)
+                    }
+                })
+        }
     }
 
-    private fun initFeedback(status: StatusResponse?) {
+    private fun initFeedback(status: List<StatusResource>?) {
+        fbBtnProgressBar.visibility=View.GONE
+        feedbackBtn.visibility=View.VISIBLE
         val dialog = Dialog(this)
         fbDialog = dialog
         dialog.setContentView(R.layout.feedback_popup)
         dialog.window.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
         prepareItems()
-        val statusList = status?.status as ArrayList<StatusResource>
+        val statusList = status as ArrayList<StatusResource>
         val adapter = ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, statusList)
         dialog.status.setAdapter(adapter)
         dialog.status.threshold = 0
@@ -130,23 +168,30 @@ class FullDetailsActivity : AppCompatActivity() {
         }
     }
 
-    private fun getItems() {
+    private fun getItems(resourceType: Int) {
+        fbBtnProgressBar.visibility=View.VISIBLE
+        feedbackBtn.visibility=View.INVISIBLE
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
 
         val itemsInterface = retrofit.create(RepresentativesInterface::class.java)
-        val itemsResponse = itemsInterface.getItems(token, getID())
-        itemsResponse.enqueue(object : Callback<ItemsResponse> {
+        val itemsResponse = token?.let { itemsInterface.getItems(it, getID()) }
+        itemsResponse?.enqueue(object : Callback<ItemsResponse> {
             override fun onFailure(call: retrofit2.Call<ItemsResponse>, t: Throwable) {
+                fbBtnProgressBar.visibility=View.GONE
+                feedbackBtn.visibility=View.VISIBLE
                 Toast.makeText(this@FullDetailsActivity, t.message, Toast.LENGTH_LONG).show()
             }
 
             override fun onResponse(call: retrofit2.Call<ItemsResponse>, response: Response<ItemsResponse>) {
                 response.body()?.let {
                     allItems = it.items
-                    getStatus()
+                    if (resourceType == 0)
+                        getStatus()
+                    else
+                        getPharmacyStatus()
                 }
             }
         })
@@ -205,54 +250,58 @@ class FullDetailsActivity : AppCompatActivity() {
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val feedbackRequest = FeedbackRequest(
-            token,
-            getID(),
-            resource.resourceType
-            ,
-            resource.id.toString()
-            ,
-            statusId.toString(),
-            note
-            ,
-            "visit",
-            "${selectedReminder.companyName}_${selectedReminder.name}",
-            "${selectedCall.companyName}_${selectedCall.name}"
-        )
-        val feedbackResponse = retrofit.create(RepresentativesInterface::class.java)
-            .postFeedback(feedbackRequest).enqueue(object : Callback<FeedbackResponse> {
-                override fun onFailure(call: Call<FeedbackResponse>, t: Throwable) {
+        val feedbackRequest = token?.let {
+            FeedbackRequest(
+                it,
+                getID(),
+                resource.resourceType
+                ,
+                resource.id.toString()
+                ,
+                statusId.toString(),
+                note
+                ,
+                "visit",
+                "${selectedReminder.companyName}_${selectedReminder.name}",
+                "${selectedCall.companyName}_${selectedCall.name}"
+            )
+        }
+        val feedbackResponse = feedbackRequest?.let {
+            retrofit.create(RepresentativesInterface::class.java)
+                .postFeedback(it).enqueue(object : Callback<FeedbackResponse> {
+                    override fun onFailure(call: Call<FeedbackResponse>, t: Throwable) {
 
-                }
-
-                override fun onResponse(call: Call<FeedbackResponse>, response: Response<FeedbackResponse>) {
-                    fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
-                    fbDialog.fbProgressBar.visibility = View.GONE
-                    if (response.body()?.activity?.id != null) {
-                        if (fbDialog.isShowing) {
-                            fbDialog.fbProgressBar.visibility = View.GONE
-                            fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
-                            fbDialog.dismiss()
-                        }
-                        showMessageOK(this@FullDetailsActivity, getString(R.string.feedback_success), ""
-                            , DialogInterface.OnClickListener { dialog, which -> dialog?.dismiss() })
-                    } else if (response.code() == 406) {
-                        val converter = retrofit.responseBodyConverter<ErrorResponse>(
-                            ErrorResponse::class.java,
-                            arrayOfNulls<Annotation>(0)
-                        )
-                        val errors = converter.convert(response.errorBody())
-                        Toast.makeText(this@FullDetailsActivity, errors?.error, Toast.LENGTH_SHORT).show()
-                    } else if (response.code() == 400 || response.code() == 422) {
-                        val converter = retrofit.responseBodyConverter<ErrorResponseArray>(
-                            ErrorResponseArray::class.java,
-                            arrayOfNulls<Annotation>(0)
-                        )
-                        val errors = converter.convert(response.errorBody())
-                        Toast.makeText(this@FullDetailsActivity, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
                     }
-                }
-            })
+
+                    override fun onResponse(call: Call<FeedbackResponse>, response: Response<FeedbackResponse>) {
+                        fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
+                        fbDialog.fbProgressBar.visibility = View.GONE
+                        if (response.body()?.activity?.id != null) {
+                            if (fbDialog.isShowing) {
+                                fbDialog.fbProgressBar.visibility = View.GONE
+                                fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
+                                fbDialog.dismiss()
+                            }
+                            showMessageOK(this@FullDetailsActivity, getString(R.string.feedback_success), ""
+                                , DialogInterface.OnClickListener { dialog, which -> dialog?.dismiss() })
+                        } else if (response.code() == 406) {
+                            val converter = retrofit.responseBodyConverter<ErrorResponse>(
+                                ErrorResponse::class.java,
+                                arrayOfNulls<Annotation>(0)
+                            )
+                            val errors = converter.convert(response.errorBody())
+                            Toast.makeText(this@FullDetailsActivity, errors?.error, Toast.LENGTH_SHORT).show()
+                        } else if (response.code() == 400 || response.code() == 422) {
+                            val converter = retrofit.responseBodyConverter<ErrorResponseArray>(
+                                ErrorResponseArray::class.java,
+                                arrayOfNulls<Annotation>(0)
+                            )
+                            val errors = converter.convert(response.errorBody())
+                            Toast.makeText(this@FullDetailsActivity, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                })
+        }
     }
 
     private fun setResource() {

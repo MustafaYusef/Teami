@@ -2,14 +2,12 @@ package com.martin.teami.activities
 
 import android.Manifest
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.provider.Settings
 import android.support.v4.content.ContextCompat
 import android.support.annotation.ColorRes
 import android.support.v4.app.ActivityCompat
@@ -24,8 +22,6 @@ import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
 import com.martin.teami.utils.*
 import com.martin.teami.utils.Consts.BASE_URL
-import com.martin.teami.utils.Consts.LOGIN_RESPONSE_SHARED
-import com.martin.teami.utils.Consts.LOGIN_TIME
 import com.martin.teami.utils.Consts.USER_LOCATION
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_main.*
@@ -106,7 +102,7 @@ class MainActivity : AppCompatActivity() {
         return ContextCompat.getColor(this, color)
     }
 
-    fun checkNearestMarker(location: Location?): List<MyResources>? {
+    fun checkNearestMarker(): List<MyResources>? {
         val sortedDoctors = resourcesList
         userLocation=locationUtils.userLocation
         userLocation?.let {
@@ -127,7 +123,7 @@ class MainActivity : AppCompatActivity() {
         adapter.resources = sortedDoctors
         resourcesList = sortedDoctors
         if (!sortedDoctors.isNullOrEmpty())
-            doctorsRV.adapter?.notifyDataSetChanged()
+            resourcesRV.adapter?.notifyDataSetChanged()
         return sortedDoctors
     }
 
@@ -157,20 +153,20 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(this@MainActivity, t.message, Toast.LENGTH_LONG).show()
                 resourcesRefresh.isRefreshing=false
                 emptyListLayout.visibility=View.VISIBLE
-                doctorsRV.visibility=View.INVISIBLE
+                resourcesRV.visibility=View.INVISIBLE
             }
 
             override fun onResponse(call: Call<MyResourcesResponse>, response: Response<MyResourcesResponse>) {
                 resourcesRefresh.isRefreshing=false
                 response.body()?.let {
                     emptyListLayout.visibility=View.INVISIBLE
-                    doctorsRV.visibility=View.VISIBLE
+                    resourcesRV.visibility=View.VISIBLE
                     resourcesList = it.Resource
                     userLocation=locationUtils.userLocation
                     if (userLocation != null)
-                        checkNearestMarker(null)
-                    doctorsRV.adapter = adapter
-                    doctorsRV.layoutManager = LinearLayoutManager(this@MainActivity)
+                        checkNearestMarker()
+                    resourcesRV.adapter = adapter
+                    resourcesRV.layoutManager = LinearLayoutManager(this@MainActivity)
                     adapter.notifyDataSetChanged()
                 }
             }
@@ -236,7 +232,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         getMyResources()
-        doctorsRV.adapter?.notifyDataSetChanged()
+        resourcesRV.adapter?.notifyDataSetChanged()
         super.onResume()
     }
 

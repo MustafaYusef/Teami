@@ -19,7 +19,7 @@
 
             <ImageView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/imageView2"
+                    android:layout_height="wrap_content" android:id="@+id/resourceIcon"
                     app:layout_collapseMode="pin"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -37,7 +37,7 @@
                     app:layout_constraintBottom_toTopOf="@+id/specialtyTV"
                     android:textSize="23sp" android:textColor="@color/background"
                     android:fontFamily="@font/cairo_bold"
-                    tools:text="Jaafar Alaa" app:layout_constraintTop_toBottomOf="@+id/imageView2"
+                    tools:text="Jaafar Alaa" app:layout_constraintTop_toBottomOf="@+id/resourceIcon"
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintVertical_chainStyle="spread" android:layout_gravity="center_horizontal"/>
             <TextView
@@ -214,6 +214,24 @@
                     app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginTop="24dp"
                     app:layout_constraintTop_toBottomOf="@+id/workHoursCV" android:fontFamily="@font/cairo_bold"/>
+            <ProgressBar
+                    style="?android:attr/progressBarStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintBottom_toBottomOf="@id/feedbackBtn"
+                    app:layout_constraintTop_toTopOf="@id/feedbackBtn"
+                    app:layout_constraintStart_toStartOf="@id/feedbackBtn"
+                    app:layout_constraintEnd_toEndOf="@+id/feedbackBtn"
+                    android:id="@+id/fbBtnProgressBar" android:visibility="gone"/>
+            <ProgressBar
+                    style="?android:attr/progressBarStyle"
+                    app:layout_constraintBottom_toBottomOf="@id/orderBtn"
+                    app:layout_constraintTop_toTopOf="@id/orderBtn"
+                    app:layout_constraintStart_toStartOf="@id/orderBtn"
+                    app:layout_constraintEnd_toEndOf="@+id/orderBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/orderProgressBar" android:visibility="gone"/>
             <Button
                     android:text="@string/order"
                     android:layout_width="0dp"
@@ -224,7 +242,7 @@
                     android:background="@drawable/rounded_btn_shape"
                     android:textColor="#ffffff" android:layout_marginTop="8dp"
                     app:layout_constraintTop_toBottomOf="@+id/feedbackBtn" android:fontFamily="@font/cairo_bold"
-                    android:visibility="gone"/>
+                    android:visibility="visible"/>
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </android.support.design.widget.CoordinatorLayout>

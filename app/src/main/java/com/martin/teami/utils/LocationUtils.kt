@@ -122,7 +122,7 @@ class LocationUtils(var context: Context) {
                         (activity as MainActivity).getMyResources()
                     }else {
                         (activity as MainActivity).adapter.notifyDataSetChanged()
-                        (activity as MainActivity).checkNearestMarker(location)
+                        (activity as MainActivity).checkNearestMarker()
                     }
                 }
             }
