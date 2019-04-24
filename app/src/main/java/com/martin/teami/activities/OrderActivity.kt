@@ -164,7 +164,7 @@ class OrderActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             selectedItems.removeIf { t -> t.id == id.toInt() }
             item_ids.removeIf { t ->
-                quantities.removeAt(item_ids.indexOf(t))
+                quantities.removeIf{t2->quantities.indexOf(t2)==item_ids.indexOf(t)}
                 t == id.toInt()
             }
             itemsLinLay.removeView(unselected)

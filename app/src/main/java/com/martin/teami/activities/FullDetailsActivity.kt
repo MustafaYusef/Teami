@@ -56,7 +56,7 @@ class FullDetailsActivity : AppCompatActivity() {
             intent.putExtra("RESOURCE", resource)
             startActivity(intent)
         }
-        if(resource.resourceType!="doctors")
+        if (resource.resourceType != "doctors")
             resourceIcon.setImageResource(R.drawable.ic_pharmacy)
         feedbackBtn.setOnClickListener {
             loginResponse = checkUser(this)
@@ -79,8 +79,8 @@ class FullDetailsActivity : AppCompatActivity() {
             retrofit.create(RepresentativesInterface::class.java).getPharmStatus(it, getID())
                 .enqueue(object : Callback<PharmStatusResponse> {
                     override fun onFailure(call: Call<PharmStatusResponse>, t: Throwable) {
-                        fbBtnProgressBar.visibility=View.GONE
-                        feedbackBtn.visibility=View.VISIBLE
+                        fbBtnProgressBar.visibility = View.GONE
+                        feedbackBtn.visibility = View.VISIBLE
                         Toast.makeText(this@FullDetailsActivity, getString(R.string.error_loading), Toast.LENGTH_LONG)
                             .show()
                     }
@@ -101,8 +101,8 @@ class FullDetailsActivity : AppCompatActivity() {
             retrofit.create(RepresentativesInterface::class.java).getStatus(it, getID())
                 .enqueue(object : Callback<StatusResponse> {
                     override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
-                        fbBtnProgressBar.visibility=View.GONE
-                        feedbackBtn.visibility=View.VISIBLE
+                        fbBtnProgressBar.visibility = View.GONE
+                        feedbackBtn.visibility = View.VISIBLE
                         Toast.makeText(this@FullDetailsActivity, getString(R.string.error_loading), Toast.LENGTH_LONG)
                             .show()
                     }
@@ -115,14 +115,19 @@ class FullDetailsActivity : AppCompatActivity() {
     }
 
     private fun initFeedback(status: List<StatusResource>?) {
-        fbBtnProgressBar.visibility=View.GONE
-        feedbackBtn.visibility=View.VISIBLE
+        fbBtnProgressBar.visibility = View.GONE
+        feedbackBtn.visibility = View.VISIBLE
         val dialog = Dialog(this)
         fbDialog = dialog
         dialog.setContentView(R.layout.feedback_popup)
         dialog.window.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
-        prepareItems()
+        if (resource.resourceType == "doctors")
+            prepareItems()
+        else {
+            dialog.callTV.visibility = View.GONE
+            dialog.reminderTV.visibility = View.GONE
+        }
         val statusList = status as ArrayList<StatusResource>
         val adapter = ArrayAdapter(this, R.layout.support_simple_spinner_dropdown_item, statusList)
         dialog.status.setAdapter(adapter)
@@ -169,8 +174,8 @@ class FullDetailsActivity : AppCompatActivity() {
     }
 
     private fun getItems(resourceType: Int) {
-        fbBtnProgressBar.visibility=View.VISIBLE
-        feedbackBtn.visibility=View.INVISIBLE
+        fbBtnProgressBar.visibility = View.VISIBLE
+        feedbackBtn.visibility = View.INVISIBLE
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -179,13 +184,13 @@ class FullDetailsActivity : AppCompatActivity() {
         val itemsInterface = retrofit.create(RepresentativesInterface::class.java)
         val itemsResponse = token?.let { itemsInterface.getItems(it, getID()) }
         itemsResponse?.enqueue(object : Callback<ItemsResponse> {
-            override fun onFailure(call: retrofit2.Call<ItemsResponse>, t: Throwable) {
-                fbBtnProgressBar.visibility=View.GONE
-                feedbackBtn.visibility=View.VISIBLE
+            override fun onFailure(call: Call<ItemsResponse>, t: Throwable) {
+                fbBtnProgressBar.visibility = View.GONE
+                feedbackBtn.visibility = View.VISIBLE
                 Toast.makeText(this@FullDetailsActivity, t.message, Toast.LENGTH_LONG).show()
             }
 
-            override fun onResponse(call: retrofit2.Call<ItemsResponse>, response: Response<ItemsResponse>) {
+            override fun onResponse(call: Call<ItemsResponse>, response: Response<ItemsResponse>) {
                 response.body()?.let {
                     allItems = it.items
                     if (resourceType == 0)
@@ -251,20 +256,34 @@ class FullDetailsActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val feedbackRequest = token?.let {
-            FeedbackRequest(
-                it,
-                getID(),
-                resource.resourceType
-                ,
-                resource.id.toString()
-                ,
-                statusId.toString(),
-                note
-                ,
-                "visit",
-                "${selectedReminder.companyName}_${selectedReminder.name}",
-                "${selectedCall.companyName}_${selectedCall.name}"
-            )
+            if (resource.resourceType == "doctors")
+                FeedbackRequest(
+                    it,
+                    getID(),
+                    resource.resourceType
+                    ,
+                    resource.id.toString()
+                    ,
+                    statusId.toString(),
+                    note
+                    ,
+                    "visit",
+                    "${selectedReminder.companyName}_${selectedReminder.name}",
+                    "${selectedCall.companyName}_${selectedCall.name}"
+                )
+            else
+                FeedbackRequest(
+                    it,
+                    getID(),
+                    resource.resourceType
+                    ,
+                    resource.id.toString()
+                    ,
+                    statusId.toString(),
+                    note
+                    ,
+                    "visit", null, null
+                )
         }
         val feedbackResponse = feedbackRequest?.let {
             retrofit.create(RepresentativesInterface::class.java)

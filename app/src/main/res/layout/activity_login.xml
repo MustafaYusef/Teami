@@ -107,7 +107,7 @@
                         android:ems="10"
                         android:id="@+id/emailET" android:layout_marginEnd="8dp"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_gravity="center_horizontal"
+                        android:layout_gravity="center"
                         android:background="@drawable/edittext_normal_bg"
                         android:layout_marginTop="8dp"
                         android:hint="@string/emailHint"
@@ -118,13 +118,14 @@
                         android:textColorHint="@color/colorPrimaryDark"
                         android:layout_marginStart="8dp" app:layout_constraintStart_toStartOf="parent"
                         android:paddingStart="12dp" android:fontFamily="@font/cairo" android:textSize="16sp"
-                        android:paddingEnd="12dp" android:drawableLeft="@drawable/ic_email"
-                        android:gravity="left|center_vertical" android:drawablePadding="8dp"/>
+                        android:paddingEnd="12dp" android:drawableStart="@drawable/ic_email"
+                        android:gravity="center" android:drawablePadding="8dp"/>
 
                 <android.support.design.widget.TextInputLayout
                         android:id="@+id/textInput"
                         android:layout_width="0dp"
                         android:layout_height="32dp"
+                        android:layerType="software"
                         app:passwordToggleEnabled="true"
                         app:passwordToggleTint="@color/colorPrimaryDark"
                         app:layout_constraintTop_toBottomOf="@+id/emailET"
@@ -136,21 +137,22 @@
                         android:layout_marginBottom="36dp"
                         android:layout_marginEnd="8dp"
                         android:background="@drawable/edittext_normal_bg"
-                        android:foregroundGravity="left|center_vertical"
-                        android:gravity="left|center_vertical"
+                        android:gravity="start|center_vertical"
                         app:hintEnabled="false" app:layout_constraintStart_toStartOf="parent"
                 >
                     <EditText
                             android:layout_width="match_parent"
-                            android:inputType="textPassword"
                             android:id="@+id/passwordET"
-                            android:gravity="left|center_vertical"
+                            android:paddingStart="10dp"
+                            android:inputType="textPassword"
+                            android:drawablePadding="8dp"
+                            android:drawableStart="@drawable/ic_password"
+                            android:gravity="center"
                             android:layout_height="match_parent"
                             android:background="@android:color/transparent" android:hint="@string/passwordHint"
-                            android:foregroundGravity="left|center_vertical"
                             android:textColorHint="@color/colorPrimaryDark"
                             android:layout_marginStart="4dp" android:fontFamily="@font/cairo" android:textSize="16sp"
-                            android:drawableLeft="@drawable/ic_password" android:layout_gravity="left"
+                            android:layout_gravity="left"
                     />
                 </android.support.design.widget.TextInputLayout>
             </android.support.constraint.ConstraintLayout>

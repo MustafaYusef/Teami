@@ -80,4 +80,7 @@
     <string name="something_happened">Something happened :(</string>
     <string name="item_name">Item Name</string>
     <string name="order_successful">Order added successfully</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
