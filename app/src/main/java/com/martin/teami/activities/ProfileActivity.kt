@@ -3,15 +3,15 @@ package com.martin.teami.activities
 import android.content.Intent
 import android.os.Bundle
 import android.provider.Settings
+import android.support.v4.content.res.ResourcesCompat
+import android.support.v4.view.ViewPager
 import android.support.v7.app.AppCompatActivity
-import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import com.martin.teami.R
-import com.martin.teami.adapters.AreaAdapter
 import com.martin.teami.models.*
 import com.martin.teami.retrofit.RepresentativesInterface
 import com.martin.teami.utils.Consts
@@ -27,21 +27,25 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
+import com.martin.teami.adapters.TabAdapter
+import com.martin.teami.fragments.*
+import kotlinx.android.synthetic.main.error_layout.*
+
 
 class ProfileActivity : AppCompatActivity() {
 
     private lateinit var token: String
     private var tokenExp: Long = 0
     private var calendar: Calendar? = null
-    private var lastPosition = -1
-    private val FADE_DURATION: Long = 500
+    private lateinit var adapter: TabAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_profile)
+        checkUser()
+
         supportActionBar?.setDisplayShowTitleEnabled(false)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        checkUser()
         reloadIV.setOnClickListener {
             checkUser()
         }
@@ -76,7 +80,7 @@ class ProfileActivity : AppCompatActivity() {
             .baseUrl(Consts.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-        val userCallback = retrofit.create(RepresentativesInterface::class.java)
+        retrofit.create(RepresentativesInterface::class.java)
             .getMe(MeRequest(token, phoneId)).enqueue(object : Callback<MeResponse> {
                 override fun onFailure(call: Call<MeResponse>, t: Throwable) {
                     errorTV.text = t.message
@@ -89,41 +93,50 @@ class ProfileActivity : AppCompatActivity() {
                     progressBar.visibility = View.GONE
                     contentLayout.visibility = View.VISIBLE
                     val meResponse = response.body()
-                    showUserInfo(meResponse?.user)
-                    setAnimation(cardView4, 0)
+                    repNameTV.text = response.body()?.user?.UserName
+                    setTabs(meResponse)
                 }
             })
     }
 
-    private fun showUserInfo(user: User?) {
-        user?.let {
-            repNameTV.text = user.UserName
-            phone.text = user.Phone
-            email.text = user.Email
-            type.text = user.Role
-            sup.text = user.Reporting_to
-            val adapter = AreaAdapter(user.Coverage_Area)
-            areaRV.layoutManager = LinearLayoutManager(this)
-            areaRV.adapter = adapter
-        }
-    }
-
-    fun setAnimation(viewToAnimate: View, position: Int) {
-        if (position > lastPosition) {
-            val anim = ScaleAnimation(
-                0.8f,
-                1.0f,
-                0.8f,
-                1.0f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f,
-                Animation.RELATIVE_TO_SELF,
-                0.5f
+    private fun setTabs(meResponse: MeResponse?) {
+        val infoFragment = InfoFragment()
+        val areaFragment = AreasFragment()
+        val args = Bundle()
+        args.putString("token", token)
+        args.putParcelable("me", meResponse)
+        adapter = TabAdapter(supportFragmentManager)
+        areaFragment.arguments = args
+        infoFragment.arguments = args
+        adapter.addFragment(infoFragment, getString(R.string.info))
+        adapter.addFragment(areaFragment, getString(R.string.areas))
+        if (meResponse?.user?.Role == "sales_delegate") {
+            val userOrdersFragment = UserOrdersFragment()
+            userOrdersFragment.arguments = args
+            adapter.addFragment(userOrdersFragment, getString(R.string.user_orders))
+            tabBar.setTitles(
+                adapter.getPageTitle(0),
+                adapter.getPageTitle(1),
+                adapter.getPageTitle(2)
             )
-            anim.duration = FADE_DURATION//to make duration random number between [0,501)
-            viewToAnimate.startAnimation(anim)
-            lastPosition = position
+        } else {
+            val historyFragment = HistoryFragment()
+            val performanceFragment = PerformanceFragment()
+            historyFragment.arguments = args
+            performanceFragment.arguments = args
+            adapter.addFragment(historyFragment, getString(R.string.history))
+            adapter.addFragment(performanceFragment, getString(R.string.performance))
+            tabBar.setTitles(
+                adapter.getPageTitle(0),
+                adapter.getPageTitle(1),
+                adapter.getPageTitle(2),
+                adapter.getPageTitle(3)
+            )
         }
+        tabsViewPager.adapter = adapter
+        tabsViewPager.offscreenPageLimit = 0
+        tabBar.setViewPager(tabsViewPager)
+        tabBar.typeface = ResourcesCompat.getFont(this, R.font.cairo_semibold)
     }
 
     fun getID(): String {

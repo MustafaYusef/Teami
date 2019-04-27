@@ -5,6 +5,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
 android {
+    android.defaultConfig.vectorDrawables.useSupportLibrary = true
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.martin.teami"
@@ -43,6 +44,7 @@ dependencies {
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     implementation 'com.getbase:floatingactionbutton:1.10.1'
     implementation 'com.wajahatkarim3.easyvalidation:easyvalidation-core:1.0.1'
-    implementation 'com.github.razerdp:AnimatedPieView:1.2.0'
+    implementation 'com.github.IntruderShanky:scatter-piechart:1.0.0'
+    implementation 'com.github.devlight.navigationtabstrip:navigationtabstrip:1.0.4'
 
 }

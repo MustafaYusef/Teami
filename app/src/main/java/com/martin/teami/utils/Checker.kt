@@ -137,6 +137,6 @@ fun logoutUser(activity: Activity, token: String, phoneId: String) {
     })
 }
 
-fun getID(context: Context): String {
-    return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
+fun getID(context: Context?): String {
+    return Settings.Secure.getString(context?.contentResolver, Settings.Secure.ANDROID_ID)
 }

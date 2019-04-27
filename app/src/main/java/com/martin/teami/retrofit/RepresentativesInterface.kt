@@ -78,4 +78,17 @@ interface RepresentativesInterface {
 
     @POST("post-order")
     fun postOrder(@Body orderRequest:OrderRequest ):Call<OrderResponse>
+
+    @GET("GetHistory")
+    fun getHistory(@Query("token") token:String,
+                   @Query("phone_id") phoneId:String):Call<HistoryResponse>
+
+    @GET("GetUserPerformance")
+    fun getUserPerformance(@Query("token") token:String,
+                   @Query("phone_id") phoneId:String):Call<PerformanceResponse>
+
+    @GET("CheckUserOrders")
+    fun checkUserOrders(@Query("token") token:String,
+                   @Query("phone_id") phoneId:String):Call<UserOrderResponse>
+
 }

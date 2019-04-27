@@ -47,14 +47,50 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Hawk.init(this).build()
-        val loginResponse=checkUser(this)
-        if(loginResponse!=null){
-            token=loginResponse.token
-            tokenExp=loginResponse.expire
+        pink_icon.visibility = View.GONE
+        val loginResponse = checkUser(this)
+        if (loginResponse != null) {
+            token = loginResponse.token
+            tokenExp = loginResponse.expire
         }
         locationUtils = LocationUtils(this@MainActivity)
         locationUtils.initLocation()
-        userLocation=locationUtils.userLocation
+        userLocation = locationUtils.userLocation
+
+        profileIV.setOnClickListener {
+            val i = Intent(this@MainActivity, ProfileActivity::class.java)
+            startActivity(i)
+        }
+
+        userLocation = locationUtils.userLocation
+        adapter = ResourcesAdapter(resourcesList, userLocation)
+        getMyResources()
+        resourcesRefresh.setOnRefreshListener {
+            getMyResources()
+            emptyListLayout.visibility = View.INVISIBLE
+        }
+        getUserData(token, getID(this))
+    }
+
+    fun getUserData(token: String, phoneId: String) {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        retrofit.create(RepresentativesInterface::class.java)
+            .getMe(MeRequest(token, phoneId)).enqueue(object : Callback<MeResponse> {
+                override fun onFailure(call: Call<MeResponse>, t: Throwable) {
+                }
+
+                override fun onResponse(call: Call<MeResponse>, response: Response<MeResponse>) {
+                    val meResponse = response.body()
+                    setFabs(meResponse)
+                }
+            })
+    }
+
+    fun setFabs(meResponse: MeResponse?) {
+        pink_icon.visibility=View.VISIBLE
         pink_icon.setOnFloatingActionsMenuUpdateListener(object :
             FloatingActionsMenu.OnFloatingActionsMenuUpdateListener {
             override fun onMenuExpanded() {
@@ -68,33 +104,28 @@ class MainActivity : AppCompatActivity() {
                 dimView.visibility = View.GONE
             }
         })
-        addDocFab.setOnClickListener {
-            userLocation=locationUtils.userLocation
-            if (userLocation != null) {
-                checkUser(this)
-                val intent = Intent(this, AddDoctor::class.java)
-                startActivity(intent)
-            } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
-        }
-        addPharmFab.setOnClickListener {
-            userLocation=locationUtils.userLocation
-            if (userLocation != null) {
-                checkUser(this)
-                val intent = Intent(this, AddPharmacy::class.java)
-                intent.putExtra(USER_LOCATION, userLocation)
-                startActivity(intent)
-            } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
-        }
-        profileIV.setOnClickListener {
-            val i = Intent(this@MainActivity, ProfileActivity::class.java)
-            startActivity(i)
-        }
-        userLocation=locationUtils.userLocation
-        adapter = ResourcesAdapter(resourcesList, userLocation)
-        getMyResources()
-        resourcesRefresh.setOnRefreshListener {
-            getMyResources()
-            emptyListLayout.visibility=View.INVISIBLE
+
+        if (meResponse?.user?.Role != "sales_delegate") {
+            addPharmFab.visibility=View.GONE
+            addDocFab.setOnClickListener {
+                userLocation = locationUtils.userLocation
+                if (userLocation != null) {
+                    checkUser(this)
+                    val intent = Intent(this, AddDoctor::class.java)
+                    startActivity(intent)
+                } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
+            }
+        } else {
+            addDocFab.visibility=View.GONE
+            addPharmFab.setOnClickListener {
+                userLocation = locationUtils.userLocation
+                if (userLocation != null) {
+                    checkUser(this)
+                    val intent = Intent(this, AddPharmacy::class.java)
+                    intent.putExtra(USER_LOCATION, userLocation)
+                    startActivity(intent)
+                } else Toast.makeText(this, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
+            }
         }
     }
 
@@ -104,7 +135,7 @@ class MainActivity : AppCompatActivity() {
 
     fun checkNearestMarker(): List<MyResources>? {
         val sortedDoctors = resourcesList
-        userLocation=locationUtils.userLocation
+        userLocation = locationUtils.userLocation
         userLocation?.let {
             Collections.sort(sortedDoctors, Comparator<MyResources> { marker1, marker2 ->
                 val locationA = Location("point A")
@@ -118,7 +149,7 @@ class MainActivity : AppCompatActivity() {
                 return@Comparator java.lang.Float.compare(distanceOne, distanceTwo)
             })
         }
-        userLocation=locationUtils.userLocation
+        userLocation = locationUtils.userLocation
         adapter.userLocation = userLocation
         adapter.resources = sortedDoctors
         resourcesList = sortedDoctors
@@ -142,7 +173,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun getMyResources() {
-        resourcesRefresh.isRefreshing=true
+        resourcesRefresh.isRefreshing = true
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BASE_URL)
@@ -151,18 +182,18 @@ class MainActivity : AppCompatActivity() {
         resourcesInterface.getMyResources(token, getID(this)).enqueue(object : Callback<MyResourcesResponse> {
             override fun onFailure(call: Call<MyResourcesResponse>, t: Throwable) {
                 Toast.makeText(this@MainActivity, t.message, Toast.LENGTH_LONG).show()
-                resourcesRefresh.isRefreshing=false
-                emptyListLayout.visibility=View.VISIBLE
-                resourcesRV.visibility=View.INVISIBLE
+                resourcesRefresh.isRefreshing = false
+                emptyListLayout.visibility = View.VISIBLE
+                resourcesRV.visibility = View.INVISIBLE
             }
 
             override fun onResponse(call: Call<MyResourcesResponse>, response: Response<MyResourcesResponse>) {
-                resourcesRefresh.isRefreshing=false
+                resourcesRefresh.isRefreshing = false
                 response.body()?.let {
-                    emptyListLayout.visibility=View.INVISIBLE
-                    resourcesRV.visibility=View.VISIBLE
+                    emptyListLayout.visibility = View.INVISIBLE
+                    resourcesRV.visibility = View.VISIBLE
                     resourcesList = it.Resource
-                    userLocation=locationUtils.userLocation
+                    userLocation = locationUtils.userLocation
                     if (userLocation != null)
                         checkNearestMarker()
                     resourcesRV.adapter = adapter
@@ -212,7 +243,7 @@ class MainActivity : AppCompatActivity() {
                                 Manifest.permission.WRITE_CONTACTS
                             )
                         ) {
-                            showMessageOKCancel(this@MainActivity,getString(R.string.permissionsTitle),
+                            showMessageOKCancel(this@MainActivity, getString(R.string.permissionsTitle),
                                 getString(R.string.permissionMessage),
                                 DialogInterface.OnClickListener { dialog, which -> locationUtils.requestUpdates() },
                                 DialogInterface.OnClickListener { dialog, which ->
@@ -242,7 +273,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onRestart() {
-       locationUtils.getLastKnowLocation()
+        locationUtils.getLastKnowLocation()
         super.onRestart()
     }
 }

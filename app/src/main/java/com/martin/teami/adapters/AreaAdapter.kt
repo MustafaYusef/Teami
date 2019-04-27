@@ -8,12 +8,15 @@ import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
 import com.martin.teami.R
 import com.martin.teami.models.CoverageArea
-import com.martin.teami.models.Resource
 import kotlinx.android.synthetic.main.area_item.view.*
 
 class AreaAdapter(val areas: List<CoverageArea>) :
     RecyclerView.Adapter<AreaAdapter.AreaViewHolder>() {
+    override fun onViewDetachedFromWindow(holder: AreaViewHolder) {
+        super.onViewDetachedFromWindow(holder)
+        holder.itemView.clearAnimation()
 
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AreaViewHolder {
         val view =
             LayoutInflater.from(parent.context).inflate(R.layout.area_item, parent, false)
@@ -33,7 +36,7 @@ class AreaAdapter(val areas: List<CoverageArea>) :
             setAnimation(view,adapterPosition)
         }
         private var lastPosition = -1
-        private val FADE_DURATION: Long = 500
+        private val FADE_DURATION: Long = 700
 
         fun setAnimation(viewToAnimate: View, position: Int) {
             if (position > lastPosition) {

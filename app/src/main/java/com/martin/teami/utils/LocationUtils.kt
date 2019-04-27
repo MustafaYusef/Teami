@@ -117,77 +117,77 @@ class LocationUtils(var context: Context) {
                     val userLong = location.longitude
                     val userLatLng = LatLng(userLat, userLong)
                 }
-                if (activity is MainActivity) {
-                    if ((activity as MainActivity).resourcesList == null) {
-                        (activity as MainActivity).getMyResources()
-                    }else {
-                        (activity as MainActivity).adapter.notifyDataSetChanged()
-                        (activity as MainActivity).checkNearestMarker()
-                    }
-                }
-            }
+//                if (activity is MainActivity) {
+//                    if ((activity as MainActivity).resourcesList == null) {
+//                        (activity as MainActivity).getMyResources()
+//                    }else {
+//                    (activity as MainActivity).checkNearestMarker()
+//                    (activity as MainActivity).adapter.notifyDataSetChanged()
+//                }
+//            }
+        }
 
-            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-            }
+        override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
+        }
 
-            override fun onProviderEnabled(provider: String?) {
-            }
+        override fun onProviderEnabled(provider: String?) {
+        }
 
-            override fun onProviderDisabled(provider: String?) {
-                initGPS()
-            }
+        override fun onProviderDisabled(provider: String?) {
+            initGPS()
         }
     }
+}
 
-    fun requestUpdates() {
-        if (PermissionChecker.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && PermissionChecker.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                activity.requestPermissions(
-                    arrayOf(
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.INTERNET
-                    )
-                    , 10
+fun requestUpdates() {
+    if (PermissionChecker.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && PermissionChecker.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            activity.requestPermissions(
+                arrayOf(
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.INTERNET
                 )
-            }
+                , 10
+            )
         }
     }
+}
 
-    fun getLastKnowLocation() {
-        if (PermissionChecker.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && PermissionChecker.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            requestUpdates()
-            return
-        }
+fun getLastKnowLocation() {
+    if (PermissionChecker.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED && PermissionChecker.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_COARSE_LOCATION
+        ) != PackageManager.PERMISSION_GRANTED
+    ) {
+        requestUpdates()
+        return
+    }
 
-        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5f, listener)
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, listener)
-        locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 5000, 5f, listener)
-        if (fusedLocationProviderClient.locationAvailability.isSuccessful)
-            fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
-                val location = task.result
-                val name = activity.intent.getStringExtra("NAME")
-                location?.let {
-                    userLocation = it
-                }
+    locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 5000, 5f, listener)
+    locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, listener)
+    locationManager.requestLocationUpdates(LocationManager.PASSIVE_PROVIDER, 5000, 5f, listener)
+    if (fusedLocationProviderClient.locationAvailability.isSuccessful)
+        fusedLocationProviderClient.lastLocation.addOnCompleteListener { task ->
+            val location = task.result
+            val name = activity.intent.getStringExtra("NAME")
+            location?.let {
+                userLocation = it
             }
-    }
+        }
+}
 
-    fun stopLocation() {
-        locationManager.removeUpdates(listener)
-    }
+fun stopLocation() {
+    locationManager.removeUpdates(listener)
+}
 }

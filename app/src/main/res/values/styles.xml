@@ -13,6 +13,7 @@
         <item name="android:windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="android:windowActionBar">false</item>
+        <item name="android:fontFamily">@font/cairo</item>
     </style>
 
     <style name="AppTheme.Fab" parent="AppTheme.NoActionBar">
@@ -28,6 +29,7 @@
         <item name="windowActionBarOverlay">true</item>
         <item name="android:elevation">0dp</item>
         <item name="elevation">0dp</item>
+        <item name="android:fontFamily">@font/cairo</item>
     </style>
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>

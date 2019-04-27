@@ -19,7 +19,7 @@
     <string name="okDialog">موافق</string>
     <string name="cancelDialog">إلغاء</string>
     <string name="action_settings">الإعدادات</string>
-    <string name="about">حول</string>
+    <string name="info">المعلومات</string>
     <string name="email">البريد:</string>
     <string name="phone">الهاتف:</string>
     <string name="supervisor">المشرف:</string>
@@ -79,4 +79,12 @@
     <string name="something_happened">حدث خطأ :(</string>
     <string name="order_successful">تمت اضافة الطلب بنجاح</string>
     <string name="item_name">اسم المادة</string>
+    <string name="history">السجل</string>
+    <string name="performance">الأداء</string>
+    <string name="user_orders">الطلبات</string>
+    <string name="item_type_count">عدد انواع المواد</string>
+    <string name="items_count">عدد المواد</string>
+    <string name="classX">التصنيف</string>
+    <string name="accepted_level">درجة القبول</string>
+    <string name="no_of_doctors">عدد الاطباء:</string>
 </resources>

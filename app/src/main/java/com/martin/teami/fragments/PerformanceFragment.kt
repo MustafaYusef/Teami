@@ -10,24 +10,23 @@ import android.view.View
 import android.view.ViewGroup
 
 import com.martin.teami.R
-import com.martin.teami.adapters.AreaAdapter
 import com.martin.teami.adapters.HistoryAdapter
+import com.martin.teami.adapters.PerformanceAdapter
 import com.martin.teami.models.History
-import com.martin.teami.models.MeRequest
-import com.martin.teami.models.HistoryResponse
-import com.martin.teami.models.User
+import com.martin.teami.models.Performance
+import com.martin.teami.models.PerformanceResponse
 import com.martin.teami.retrofit.RepresentativesInterface
 import com.martin.teami.utils.Consts
 import com.martin.teami.utils.getID
-import kotlinx.android.synthetic.main.fragment_areas.*
 import kotlinx.android.synthetic.main.fragment_history.*
+import kotlinx.android.synthetic.main.fragment_performance.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class HistoryFragment : Fragment() {
+class PerformanceFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,7 +35,7 @@ class HistoryFragment : Fragment() {
         arguments?.let {
             getUserData(it.getString("token"), getID(context))
         }
-        return inflater.inflate(R.layout.fragment_history, container, false)
+        return inflater.inflate(R.layout.fragment_performance, container, false)
     }
 
     private fun getUserData(token: String, phoneId: String) {
@@ -45,23 +44,22 @@ class HistoryFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         retrofit.create(RepresentativesInterface::class.java)
-            .getHistory(token, phoneId).enqueue(object : Callback<HistoryResponse> {
-                override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
+            .getUserPerformance(token, phoneId).enqueue(object : Callback<PerformanceResponse> {
+                override fun onFailure(call: Call<PerformanceResponse>, t: Throwable) {
                 }
 
-                override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {
+                override fun onResponse(call: Call<PerformanceResponse>, response: Response<PerformanceResponse>) {
                     val meResponse = response.body()
-                    showUserInfo(meResponse?.history)
+                    showUserInfo(meResponse?.performance)
                 }
             })
     }
 
-    private fun showUserInfo(history: List<History>?) {
-        history?.let {
-            val adapter = HistoryAdapter(history)
-            historyRV.layoutManager = LinearLayoutManager(context)
-            historyRV.adapter = adapter
+    private fun showUserInfo(performance: List<Performance>?) {
+        performance?.let {
+            val adapter = PerformanceAdapter(performance)
+            performanceRV.layoutManager = LinearLayoutManager(context)
+            performanceRV.adapter = adapter
         }
     }
-
 }

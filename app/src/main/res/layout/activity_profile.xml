@@ -25,23 +25,12 @@
                 app:layout_scrollFlags="snap"
                 app:contentScrim="?attr/colorPrimary">
 
-            <LinearLayout
-                    android:orientation="vertical"
+            <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal" android:paddingBottom="16dp">
-                <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" app:srcCompat="@drawable/ic_about"
-                        android:id="@+id/imageView10" android:layout_gravity="center_horizontal|top"
-                />
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content" android:id="@+id/repNameTV" tools:text="Mustafa M. Dakhel"
-                        android:textColor="@color/background" android:textSize="24sp"
-                        android:fontFamily="@font/cairo_bold" android:layout_gravity="bottom|center_horizontal"
-                />
-            </LinearLayout>
+                    android:layout_height="wrap_content" android:id="@+id/repNameTV" tools:text="Mustafa M. Dakhel"
+                    android:textColor="@color/background" android:textSize="20sp"
+                    android:fontFamily="@font/cairo_bold" android:layout_gravity="bottom|center_horizontal"
+                    android:drawableTop="@drawable/ic_about" android:paddingBottom="16dp"/>
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
@@ -56,240 +45,54 @@
                 style="?android:attr/progressBarStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/progressBar" app:layout_constraintEnd_toEndOf="@+id/errorLayout"
+                android:id="@+id/progressBar" app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginEnd="8dp"
-                app:layout_constraintStart_toStartOf="@+id/errorLayout"
-                android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="@+id/errorLayout"
-                app:layout_constraintTop_toTopOf="@+id/errorLayout"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.39999998" android:visibility="gone"/>
-        <ScrollView
+        <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent">
-            <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent"
-                          android:orientation="vertical">
-                <android.support.constraint.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        app:layout_constraintTop_toTopOf="parent" app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent" android:id="@+id/contentLayout">
+                app:layout_constraintBottom_toBottomOf="parent" android:id="@+id/contentLayout"
+                android:visibility="visible">
 
-                    <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" android:id="@+id/areaTV"
-                            android:textSize="22sp" android:textColor="@color/colorPrimaryDark"
-                            android:fontFamily="@font/cairo_bold" android:layout_marginTop="24dp"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:layout_marginStart="8dp" app:layout_constraintTop_toBottomOf="@+id/cardView4"
-                            android:layout_marginEnd="8dp" app:layout_constraintEnd_toEndOf="parent"
-                            android:text="@string/areas"/>
-                    <android.support.v7.widget.RecyclerView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            app:layout_constraintTop_toBottomOf="@+id/areaTV"
-                            app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            android:id="@+id/areaRV" android:layout_marginBottom="16dp"/>
-                    <android.support.v7.widget.CardView
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content" app:layout_constraintStart_toStartOf="parent"
-                            android:layout_marginStart="8dp" android:layout_marginEnd="8dp"
-                            app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="16dp"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:cardCornerRadius="16dp" app:contentPadding="4dp" android:id="@+id/cardView4"
-                            app:cardElevation="6dp">
-                        <android.support.constraint.ConstraintLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content">
-
-                            <android.support.v7.widget.CardView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="0dp"
-                                    app:cardBackgroundColor="@color/darkRedT"
-                                    app:cardCornerRadius="4dp"
-                                    app:layout_constraintBottom_toBottomOf="parent"
-                                    app:layout_constraintTop_toBottomOf="@+id/AboutTV"
-                                    android:layout_marginBottom="8dp" android:id="@+id/cardView2"
-                                    android:layout_marginStart="16dp"
-                                    app:layout_constraintStart_toEndOf="@+id/aboutSupTV">
-                                <android.support.constraint.ConstraintLayout
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="match_parent">
-
-                                    <ImageView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            app:srcCompat="@drawable/ic_email_white"
-                                            android:id="@+id/imageView11" android:layout_marginTop="8dp"
-                                            app:layout_constraintTop_toTopOf="parent"
-                                            app:layout_constraintEnd_toEndOf="parent"
-                                            app:layout_constraintStart_toStartOf="parent"
-                                            app:layout_constraintHorizontal_bias="0.5"
-                                            app:layout_constraintBottom_toTopOf="@+id/imageView12" android:scaleY="0.8"
-                                            android:scaleX="0.8"/>
-                                    <ImageView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            app:srcCompat="@android:drawable/stat_sys_speakerphone"
-                                            android:id="@+id/imageView12"
-                                            app:layout_constraintTop_toBottomOf="@+id/imageView11"
-                                            app:layout_constraintEnd_toEndOf="parent"
-                                            app:layout_constraintStart_toStartOf="parent"
-                                            app:layout_constraintHorizontal_bias="0.5"
-                                            app:layout_constraintBottom_toTopOf="@+id/imageView14"
-                                            android:layout_marginTop="8dp"/>
-                                    <ImageView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content"
-                                            app:srcCompat="@drawable/ic_doctor"
-                                            android:id="@+id/imageView14"
-                                            android:layout_marginTop="8dp"
-                                            app:layout_constraintTop_toBottomOf="@+id/imageView12"
-                                            app:layout_constraintBottom_toTopOf="@+id/imageView15"
-                                            app:layout_constraintStart_toStartOf="parent"
-                                            app:layout_constraintEnd_toEndOf="parent"
-                                            android:layout_marginBottom="8dp" android:scaleX="0.9"
-                                            android:scaleY="0.9"/>
-                                    <ImageView
-                                            android:layout_width="wrap_content"
-                                            android:layout_height="wrap_content" app:srcCompat="@drawable/ic_supervisor"
-                                            android:id="@+id/imageView15"
-                                            app:layout_constraintBottom_toBottomOf="parent"
-                                            app:layout_constraintTop_toBottomOf="@+id/imageView14"
-                                            app:layout_constraintStart_toStartOf="parent"
-                                            app:layout_constraintEnd_toEndOf="parent"
-                                            android:layout_marginBottom="8dp" android:scaleX="0.9"
-                                            android:scaleY="0.9"/>
-                                </android.support.constraint.ConstraintLayout>
-                            </android.support.v7.widget.CardView>
-                            <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" android:id="@+id/AboutTV"
-                                    android:textSize="22sp" android:textColor="@color/colorPrimaryDark"
-                                    android:fontFamily="@font/cairo_bold"
-                                    app:layout_constraintTop_toTopOf="parent"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    android:layout_marginStart="8dp" android:text="@string/about"/>
-                            <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" android:id="@+id/email"
-                                    app:layout_constraintStart_toEndOf="@+id/cardView2" android:layout_marginStart="8dp"
-                                    app:layout_constraintTop_toTopOf="@+id/cardView2"
-                                    app:layout_constraintBottom_toTopOf="@+id/phone" android:layout_marginTop="8dp"
-                                    android:fontFamily="@font/cairo" android:textColor="#505050"
-                                    tools:text="mstfdakhel@gmail.com" android:textSize="16dp"/>
-                            <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" android:id="@+id/phone"
-                                    app:layout_constraintTop_toBottomOf="@+id/email"
-                                    app:layout_constraintStart_toEndOf="@+id/cardView2" android:layout_marginStart="8dp"
-                                    app:layout_constraintBottom_toTopOf="@+id/type"
-                                    android:fontFamily="@font/cairo"
-                                    android:textColor="#505050"
-                                    tools:text="07800000000" android:textSize="16dp"/>
-                            <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" android:id="@+id/type"
-                                    app:layout_constraintTop_toBottomOf="@+id/phone"
-                                    app:layout_constraintStart_toEndOf="@+id/cardView2" android:layout_marginStart="8dp"
-                                    app:layout_constraintBottom_toTopOf="@+id/sup"
-                                    android:fontFamily="@font/cairo"
-                                    android:textColor="#505050"
-                                    tools:text="Trade" android:textSize="16dp"/>
-                            <TextView
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" android:id="@+id/sup"
-                                    app:layout_constraintTop_toBottomOf="@+id/type"
-                                    app:layout_constraintStart_toEndOf="@+id/cardView2" android:layout_marginStart="8dp"
-                                    app:layout_constraintBottom_toBottomOf="@+id/cardView2"
-                                    android:layout_marginBottom="8dp"
-                                    android:fontFamily="@font/cairo" android:textColor="#505050" tools:text="Ahmed Ali"
-                                    android:textSize="16dp"/>
-                            <TextView
-                                    android:text="@string/email"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" android:id="@+id/aboutEmailTV"
-                                    app:layout_constraintTop_toBottomOf="@+id/AboutTV"
-                                    app:layout_constraintStart_toStartOf="parent"
-                                    android:layout_marginStart="16dp"
-                                    app:layout_constraintBottom_toTopOf="@+id/aboutPhoneTV"
-                                    android:layout_marginTop="8dp"
-                                    app:layout_constraintTop_toTopOf="@+id/cardView2"
-                                    android:fontFamily="@font/cairo_semibold"
-                                    android:textColor="#505050" android:textSize="18sp"/>
-                            <TextView
-                                    android:text="@string/phone"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" android:id="@+id/aboutPhoneTV"
-                                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
-                                    app:layout_constraintTop_toBottomOf="@+id/aboutEmailTV"
-                                    app:layout_constraintBottom_toTopOf="@+id/aboutTypeTV"
-                                    android:fontFamily="@font/cairo_semibold" android:textColor="#505050"
-                                    android:textSize="18sp"/>
-                            <TextView
-                                    android:text="@string/type"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" android:id="@+id/aboutTypeTV"
-                                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
-                                    app:layout_constraintTop_toBottomOf="@+id/aboutPhoneTV"
-                                    app:layout_constraintBottom_toTopOf="@+id/aboutSupTV"
-                                    android:fontFamily="@font/cairo_semibold"
-                                    android:textColor="#505050" android:textSize="18sp"/>
-                            <TextView
-                                    android:text="@string/supervisor"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" android:id="@+id/aboutSupTV"
-                                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
-                                    app:layout_constraintTop_toBottomOf="@+id/aboutTypeTV"
-                                    app:layout_constraintBottom_toBottomOf="@+id/cardView2"
-                                    android:layout_marginBottom="8dp" android:fontFamily="@font/cairo_semibold"
-                                    android:textColor="#505050" android:textSize="18sp"/>
-                        </android.support.constraint.ConstraintLayout>
-                    </android.support.v7.widget.CardView>
-                </android.support.constraint.ConstraintLayout>
-            </LinearLayout>
-        </ScrollView>
-        <android.support.constraint.ConstraintLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content" android:layout_marginTop="8dp"
-                app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="24dp" app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="24dp"
-                app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintVertical_bias="0.39"
-                android:id="@+id/errorLayout" android:visibility="invisible">
-
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" app:srcCompat="@drawable/ic_error" android:id="@+id/imageView3"
-                    app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-                    app:layout_constraintHorizontal_bias="0.5"
-                    app:layout_constraintBottom_toTopOf="@+id/errorTV"
-                    app:layout_constraintTop_toTopOf="parent"/>
-            <TextView
-                    android:text="Error!"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/errorTV"
-                    app:layout_constraintEnd_toEndOf="@+id/imageView3"
-                    app:layout_constraintStart_toStartOf="@+id/imageView3"
-                    android:textColor="@color/colorAccentDark"
-                    android:textSize="20sp" android:fontFamily="@font/roboto_light"
-                    app:layout_constraintHorizontal_bias="0.5" app:layout_constraintTop_toBottomOf="@+id/imageView3"
-                    app:layout_constraintBottom_toTopOf="@+id/reloadIV" android:gravity="center_horizontal"
-                    android:foregroundGravity="center_horizontal" android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"/>
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" app:srcCompat="@drawable/ic_reload"
-                    android:id="@+id/reloadIV"
-                    app:layout_constraintTop_toBottomOf="@+id/errorTV" app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent" app:layout_constraintHorizontal_bias="0.5"/>
+            <com.gigamole.navigationtabstrip.NavigationTabStrip
+                    android:layout_width="0dp"
+                    android:layout_height="30dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:id="@+id/tabBar"
+                    app:nts_active_color="@color/colorPrimaryDark"
+                    app:nts_color="@color/colorPrimaryDark"
+                    app:nts_weight="8dp"
+                    app:nts_size="18sp"
+                    android:theme="@style/AppTheme.NoActionBar"
+                    app:nts_corners_radius="16dp"
+                    app:nts_gravity="top"
+                    app:nts_type="point"
+                    app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="8dp"
+                    android:layout_marginEnd="32dp">
+            </com.gigamole.navigationtabstrip.NavigationTabStrip>
+            <android.support.v4.view.ViewPager
+                    android:id="@+id/tabsViewPager"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/tabBar"
+                    app:layout_constraintBottom_toBottomOf="parent" android:layout_marginTop="8dp"/>
         </android.support.constraint.ConstraintLayout>
+        <include
+                layout="@layout/error_layout"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/error" app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent" app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
     </android.support.constraint.ConstraintLayout>
 
 </android.support.design.widget.CoordinatorLayout>

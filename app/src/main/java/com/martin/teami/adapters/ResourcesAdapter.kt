@@ -51,7 +51,7 @@ class ResourcesAdapter(var resources: List<MyResources>?, var userLocation: Loca
                 view.resourceNameTV.text = it.name
                 view.resourceAddressTV.text = it.reign
                 view.resourceStreetTV.text = it.street
-                view.resourceHospitalTV.text = it.reign
+                view.resourceHospitalTV.text = it.organisation
                 setCardView(resource)
             }
         }

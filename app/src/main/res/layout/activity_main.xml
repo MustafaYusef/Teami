@@ -12,20 +12,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <android.support.v4.widget.SwipeRefreshLayout
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layout_constraintTop_toBottomOf="@+id/app_bar"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                android:id="@+id/resourcesRefresh">
-            <android.support.v7.widget.RecyclerView
-                    android:layout_width="0dp"
-                    android:layout_height="0dp" android:id="@+id/resourcesRV"
-
-            />
-        </android.support.v4.widget.SwipeRefreshLayout>
         <android.support.constraint.ConstraintLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" app:layout_constraintEnd_toEndOf="parent"
@@ -52,6 +38,20 @@
                     android:layout_marginEnd="8dp" app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginStart="8dp"/>
         </android.support.constraint.ConstraintLayout>
+        <android.support.v4.widget.SwipeRefreshLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintTop_toBottomOf="@+id/app_bar"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:id="@+id/resourcesRefresh">
+            <android.support.v7.widget.RecyclerView
+                    android:layout_width="0dp"
+                    android:layout_height="0dp" android:id="@+id/resourcesRV"
+
+            />
+        </android.support.v4.widget.SwipeRefreshLayout>
         <android.support.design.widget.AppBarLayout
                 android:id="@+id/app_bar"
                 android:fitsSystemWindows="true"
@@ -80,6 +80,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" app:srcCompat="@drawable/ic_person_white_24dp"
                             android:id="@+id/profileIV"
+                            android:foreground="?android:attr/selectableItemBackground"
                             android:scaleY="1.2" android:scaleX="1.2"
                             android:layout_gravity="start|top" android:paddingBottom="12dp" android:paddingEnd="12dp"
                             android:paddingStart="18dp" android:paddingTop="4dp"/>
