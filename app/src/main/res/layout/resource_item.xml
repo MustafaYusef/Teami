@@ -72,7 +72,7 @@
                         app:layout_constraintBottom_toTopOf="@+id/addressIV"
                 />
                 <ImageView
-                        android:src="@drawable/ic_address_white"
+                        android:src="@drawable/ic_location_white"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/addressIV"
                         app:layout_constraintTop_toBottomOf="@+id/resourceIV"
@@ -90,7 +90,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                 />
                 <ImageView
-                        android:src="@drawable/ic_building_black"
+                        android:src="@drawable/ic_building_white"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/buildingIV"
                         app:layout_constraintBottom_toBottomOf="parent"

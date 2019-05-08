@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">تيمي</string>
     <string name="not_near_marker">لست بالقرب من أي صيدلية، لتسجيل زيارة يتوجب ان تكون قرب صيدلية</string>
     <string name="registeration_done">تم تسجيل زيارتك في</string>
     <string name="dif_device">"الرجاء تسجيل الدخول من نفس الجهاز المستخدم في اول تسجيل، لا يمكن تسجيل الدخول بأكثر
@@ -48,7 +47,7 @@
     <string name="area">المنطقة</string>
     <string name="fill_all_fields">الرجاء ملئ كل الحقول</string>
     <string name="feedback_success">تمت اضافة التقرير</string>
-    <string name="feedback">تسجيل تقرير</string>
+    <string name="feedback">تقرير</string>
     <string name="order">تسجيل طلب</string>
     <string name="distanceKM">%1$.1f كم</string>
     <string name="distanceM">%1$.1f م</string>
@@ -87,4 +86,10 @@
     <string name="classX">التصنيف</string>
     <string name="accepted_level">درجة القبول</string>
     <string name="no_of_doctors">عدد الاطباء:</string>
+    <string name="empty_list_desc">اما انك بعيد عن أي موقع مسجل او لم يتم تعيين اية موارد لحسابك</string>
+    <string name="the_list_is_empty">القائمة فارغة</string>
+    <string name="check_connection">الرجاء التحقق من الاتصال وإعادة المحاولة</string>
+    <string name="status">الحالة</string>
+    <string name="reminder_product">التذكير بالمنتج</string>
+    <string name="call_product">المنتج الجديد</string>
 </resources>

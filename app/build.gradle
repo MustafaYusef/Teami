@@ -8,7 +8,7 @@ android {
     android.defaultConfig.vectorDrawables.useSupportLibrary = true
     compileSdkVersion 28
     defaultConfig {
-        applicationId "com.martin.teami"
+        applicationId "com.croczi.teami"
         minSdkVersion 19
         targetSdkVersion 28
         versionCode 1

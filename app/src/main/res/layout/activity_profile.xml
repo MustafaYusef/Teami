@@ -68,13 +68,13 @@
                     app:nts_active_color="@color/colorPrimaryDark"
                     app:nts_color="@color/colorPrimaryDark"
                     app:nts_weight="8dp"
-                    app:nts_size="18sp"
+                    app:nts_size="12sp"
                     android:theme="@style/AppTheme.NoActionBar"
                     app:nts_corners_radius="16dp"
                     app:nts_gravity="top"
                     app:nts_type="point"
                     app:layout_constraintTop_toTopOf="parent" android:layout_marginTop="8dp"
-                    android:layout_marginEnd="32dp">
+            >
             </com.gigamole.navigationtabstrip.NavigationTabStrip>
             <android.support.v4.view.ViewPager
                     android:id="@+id/tabsViewPager"

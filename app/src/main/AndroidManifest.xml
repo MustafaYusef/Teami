@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.martin.teami">
+          package="com.croczi.teami">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
@@ -23,7 +23,7 @@
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
         <activity android:name=".activities.AddPharmacy"
-        android:theme="@style/AppTheme.NoActionBar">
+                  android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
                 android:name=".activities.ForgotPasswordActivity"
@@ -32,19 +32,21 @@
         <activity
                 android:name=".activities.ProfileActivity"
                 android:parentActivityName=".activities.MainActivity"
-        android:theme="@style/AppTheme.TransparentActionBar">
+                android:theme="@style/AppTheme.TransparentActionBar">
         </activity>
         <activity android:name=".activities.OrderActivity"
-        android:theme="@style/AppTheme.NoActionBar">
+                  android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".activities.FullDetailsActivity"
-        android:theme="@style/AppTheme.NoActionBar">
+                  android:windowSoftInputMode="adjustPan|adjustResize"
+
+                  android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".activities.AddDoctor"
-        android:theme="@style/AppTheme.NoActionBar">
+                  android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".activities.MainActivity"
-        android:theme="@style/AppTheme.NoActionBar">
+                  android:theme="@style/splashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -54,6 +56,11 @@
         <activity
                 android:name=".activities.LoginActivity"
                 android:theme="@style/AppTheme.NoActionBar">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN"/>-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER"/>-->
+            <!--</intent-filter>-->
         </activity>
         <meta-data
                 android:name="com.google.android.geo.API_KEY"

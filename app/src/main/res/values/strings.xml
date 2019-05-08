@@ -1,6 +1,10 @@
 <resources>
-    <string name="app_name">Teami</string>
-    <string name="maps_api" translatable="false">AIzaSyBnp5kfH-F36i06KVEUEoa6p_0ylIhPuEE</string>
+    <string name="app_name"
+            translatable="false">Teami
+    </string>
+    <string name="maps_api"
+            translatable="false">AIzaSyBnp5kfH-F36i06KVEUEoa6p_0ylIhPuEE
+    </string>
     <string name="not_near_marker">You\'re not near a pharmacy, you must be at most 5 meters away from a phamracy to
         register your location at that pharmacy.
     </string>
@@ -48,7 +52,7 @@
     <string name="speciality">Speciality</string>
     <string name="fill_all_fields">Please, fill all the fields!</string>
     <string name="feedback_success">Feedback Successfully Posted!</string>
-    <string name="feedback">Feedback</string>
+    <string name="feedback">Report</string>
     <string name="order">Order</string>
     <string name="distanceKM">%1$.1f KM</string>
     <string name="distanceM">%1$.1f M</string>
@@ -88,7 +92,15 @@
     <string name="classX">Class</string>
     <string name="accepted_level">Accepted level</string>
     <string name="no_of_doctors">No. of doctors:</string>
+    <string name="the_list_is_empty">The list is empty</string>
+    <string name="empty_list_desc">You\'re either far from any locations or you don\'t have any resources assigned to
+        your account
+    </string>
+    <string name="check_connection">please check your connection and retry</string>
+    <string name="status">feedback</string>
+    <string name="reminder_product">Reminder Product</string>
+    <string name="call_product">Call Product</string>
+    <string name="frequency">Frequency</string>
+    <string name="productivity">Productivity</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
