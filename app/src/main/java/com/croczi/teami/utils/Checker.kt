@@ -117,7 +117,7 @@ fun getRefresh(activity: Activity, token: String, phoneId: String) {
     })
 }
 
-fun logoutUser(activity: Activity, token: String, phoneId: String) {
+fun logoutUser(activity: Activity, token: String?, phoneId: String) {
     Hawk.deleteAll()
     val retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
@@ -145,6 +145,7 @@ fun logoutUser(activity: Activity, token: String, phoneId: String) {
                     .FLAG_ACTIVITY_NEW_TASK or Intent
                     .FLAG_ACTIVITY_CLEAR_TASK
                 activity.finish()
+                intent.putExtra("logout",false)
                 activity.startActivity(intent)
             }
         }

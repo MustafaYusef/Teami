@@ -4,6 +4,10 @@ apply plugin: 'kotlin-android'
 
 apply plugin: 'kotlin-android-extensions'
 
+apply plugin: 'io.fabric'
+
+apply plugin: 'com.google.gms.google-services'
+
 android {
     android.defaultConfig.vectorDrawables.useSupportLibrary = true
     compileSdkVersion 28
@@ -46,5 +50,6 @@ dependencies {
     implementation 'com.wajahatkarim3.easyvalidation:easyvalidation-core:1.0.1'
     implementation 'com.github.IntruderShanky:scatter-piechart:1.0.0'
     implementation 'com.github.devlight.navigationtabstrip:navigationtabstrip:1.0.4'
-
+    implementation 'com.google.firebase:firebase-core:16.0.9'
+    implementation 'com.crashlytics.sdk.android:crashlytics:2.10.0'
 }

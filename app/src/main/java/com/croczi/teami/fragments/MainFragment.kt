@@ -104,22 +104,22 @@ class MainFragment : Fragment() {
     }
 
     fun setFabs(meResponse: MeResponse?) {
-        pink_icon.visibility = View.VISIBLE
-        pink_icon.setOnFloatingActionsMenuUpdateListener(object :
+        pink_icon?.visibility = View.VISIBLE
+        pink_icon?.setOnFloatingActionsMenuUpdateListener(object :
             FloatingActionsMenu.OnFloatingActionsMenuUpdateListener {
             override fun onMenuExpanded() {
-                dimView.visibility = View.VISIBLE
-                dimView.setOnClickListener {
-                    pink_icon.collapse()
+                dimView?.visibility = View.VISIBLE
+                dimView?.setOnClickListener {
+                    pink_icon?.collapse()
                 }
             }
 
             override fun onMenuCollapsed() {
-                dimView.visibility = View.GONE
+                dimView?.visibility = View.GONE
             }
         })
-        addPharmFab.visibility = View.VISIBLE
-        addPharmFab.setOnClickListener {
+        addPharmFab?.visibility = View.VISIBLE
+        addPharmFab?.setOnClickListener {
             userLocation = locationUtils.userLocation
             if (userLocation != null) {
                 val intent = Intent(context, AddPharmacy::class.java)
@@ -128,14 +128,14 @@ class MainFragment : Fragment() {
             } else Toast.makeText(context, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
         }
         if (meResponse?.user?.Role != "sales_delegate") {
-            addDocFab.setOnClickListener {
+            addDocFab?.setOnClickListener {
                 userLocation = locationUtils.userLocation
                 if (userLocation != null) {
                     val intent = Intent(context, AddDoctor::class.java)
                     startActivity(intent)
                 } else Toast.makeText(context, getString(R.string.location_unavailable), Toast.LENGTH_LONG).show()
             }
-        } else addDocFab.visibility = View.GONE
+        } else addDocFab?.visibility = View.GONE
     }
 
 //    private fun fetchColor(@ColorRes color: Int): Int {
@@ -189,7 +189,7 @@ class MainFragment : Fragment() {
     }
 
     fun getMyResources() {
-        resourcesRefresh.isRefreshing = true
+        resourcesRefresh?.isRefreshing = true
         val retrofit = Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(Consts.BASE_URL)
@@ -198,22 +198,22 @@ class MainFragment : Fragment() {
         resourcesInterface.getMyResources(token, getID(context)).enqueue(object :
             Callback<MyResourcesResponse> {
             override fun onFailure(call: Call<MyResourcesResponse>, t: Throwable) {
-                resourcesRefresh.isRefreshing = false
+                resourcesRefresh?.isRefreshing = false
                 errorLayout.visibility = View.VISIBLE
                 resourcesRV.visibility = View.INVISIBLE
             }
 
             override fun onResponse(call: Call<MyResourcesResponse>, response: Response<MyResourcesResponse>) {
-                resourcesRefresh.isRefreshing = false
+                resourcesRefresh?.isRefreshing = false
                 response.body()?.let {
-                    errorLayout.visibility = View.INVISIBLE
-                    resourcesRV.visibility = View.VISIBLE
+                    errorLayout?.visibility = View.INVISIBLE
+                    resourcesRV?.visibility = View.VISIBLE
                     resourcesList = it.Resource
                     userLocation = locationUtils.userLocation
                     if (userLocation != null)
                         checkNearestMarker()
-                    resourcesRV.adapter = adapter
-                    resourcesRV.layoutManager = LinearLayoutManager(context)
+                    resourcesRV?.adapter = adapter
+                    resourcesRV?.layoutManager = LinearLayoutManager(context)
                     adapter.notifyDataSetChanged()
                 }
             }

@@ -28,7 +28,11 @@ class MainActivity : AppCompatActivity() {
         Hawk.init(this).build()
 //        pink_icon.visibility = View.GONE
         getLoginResponse()
-        gotoMain()
+        if (intent.getBooleanExtra("logout", false))
+            gotoMain()
+        else
+            checkUser(this)
+        //            gotoLogin()
 //        locationUtils = LocationUtils(this@MainActivity)
 //        locationUtils.initLocation()
 //        userLocation = locationUtils.userLocation
