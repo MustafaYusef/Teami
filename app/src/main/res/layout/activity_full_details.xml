@@ -23,7 +23,7 @@
                     app:layout_collapseMode="pin"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:src="@drawable/ic_doctor_bg" android:layout_gravity="center|top"
+                    app:srcCompat="@drawable/ic_doctor_bg" android:layout_gravity="center|top"
                     android:foregroundGravity="center"
                     app:layout_constraintBottom_toTopOf="@+id/docNameTV"
                     app:layout_constraintTop_toTopOf="parent" app:layout_constraintVertical_bias="0.65"

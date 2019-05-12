@@ -63,7 +63,7 @@
                     android:layout_height="match_parent">
 
                 <ImageView
-                        android:src="@drawable/ic_doctor"
+                        app:srcCompat="@drawable/ic_doctor"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/resourceIV"
                         app:layout_constraintStart_toStartOf="parent"
@@ -72,7 +72,7 @@
                         app:layout_constraintBottom_toTopOf="@+id/addressIV"
                 />
                 <ImageView
-                        android:src="@drawable/ic_location_white"
+                        app:srcCompat="@drawable/ic_location_white"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/addressIV"
                         app:layout_constraintTop_toBottomOf="@+id/resourceIV"
@@ -81,7 +81,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                 />
                 <ImageView
-                        android:src="@drawable/ic_street_black"
+                        app:srcCompat="@drawable/ic_street_black"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/streetIV"
                         app:layout_constraintBottom_toTopOf="@+id/buildingIV"
@@ -90,7 +90,7 @@
                         app:layout_constraintEnd_toEndOf="parent"
                 />
                 <ImageView
-                        android:src="@drawable/ic_building_white"
+                        app:srcCompat="@drawable/ic_building_white"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" android:id="@+id/buildingIV"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -109,7 +109,7 @@
                 app:layout_constraintTop_toTopOf="parent" android:fontFamily="@font/cairo_light"
                 android:textSize="12sp"/>
         <ImageView
-                android:src="@drawable/ic_place_black_24dp"
+                app:srcCompat="@drawable/ic_place_black_24dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/imageView6"
                 app:layout_constraintBottom_toTopOf="@+id/imageView4"
@@ -119,7 +119,7 @@
                 app:layout_constraintVertical_chainStyle="spread_inside"
                 app:layout_constraintTop_toBottomOf="@+id/distanceTV"/>
         <ImageView
-                android:src="@drawable/ic_doctor"
+                app:srcCompat="@drawable/ic_doctor"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/resourceIV2"
                 app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"
@@ -135,7 +135,7 @@
                 android:layout_marginTop="8dp" app:srcCompat="@drawable/dash_drawable"
                 android:scaleType="fitXY"/>
         <ImageView
-                android:src="@drawable/ic_not_available"
+                app:srcCompat="@drawable/ic_not_available"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" android:id="@+id/imageView4"
                 app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="16dp"
