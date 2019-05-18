@@ -30,34 +30,8 @@ class AreasFragment : Fragment() {
         arguments?.getParcelable<MeResponse>("me")?.let { it ->
             meResponse = it
             showUserInfo(meResponse.user)
-//            getUserData(token, getID())
         }
-//        areasSwipe.setOnRefreshListener { getUserData(token, getID()) }
     }
-//
-//    private fun getUserData(token: String, phoneId: String) {
-//        areasSwipe.isRefreshing = true
-//        val retrofit = Retrofit.Builder()
-//            .baseUrl(Consts.BASE_URL)
-//            .addConverterFactory(GsonConverterFactory.create())
-//            .build()
-//        retrofit.create(RepresentativesInterface::class.java)
-//            .getMe(MeRequest(token, phoneId)).enqueue(object : Callback<MeResponse> {
-//                override fun onFailure(call: Call<MeResponse>, t: Throwable) {
-//                    areasSwipe.isRefreshing = false
-//                }
-//
-//                override fun onResponse(call: Call<MeResponse>, response: Response<MeResponse>) {
-//                    areasSwipe.isRefreshing = false
-//                    if (response.body() != null) {
-//                        response.body()?.let {
-//                            val meResponse = it
-//                            showUserInfo(meResponse.user)
-//                        }
-//                    }
-//                }
-//            })
-//    }
 
     private fun showUserInfo(user: User?) {
         user?.let {

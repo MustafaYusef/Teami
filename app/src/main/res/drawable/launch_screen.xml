@@ -9,7 +9,7 @@
     <item>
         <bitmap android:mipMap="true"
                 android:gravity="center"
-                app:srcCompat="@drawable/teami_last_logo"/>
+                android:src="@drawable/teami_last_logo"/>
     </item>
 
 </layer-list>

@@ -38,11 +38,11 @@ class PerformanceFragment : Fragment() {
             token = it
             getUserData(token, getID(context))
         }
-        performanceSwipe.setOnRefreshListener { getUserData(token, getID(context)) }
+        performanceSwipe?.setOnRefreshListener { getUserData(token, getID(context)) }
     }
 
     private fun getUserData(token: String, phoneId: String) {
-        performanceSwipe.isRefreshing = true
+        performanceSwipe?.isRefreshing = true
         val retrofit = Retrofit.Builder()
             .baseUrl(Consts.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -50,11 +50,11 @@ class PerformanceFragment : Fragment() {
         retrofit.create(RepresentativesInterface::class.java)
             .getUserPerformance(token, phoneId).enqueue(object : Callback<PerformanceResponse> {
                 override fun onFailure(call: Call<PerformanceResponse>, t: Throwable) {
-                    performanceSwipe.isRefreshing = false
+                    performanceSwipe?.isRefreshing = false
                 }
 
                 override fun onResponse(call: Call<PerformanceResponse>, response: Response<PerformanceResponse>) {
-                    performanceSwipe.isRefreshing = false
+                    performanceSwipe?.isRefreshing = false
                     if (response.body() != null) {
                         response.body()?.let {
                             val performanceResponse = it

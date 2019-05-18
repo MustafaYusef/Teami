@@ -55,7 +55,7 @@ class AddPharmacy : AppCompatActivity() {
             token=loginResponse?.token
             tokenExp=loginResponse?.expire
         }
-        locationUtils = LocationUtils.getInstance(this@AddPharmacy)
+        locationUtils = LocationUtils.getInstance(this)
 //        locationUtils.initLocation(this)
         finishAddPharmBtn.setOnClickListener {
             loginResponse= checkUser(this)

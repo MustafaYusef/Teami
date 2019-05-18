@@ -102,5 +102,9 @@
     <string name="call_product">Call Product</string>
     <string name="frequency">Frequency</string>
     <string name="productivity">Productivity</string>
+    <string name="streetFull">Street:</string>
+    <string name="hospitalFull">Hospital:</string>
+    <string name="regionFull">Region:</string>
+    <string name="workFull">Work:</string>
 
 </resources>

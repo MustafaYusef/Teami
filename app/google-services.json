@@ -15,40 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "905690423971-kt8ifpcmrcggt5snh858pejbeeafckff.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDEPM80dVJeRS38jgGfS9-LS0Cp_dzSgFg"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "905690423971-kt8ifpcmrcggt5snh858pejbeeafckff.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:905690423971:android:29c48e087d4b1b31",
-        "android_client_info": {
-          "package_name": "com.martin.firebasetest"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "905690423971-vet2ovh0u8dnrpok9olecaooi21q5cac.apps.googleusercontent.com",
+          "client_id": "905690423971-v2ktelj5sa0mlq04481ve5vr4p3nmcvq.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.martin.firebasetest",
-            "certificate_hash": "425a9a6b6ee2ec5a768e7c2ebef2510ae5ddc980"
+            "package_name": "com.croczi.teami",
+            "certificate_hash": "e15f06bfd8e9f596f8c0086ae5078e31011823e0"
           }
         },
         {

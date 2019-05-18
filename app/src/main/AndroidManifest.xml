@@ -23,29 +23,35 @@
             android:theme="@style/AppTheme"
             android:usesCleartextTraffic="true">
         <activity android:name=".activities.AddPharmacy"
+                  android:screenOrientation="portrait"
                   android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
                 android:name=".activities.ForgotPasswordActivity"
+                android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
                 android:name=".activities.ProfileActivity"
+                android:screenOrientation="portrait"
                 android:parentActivityName=".activities.MainActivity"
                 android:theme="@style/AppTheme.TransparentActionBar">
         </activity>
         <activity android:name=".activities.OrderActivity"
+                  android:screenOrientation="portrait"
                   android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".activities.FullDetailsActivity"
                   android:windowSoftInputMode="adjustPan|adjustResize"
-
+                  android:screenOrientation="portrait"
                   android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".activities.AddDoctor"
+                  android:screenOrientation="portrait"
                   android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity android:name=".activities.MainActivity"
+                  android:screenOrientation="portrait"
                   android:theme="@style/splashScreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -55,6 +61,7 @@
         </activity>
         <activity
                 android:name=".activities.LoginActivity"
+                android:screenOrientation="portrait"
                 android:theme="@style/AppTheme.NoActionBar">
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN"/>-->
@@ -71,6 +78,19 @@
         <uses-library
                 android:name="org.apache.http.legacy"
                 android:required="false"/>
+        <service
+                android:name=".utils.MyFirebaseInstanceIdService"
+                android:permission="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
+        <service
+                android:name=".utils.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
     </application>
 
 </manifest>

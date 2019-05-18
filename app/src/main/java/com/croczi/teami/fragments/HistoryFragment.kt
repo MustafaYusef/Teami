@@ -38,13 +38,13 @@ class HistoryFragment : Fragment() {
             token = it
             getUserData(token, getID(context))
         }
-        historySwipe.setOnRefreshListener {
+        historySwipe?.setOnRefreshListener {
             getUserData(token, getID(context))
         }
     }
 
     private fun getUserData(token: String, phoneId: String) {
-        historySwipe.isRefreshing=true
+        historySwipe?.isRefreshing=true
         val retrofit = Retrofit.Builder()
             .baseUrl(Consts.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
@@ -52,7 +52,7 @@ class HistoryFragment : Fragment() {
         retrofit.create(RepresentativesInterface::class.java)
             .getHistory(token, phoneId).enqueue(object : Callback<HistoryResponse> {
                 override fun onFailure(call: Call<HistoryResponse>, t: Throwable) {
-                    historySwipe.isRefreshing=false
+                    historySwipe?.isRefreshing=false
                 }
 
                 override fun onResponse(call: Call<HistoryResponse>, response: Response<HistoryResponse>) {

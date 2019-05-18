@@ -80,7 +80,7 @@ class ProfileActivity : AppCompatActivity() {
         retrofit.create(RepresentativesInterface::class.java)
             .getMe(MeRequest(token, phoneId)).enqueue(object : Callback<MeResponse> {
                 override fun onFailure(call: Call<MeResponse>, t: Throwable) {
-                    emptyTV.text = t.message
+//                    emptyTV.text = t.message
                     progressBar.visibility = View.GONE
                     errorLayout.visibility = View.VISIBLE
                     contentLayout.visibility = View.INVISIBLE

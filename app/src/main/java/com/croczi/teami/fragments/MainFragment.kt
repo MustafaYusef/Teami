@@ -29,6 +29,7 @@ import com.croczi.teami.models.*
 import com.croczi.teami.retrofit.RepresentativesInterface
 import com.croczi.teami.utils.*
 import kotlinx.android.synthetic.main.fragment_main.*
+import kotlinx.coroutines.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -75,13 +76,14 @@ class MainFragment : Fragment() {
         }
         userLocation = locationUtils.userLocation
         adapter = ResourcesAdapter(resourcesList, userLocation)
-        getMyResources()
         resourcesRefresh.setOnRefreshListener {
             getMyResources()
             emptyListLayout.visibility = View.INVISIBLE
             errorLayout.visibility = View.INVISIBLE
         }
         getUserData(token, getID(context))
+        getMyResources()
+        adapter.notifyDataSetChanged()
     }
 
     fun getUserData(token: String?, phoneId: String) {
@@ -194,9 +196,9 @@ class MainFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(Consts.BASE_URL)
             .build()
-        val resourcesInterface = retrofit.create(RepresentativesInterface::class.java)
-        resourcesInterface.getMyResources(token, getID(context)).enqueue(object :
-            Callback<MyResourcesResponse> {
+        val resourcesInterface =
+            retrofit.create(RepresentativesInterface::class.java).getMyResources(token, getID(context))
+        resourcesInterface.enqueue(object : Callback<MyResourcesResponse> {
             override fun onFailure(call: Call<MyResourcesResponse>, t: Throwable) {
                 resourcesRefresh?.isRefreshing = false
                 errorLayout.visibility = View.VISIBLE
@@ -264,7 +266,11 @@ class MainFragment : Fragment() {
                         ) {
                             showMessageOKCancel(context as Activity, getString(R.string.permissionsTitle),
                                 getString(R.string.permissionMessage),
-                                DialogInterface.OnClickListener { dialog, which -> locationUtils.requestUpdates(myContext) },
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    locationUtils.requestUpdates(
+                                        myContext
+                                    )
+                                },
                                 DialogInterface.OnClickListener { dialog, which ->
                                     (myContext as Activity).finish()
                                 })
@@ -281,8 +287,6 @@ class MainFragment : Fragment() {
     }
 
     override fun onResume() {
-        getMyResources()
-        resourcesRV.adapter?.notifyDataSetChanged()
         super.onResume()
     }
 

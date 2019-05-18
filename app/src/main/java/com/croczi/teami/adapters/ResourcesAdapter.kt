@@ -38,12 +38,13 @@ class ResourcesAdapter(var resources: List<MyResources>?, var userLocation: Loca
 
             userLocation?.let {
                 val distance = it.distanceTo(docLocation)
-                if (distance in 30.0..10000.0) {
+                if (distance in 1000.0..10000.0) {
                     view.distanceTV.text = view.context.getString(R.string.distanceKM, distance / 1000)
-                } else if (distance < 30) {
+//                    return false
+                } else if (distance < 1000) {
                     view.distanceTV.text = view.context.getString(R.string.distanceM, distance)
-                    return true
-                } else
+                }
+//                else
                     return distance < 30
             }
             return false
@@ -53,6 +54,7 @@ class ResourcesAdapter(var resources: List<MyResources>?, var userLocation: Loca
             resource?.let {
                 if (resource.resourceType == "pharmacies") {
                     view.resourceIV.setImageResource(R.drawable.ic_pharmacy_small)
+                    view.resourceIV2.setImageResource(R.drawable.ic_pharmacy_red)
                 }
                 view.resourceNameTV.text = it.name
                 view.resourceAddressTV.text = it.reign
@@ -78,7 +80,7 @@ class ResourcesAdapter(var resources: List<MyResources>?, var userLocation: Loca
                             .show()
                     }
                     view.imageView4?.setImageResource(R.drawable.ic_my_location_red_24dp)
-                    view.detailsCV?.setOnClickListener(null)
+//                    view.detailsCV?.setOnClickListener(null)
                 }
             } else view.imageView4?.setImageResource(R.drawable.ic_not_available)
             setAnimation(view, adapterPosition)

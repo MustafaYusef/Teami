@@ -2,12 +2,19 @@ package com.croczi.teami.activities
 
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import com.croczi.teami.R
 import com.croczi.teami.fragments.LoginFragment
 import com.croczi.teami.fragments.MainFragment
 import com.croczi.teami.models.*
 import com.croczi.teami.utils.*
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
 import com.orhanobut.hawk.Hawk
+import com.google.firebase.iid.InstanceIdResult
+import com.google.android.gms.tasks.OnSuccessListener
+import android.app.Activity
 
 
 class MainActivity : AppCompatActivity() {
@@ -26,6 +33,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         Hawk.init(this).build()
+        FirebaseInstanceId.getInstance().instanceId.addOnSuccessListener { instanceIdResult ->
+            val newToken = instanceIdResult.token
+            Log.d("Token",newToken)
+        }
 //        pink_icon.visibility = View.GONE
         getLoginResponse()
         if (intent.getBooleanExtra("logout", false))
@@ -66,7 +77,7 @@ class MainActivity : AppCompatActivity() {
     fun gotoLogin() {
         val loginFragment = LoginFragment()
         supportFragmentManager.fragments.clear()
-        supportFragmentManager.beginTransaction().add(R.id.fragLayout, loginFragment).commit()
+        supportFragmentManager.beginTransaction().add(R.id.fragLayout, loginFragment).commitAllowingStateLoss()
     }
 
     fun gotoMain() {
@@ -75,8 +86,8 @@ class MainActivity : AppCompatActivity() {
         if (supportFragmentManager.fragments.isEmpty() || supportFragmentManager.fragments.last() !is MainFragment) {
             val mainFragment = MainFragment()
             mainFragment.arguments = args
-            supportFragmentManager.fragments.clear()
-            supportFragmentManager.beginTransaction().add(R.id.fragLayout, mainFragment).commit()
+            supportFragmentManager?.fragments?.clear()
+            supportFragmentManager?.beginTransaction()?.add(R.id.fragLayout, mainFragment)?.commitAllowingStateLoss()
         }
     }
 

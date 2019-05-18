@@ -146,7 +146,8 @@
                 android:background="@drawable/ic_subtraction_1"
                 android:paddingTop="12dp"
                 android:paddingBottom="10dp"
-                android:id="@+id/frameLayout">
+                android:id="@+id/frameLayout"
+        >
             <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

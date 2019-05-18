@@ -63,7 +63,7 @@ class AddDoctor : AppCompatActivity() {
             token = loginResponse?.token
             tokenExp = loginResponse?.expire
         }
-        locationUtils = LocationUtils.getInstance(this@AddDoctor)
+        locationUtils = LocationUtils.getInstance(this)
 //        locationUtils.initLocation(this)
         finishAddBtn.setOnClickListener {
             loginResponse = checkUser(this)

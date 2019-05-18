@@ -8,8 +8,10 @@ import retrofit2.http.*
 interface RepresentativesInterface {
 
     @GET("get-items")
-    fun getItems(@Query("token") token:String,
-                 @Query("phone_id") phoneId:String): Call<ItemsResponse>
+    fun getItems(
+        @Query("token") token: String,
+        @Query("phone_id") phoneId: String
+    ): Call<ItemsResponse>
 
     @POST("pharmacies/edit/")
     fun registerPharmacy(
@@ -38,57 +40,77 @@ interface RepresentativesInterface {
     fun sendForgotPasswordEmail(@Body forgotRequest: ForgotRequest): Call<ForgotResponse>
 
     @GET("GetSpecialities")
-    fun getSpecialty(@Query("token") token:String,
-                     @Query("phone_id") phoneId:String):Call<SpecialityResponse>
+    fun getSpecialty(
+        @Query("token") token: String,
+        @Query("phone_id") phoneId: String
+    ): Call<SpecialityResponse>
 
     @GET("GetReigns")
-    fun getRegion(@Query("token") token:String,
-                  @Query("phone_id") phoneId:String,
-                  @Query("organisation_id")orgId:Int):Call<RegionResponse>
+    fun getRegion(
+        @Query("token") token: String,
+        @Query("phone_id") phoneId: String,
+        @Query("organisation_id") orgId: Int
+    ): Call<RegionResponse>
 
     @GET("get-status")
-    fun getStatus(@Query("token") token:String,
-                  @Query("phone_id") phoneId:String):Call<StatusResponse>
+    fun getStatus(
+        @Query("token") token: String,
+        @Query("phone_id") phoneId: String
+    ): Call<StatusResponse>
 
     @GET("GetPharmacyStatus")
-    fun getPharmStatus(@Query("token") token:String,
-                  @Query("phone_id") phoneId:String):Call<PharmStatusResponse>
+    fun getPharmStatus(
+        @Query("token") token: String,
+        @Query("phone_id") phoneId: String
+    ): Call<PharmStatusResponse>
 
     @GET("GetOrganisations")
-    fun getOrgs(@Query("token") token:String,
-                @Query("phone_id") phoneId:String):Call<OrganizationResponse>
+    fun getOrgs(
+        @Query("token") token: String,
+        @Query("phone_id") phoneId: String
+    ): Call<OrganizationResponse>
 
     @GET("GetHospitals")
-    fun getHospitals(@Query("token") token:String,
-                @Query("phone_id") phoneId:String,
-                     @Query("organisation_id") orgId: Int):Call<HospitalsResponse>
+    fun getHospitals(
+        @Query("token") token: String,
+        @Query("phone_id") phoneId: String,
+        @Query("organisation_id") orgId: Int
+    ): Call<HospitalsResponse>
 
     @POST("add-doctor")
-    fun addNewDoctor(@Body doctor: Doctor):Call<AddDoctorResponse>
+    fun addNewDoctor(@Body doctor: Doctor): Call<AddDoctorResponse>
 
     @POST("add-pharmacy")
-    fun addNewPharmacy(@Body pharmacy: Pharmacy):Call<AddPharmacyResponse>
+    fun addNewPharmacy(@Body pharmacy: Pharmacy): Call<AddPharmacyResponse>
 
     @GET("GetMyResource")
-    fun getMyResources(@Query("token") token: String?,
-                       @Query("phone_id") phoneId: String):Call<MyResourcesResponse>
+    fun getMyResources(
+        @Query("token") token: String?,
+        @Query("phone_id") phoneId: String
+    ): Call<MyResourcesResponse>
 
     @POST("post-feedback")
-    fun postFeedback(@Body feedbackRequest: FeedbackRequest):Call<FeedbackResponse>
+    fun postFeedback(@Body feedbackRequest: FeedbackRequest): Call<FeedbackResponse>
 
     @POST("post-order")
-    fun postOrder(@Body orderRequest:OrderRequest ):Call<OrderResponse>
+    fun postOrder(@Body orderRequest: OrderRequest): Call<OrderResponse>
 
     @GET("GetHistory")
-    fun getHistory(@Query("token") token:String,
-                   @Query("phone_id") phoneId:String):Call<HistoryResponse>
+    fun getHistory(
+        @Query("token") token: String,
+        @Query("phone_id") phoneId: String
+    ): Call<HistoryResponse>
 
     @GET("GetUserPerformance")
-    fun getUserPerformance(@Query("token") token:String,
-                   @Query("phone_id") phoneId:String):Call<PerformanceResponse>
+    fun getUserPerformance(
+        @Query("token") token: String,
+        @Query("phone_id") phoneId: String
+    ): Call<PerformanceResponse>
 
     @GET("CheckUserOrders")
-    fun checkUserOrders(@Query("token") token:String,
-                   @Query("phone_id") phoneId:String):Call<UserOrderResponse>
+    fun checkUserOrders(
+        @Query("token") token: String,
+        @Query("phone_id") phoneId: String
+    ): Call<UserOrderResponse>
 
 }
