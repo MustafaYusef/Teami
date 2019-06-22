@@ -66,15 +66,12 @@ class MainFragment : Fragment() {
         context?.let {
             myContext = it
         }
-//        context?.let {
-        locationUtils = LocationUtils.getInstance(myContext)
+        locationUtils = LocationUtils.getInstance(this,myContext)
         userLocation = locationUtils.userLocation
-//        }
         profileIV.setOnClickListener {
             val i = Intent(context, ProfileActivity::class.java)
             startActivity(i)
         }
-        userLocation = locationUtils.userLocation
         adapter = ResourcesAdapter(resourcesList, userLocation)
         resourcesRefresh.setOnRefreshListener {
             getMyResources()
@@ -139,10 +136,6 @@ class MainFragment : Fragment() {
             }
         } else addDocFab?.visibility = View.GONE
     }
-
-//    private fun fetchColor(@ColorRes color: Int): Int {
-//        return ContextCompat.getColor(view?.context, color)
-//    }
 
     fun checkNearestMarker(): List<MyResources>? {
         val sortedDoctors = resourcesList
@@ -236,14 +229,13 @@ class MainFragment : Fragment() {
                                 Manifest.permission.ACCESS_COARSE_LOCATION
                             ) != PackageManager.PERMISSION_GRANTED
                         )
-                        else locationUtils.requestUpdates(myContext)
+                        else locationUtils.requestUpdates(myContext,false)
                     }
                     Activity.RESULT_CANCELED -> locationUtils.initGPS(myContext)
                 }
             }
         }
     }
-
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -257,8 +249,10 @@ class MainFragment : Fragment() {
                             && grantResults[2] == PackageManager.PERMISSION_GRANTED)
                 ) {
                     locationUtils.getLastKnowLocation(myContext)
+                    userLocation = locationUtils.userLocation
+                    getMyResources()
                 } else {
-                    if (permissionCount > 0) {
+                    if (permissionCount > 1) {
                         if (!ActivityCompat.shouldShowRequestPermissionRationale(
                                 myContext as Activity,
                                 Manifest.permission.WRITE_CONTACTS
@@ -267,9 +261,7 @@ class MainFragment : Fragment() {
                             showMessageOKCancel(context as Activity, getString(R.string.permissionsTitle),
                                 getString(R.string.permissionMessage),
                                 DialogInterface.OnClickListener { dialog, which ->
-                                    locationUtils.requestUpdates(
-                                        myContext
-                                    )
+                                    locationUtils.requestUpdates(myContext,false)
                                 },
                                 DialogInterface.OnClickListener { dialog, which ->
                                     (myContext as Activity).finish()
@@ -284,10 +276,6 @@ class MainFragment : Fragment() {
             }
             else -> return
         }
-    }
-
-    override fun onResume() {
-        super.onResume()
     }
 
     override fun onStop() {

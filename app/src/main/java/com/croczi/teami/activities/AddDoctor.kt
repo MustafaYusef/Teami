@@ -488,7 +488,7 @@ class AddDoctor : AppCompatActivity() {
                                 Manifest.permission.ACCESS_COARSE_LOCATION
                             ) != PackageManager.PERMISSION_GRANTED
                         )
-                        else locationUtils.requestUpdates(this)
+                        else locationUtils.requestUpdates(this,true)
                     }
                     Activity.RESULT_CANCELED -> locationUtils.initGPS(this)
                 }
@@ -514,7 +514,7 @@ class AddDoctor : AppCompatActivity() {
                         ) {
                             showMessageOKCancel(this@AddDoctor, getString(R.string.permissionsTitle),
                                 getString(R.string.permissionMessage),
-                                DialogInterface.OnClickListener { dialog, which -> locationUtils.requestUpdates(this) },
+                                DialogInterface.OnClickListener { dialog, which -> locationUtils.requestUpdates(this,true) },
                                 DialogInterface.OnClickListener { dialog, which ->
                                     this.finish()
                                 })

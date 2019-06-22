@@ -11,6 +11,8 @@ import android.location.LocationManager
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat.requestPermissions
+import android.support.v4.app.Fragment
 import android.support.v4.content.PermissionChecker
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
@@ -21,6 +23,8 @@ import com.google.android.gms.tasks.Task
 
 
 object LocationUtils {
+    private lateinit var fragment: Fragment
+    private var isActivity: Boolean = true
     private var dialogCount = 0
     private lateinit var locationManager: LocationManager
     private lateinit var listener: LocationListener
@@ -36,6 +40,13 @@ object LocationUtils {
         return LocationUtils
     }
 
+    fun getInstance(fragment: Fragment, context: Context): LocationUtils {
+        this.isActivity=false
+        this.fragment = fragment
+        initLocation(context)
+
+        return LocationUtils
+    }
 
     fun initLocation(context: Context) {
 
@@ -49,7 +60,7 @@ object LocationUtils {
 
         getLastKnowLocation(context)
 
-        requestUpdates(context)
+        requestUpdates(context, isActivity)
     }
 
 //    fun getID(context: Context): String {
@@ -140,24 +151,47 @@ object LocationUtils {
         }
     }
 
-    fun requestUpdates(context: Context) {
-        if (PermissionChecker.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && PermissionChecker.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                (context as Activity).requestPermissions(
-                    arrayOf(
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.INTERNET
+    fun requestUpdates(context: Context, isActivity: Boolean) {
+        this.isActivity = isActivity
+        if (isActivity) {
+            if (PermissionChecker.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && PermissionChecker.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    (context as Activity).requestPermissions(
+                        arrayOf(
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.INTERNET
+                        )
+                        , 10
                     )
-                    , 10
-                )
+                }
+            }
+        } else {
+            if (PermissionChecker.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && PermissionChecker.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && this::fragment.isInitialized) {
+                    fragment.requestPermissions(
+                        arrayOf(
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.INTERNET
+                        )
+                        , 10
+                    )
+                }
             }
         }
     }
@@ -171,7 +205,7 @@ object LocationUtils {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            requestUpdates(context)
+            requestUpdates(context, isActivity)
             return
         }
 
