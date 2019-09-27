@@ -11,7 +11,7 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent">
 
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_email_white"
@@ -23,7 +23,7 @@
                 app:layout_constraintBottom_toTopOf="@+id/imageView12"
                 android:scaleY="0.8"
                 android:scaleX="0.8"/>
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@android:drawable/stat_sys_speakerphone"
@@ -34,7 +34,7 @@
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintBottom_toTopOf="@+id/imageView14"
         />
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_doctor"
@@ -45,7 +45,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 android:scaleX="0.9"
                 android:scaleY="0.9"/>
-        <ImageView
+        <android.support.v7.widget.AppCompatImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_supervisor"

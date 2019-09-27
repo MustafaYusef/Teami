@@ -1,9 +1,7 @@
 <resources>
-    <string name="app_name"
-            translatable="false">Teami
+    <string name="app_name" translatable="false">Teami
     </string>
-    <string name="maps_api"
-            translatable="false">AIzaSyBnp5kfH-F36i06KVEUEoa6p_0ylIhPuEE
+    <string name="maps_api" translatable="false">AIzaSyBnp5kfH-F36i06KVEUEoa6p_0ylIhPuEE
     </string>
     <string name="not_near_marker">You\'re not near a pharmacy, you must be at most 5 meters away from a phamracy to
         register your location at that pharmacy.
@@ -82,6 +80,7 @@
     <string name="error_loading">Something Went Wrong :(</string>
     <string name="not_near">You\'re not near this place</string>
     <string name="something_happened">Something happened :(</string>
+    <string name="something_went_wrong">Something went wrong :(</string>
     <string name="item_name">Item Name</string>
     <string name="order_successful">Order added successfully</string>
     <string name="history">History</string>
@@ -106,5 +105,12 @@
     <string name="hospitalFull">Hospital:</string>
     <string name="regionFull">Region:</string>
     <string name="workFull">Work:</string>
+    <string name="mock_location">Mock Location Detected!</string>
+    <string name="mock_location_desc">Please turn off the gps mocking and try again.\nsuspicious activities will be reported to the supervisor
+    </string>
+    <string name="provider_disabled_desc">Please enable your gps services to use this app</string>
+    <string name="provider_disabled">GPS Disabled</string>
+    <string name="enable_gps">Enable GPS</string>
+    <string name="search">Search:</string>
 
 </resources>

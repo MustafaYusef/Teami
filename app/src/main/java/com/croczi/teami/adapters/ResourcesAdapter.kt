@@ -1,5 +1,6 @@
 package com.croczi.teami.adapters
 
+import android.content.Context
 import android.content.Intent
 import android.location.Location
 import android.support.v7.widget.RecyclerView
@@ -8,14 +9,31 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.ScaleAnimation
+import android.widget.Filter
+import android.widget.Filterable
 import android.widget.Toast
 import com.croczi.teami.R
 import com.croczi.teami.activities.FullDetailsActivity
 import com.croczi.teami.models.MyResources
+import com.wajahatkarim3.easyvalidation.core.collection_ktx.greaterThanList
 import kotlinx.android.synthetic.main.resource_item.view.*
 
-class ResourcesAdapter(var resources: List<MyResources>?, var userLocation: Location?) :
-    RecyclerView.Adapter<ResourcesAdapter.DoctorsViewHolder>() {
+class ResourcesAdapter(
+    var allResources: List<MyResources>?,
+    var userLocation: Location?,
+    var context: Context
+) :
+    RecyclerView.Adapter<ResourcesAdapter.DoctorsViewHolder>(){
+
+
+    override fun getItemId(position: Int): Long {
+        val resource = allResources?.get(position)
+        var id: Long = 0
+        resource?.id?.toLong()?.let {
+            id = it
+        }
+        return id
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DoctorsViewHolder {
         val view =
@@ -23,10 +41,10 @@ class ResourcesAdapter(var resources: List<MyResources>?, var userLocation: Loca
         return DoctorsViewHolder(view)
     }
 
-    override fun getItemCount() = resources?.size ?: 0
+    override fun getItemCount() = allResources?.size?:0
 
     override fun onBindViewHolder(viewHolder: DoctorsViewHolder, position: Int) {
-        viewHolder.setArea(resources?.get(position))
+        viewHolder.setArea(allResources?.get(position))
     }
 
     inner class DoctorsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
@@ -45,7 +63,7 @@ class ResourcesAdapter(var resources: List<MyResources>?, var userLocation: Loca
                     view.distanceTV.text = view.context.getString(R.string.distanceM, distance)
                 }
 //                else
-                    return distance < 30
+                return distance < 150
             }
             return false
         }
@@ -92,10 +110,10 @@ class ResourcesAdapter(var resources: List<MyResources>?, var userLocation: Loca
         fun setAnimation(viewToAnimate: View, position: Int) {
             if (position > lastPosition) {
                 val anim = ScaleAnimation(
-                    0.8f,
-                    1.0f,
-                    0.8f,
-                    1.0f,
+                    0.5f,
+                    1f,
+                    0.5f,
+                    1f,
                     Animation.RELATIVE_TO_SELF,
                     0.5f,
                     Animation.RELATIVE_TO_SELF,

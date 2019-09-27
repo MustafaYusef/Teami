@@ -1,20 +1,27 @@
 package com.croczi.teami.activities
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.DialogInterface
 import android.content.Intent
+import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.support.v7.app.AppCompatDelegate
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.croczi.teami.R
 import com.croczi.teami.models.*
+import com.croczi.teami.retrofit.NetworkTools
 import com.croczi.teami.retrofit.RepresentativesInterface
+import com.croczi.teami.retrofit.addTLSSupport
+import com.croczi.teami.utils.Consts
 import com.croczi.teami.utils.Consts.BASE_URL
 import com.croczi.teami.utils.checkUser
+import com.croczi.teami.utils.getID
 import com.croczi.teami.utils.showMessageOK
 import kotlinx.android.synthetic.main.activity_full_details.*
 import kotlinx.android.synthetic.main.feedback_popup.*
@@ -33,14 +40,17 @@ class FullDetailsActivity : AppCompatActivity() {
     private lateinit var fbDialog: Dialog
     private var selectedStatus = -1
     private lateinit var allItems: List<Item>
-    private lateinit var selectedReminder: Item
-    private lateinit var selectedCall: Item
+    private var selectedReminder: Item = Item()
+    private var selectedCall: Item = Item()
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_full_details)
 
-        loginResponse = checkUser(this)
+        checkUser(this) { status, loginResponse ->
+            this.loginResponse = loginResponse
+        }
         if (loginResponse != null) {
             token = loginResponse?.token
             tokenExp = loginResponse?.expire
@@ -54,10 +64,9 @@ class FullDetailsActivity : AppCompatActivity() {
             intent.putExtra("RESOURCE", resource)
             startActivity(intent)
         }
-        if (resource.resourceType != "doctors")
+        if (resource.resourceType == "pharmacies")
             resourceIcon.setImageResource(R.drawable.ic_pharmacy)
-        feedbackBtn.setOnClickListener {
-            loginResponse = checkUser(this)
+        feedbackBtn?.setOnClickListener {
             if (loginResponse != null) {
                 if (resource.resourceType == "doctors") {
                     getItems(0)
@@ -69,56 +78,42 @@ class FullDetailsActivity : AppCompatActivity() {
     }
 
     private fun getPharmacyStatus() {
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_URL)
-            .build()
         token?.let {
-            retrofit.create(RepresentativesInterface::class.java).getPharmStatus(it, getID())
-                .enqueue(object : Callback<PharmStatusResponse> {
-                    override fun onFailure(call: Call<PharmStatusResponse>, t: Throwable) {
-                        fbBtnProgressBar.visibility = View.GONE
-                        feedbackBtn.visibility = View.VISIBLE
-                        Toast.makeText(this@FullDetailsActivity, getString(R.string.error_loading), Toast.LENGTH_LONG)
-                            .show()
-                    }
-
-                    override fun onResponse(call: Call<PharmStatusResponse>, response: Response<PharmStatusResponse>) {
-                        initFeedback(response.body()?.PharmacyStatus)
-                    }
-                })
-        }
+            NetworkTools.getPharmacyStatus(it, getID(), { response ->
+                initFeedback(response.PharmacyStatus)
+            }, { message ->
+                fbBtnProgressBar?.visibility = View.GONE
+                feedbackBtn?.visibility = View.VISIBLE
+                Toast.makeText(this@FullDetailsActivity, message, Toast.LENGTH_LONG)
+                    .show()
+            })
+        } ?: run { checkUser(this) { _, _ -> } }
     }
 
     private fun getStatus() {
-        val retrofit = Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BASE_URL)
-            .build()
         token?.let {
-            retrofit.create(RepresentativesInterface::class.java).getStatus(it, getID())
-                .enqueue(object : Callback<StatusResponse> {
-                    override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
-                        fbBtnProgressBar.visibility = View.GONE
-                        feedbackBtn.visibility = View.VISIBLE
-                        Toast.makeText(this@FullDetailsActivity, getString(R.string.error_loading), Toast.LENGTH_LONG)
-                            .show()
-                    }
-
-                    override fun onResponse(call: Call<StatusResponse>, response: Response<StatusResponse>) {
-                        initFeedback(response.body()?.status)
-                    }
-                })
-        }
+            NetworkTools.getStatus(it, getID(), { response ->
+                initFeedback(response.status)
+            }, { message ->
+                fbBtnProgressBar?.visibility = View.GONE
+                feedbackBtn?.visibility = View.VISIBLE
+                Toast.makeText(
+                    this@FullDetailsActivity,
+                    message,
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+            })
+        } ?: run { checkUser(this) { _, _ -> } }
     }
 
     private fun initFeedback(status: List<StatusResource>?) {
-        fbBtnProgressBar.visibility = View.GONE
-        feedbackBtn.visibility = View.VISIBLE
+        fbBtnProgressBar?.visibility = View.GONE
+        feedbackBtn?.visibility = View.VISIBLE
         val dialog = Dialog(this)
         fbDialog = dialog
         dialog.setContentView(R.layout.feedback_popup)
-        dialog.window.setBackgroundDrawableResource(android.R.color.transparent)
+        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
         dialog.show()
         if (resource.resourceType == "doctors")
             prepareItems()
@@ -172,32 +167,30 @@ class FullDetailsActivity : AppCompatActivity() {
     }
 
     private fun getItems(resourceType: Int) {
-        fbBtnProgressBar.visibility = View.VISIBLE
-        feedbackBtn.visibility = View.INVISIBLE
-        val retrofit = Retrofit.Builder()
+        fbBtnProgressBar?.visibility = View.VISIBLE
+        feedbackBtn?.visibility = View.INVISIBLE
+        var retrofitBuilder = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            retrofitBuilder.addTLSSupport()
+        }
+        val retrofit = retrofitBuilder.build()
 
         val itemsInterface = retrofit.create(RepresentativesInterface::class.java)
-        val itemsResponse = token?.let { itemsInterface.getItems(it, getID()) }
-        itemsResponse?.enqueue(object : Callback<ItemsResponse> {
-            override fun onFailure(call: Call<ItemsResponse>, t: Throwable) {
-                fbBtnProgressBar.visibility = View.GONE
-                feedbackBtn.visibility = View.VISIBLE
-                Toast.makeText(this@FullDetailsActivity, t.message, Toast.LENGTH_LONG).show()
-            }
-
-            override fun onResponse(call: Call<ItemsResponse>, response: Response<ItemsResponse>) {
-                response.body()?.let {
-                    allItems = it.items
-                    if (resourceType == 0)
-                        getStatus()
-                    else
-                        getPharmacyStatus()
-                }
-            }
-        })
+        token?.let {
+            NetworkTools.getItems(it, getID(), { response ->
+                allItems = response.items
+                if (resourceType == 0)
+                    getStatus()
+                else
+                    getPharmacyStatus()
+            }, { message ->
+                fbBtnProgressBar?.visibility = View.GONE
+                feedbackBtn?.visibility = View.VISIBLE
+                Toast.makeText(this@FullDetailsActivity, message, Toast.LENGTH_LONG).show()
+            })
+        } ?: run { checkUser(this) { _, _ -> } }
     }
 
     private fun prepareItems() {
@@ -249,22 +242,15 @@ class FullDetailsActivity : AppCompatActivity() {
     }
 
     private fun postFeedback(statusId: Int, note: String) {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
         val feedbackRequest = token?.let {
             if (resource.resourceType == "doctors")
                 FeedbackRequest(
                     it,
                     getID(),
-                    resource.resourceType
-                    ,
-                    resource.id.toString()
-                    ,
+                    resource.resourceType,
+                    resource.id.toString(),
                     statusId.toString(),
-                    note
-                    ,
+                    note,
                     "visit",
                     "${selectedReminder.companyName}_${selectedReminder.name}",
                     "${selectedCall.companyName}_${selectedCall.name}"
@@ -283,41 +269,25 @@ class FullDetailsActivity : AppCompatActivity() {
                     "visit", null, null
                 )
         }
-        val feedbackResponse = feedbackRequest?.let {
-            retrofit.create(RepresentativesInterface::class.java)
-                .postFeedback(it).enqueue(object : Callback<FeedbackResponse> {
-                    override fun onFailure(call: Call<FeedbackResponse>, t: Throwable) {
-
-                    }
-
-                    override fun onResponse(call: Call<FeedbackResponse>, response: Response<FeedbackResponse>) {
-                        fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
-                        fbDialog.fbProgressBar.visibility = View.GONE
-                        if (response.body()?.activity?.id != null) {
-                            if (fbDialog.isShowing) {
-                                fbDialog.fbProgressBar.visibility = View.GONE
-                                fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
-                                fbDialog.dismiss()
-                            }
-                            showMessageOK(this@FullDetailsActivity, getString(R.string.feedback_success), ""
-                                , DialogInterface.OnClickListener { dialog, which -> dialog?.dismiss() })
-                        } else if (response.code() == 406) {
-                            val converter = retrofit.responseBodyConverter<ErrorResponse>(
-                                ErrorResponse::class.java,
-                                arrayOfNulls<Annotation>(0)
-                            )
-                            val errors = converter.convert(response.errorBody())
-                            Toast.makeText(this@FullDetailsActivity, errors?.error, Toast.LENGTH_SHORT).show()
-                        } else if (response.code() == 400 || response.code() == 422) {
-                            val converter = retrofit.responseBodyConverter<ErrorResponseArray>(
-                                ErrorResponseArray::class.java,
-                                arrayOfNulls<Annotation>(0)
-                            )
-                            val errors = converter.convert(response.errorBody())
-                            Toast.makeText(this@FullDetailsActivity, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                })
+        feedbackRequest?.let {
+            NetworkTools.postFeedback(it, {
+                fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
+                fbDialog.fbProgressBar.visibility = View.GONE
+                if (fbDialog.isShowing) {
+                    fbDialog.fbProgressBar.visibility = View.GONE
+                    fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
+                    fbDialog.dismiss()
+                }
+                showMessageOK(this@FullDetailsActivity,
+                    getString(R.string.feedback_success),
+                    ""
+                    ,
+                    DialogInterface.OnClickListener { dialog, which -> dialog?.dismiss() })
+            }, { message ->
+                fbBtnProgressBar?.visibility = View.GONE
+                feedbackBtn?.visibility = View.VISIBLE
+                Toast.makeText(this@FullDetailsActivity, message, Toast.LENGTH_LONG).show()
+            })
         }
     }
 
@@ -335,7 +305,7 @@ class FullDetailsActivity : AppCompatActivity() {
                 else -> "NaN"
             }
         } else {
-            hospitalTV.visibility=View.GONE
+            hospitalTV.visibility = View.GONE
             docHospitalTV.visibility = View.GONE
             workHoursCV.visibility = View.GONE
             specialtyTV.visibility = View.GONE
@@ -343,7 +313,11 @@ class FullDetailsActivity : AppCompatActivity() {
         }
     }
 
+    @SuppressLint("HardwareIds")
     fun getID(): String {
-        return Settings.Secure.getString(this@FullDetailsActivity.contentResolver, Settings.Secure.ANDROID_ID)
+        return Settings.Secure.getString(
+            this@FullDetailsActivity.contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
     }
 }

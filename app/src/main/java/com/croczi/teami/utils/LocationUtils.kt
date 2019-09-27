@@ -11,9 +11,10 @@ import android.location.LocationManager
 import android.os.Build
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.app.ActivityCompat.requestPermissions
 import android.support.v4.app.Fragment
 import android.support.v4.content.PermissionChecker
+import com.croczi.teami.activities.MainActivity
+import com.croczi.teami.fragments.MainFragment
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -23,6 +24,7 @@ import com.google.android.gms.tasks.Task
 
 
 object LocationUtils {
+    var providerDisabled: Boolean = false
     private lateinit var fragment: Fragment
     private var isActivity: Boolean = true
     private var dialogCount = 0
@@ -35,14 +37,18 @@ object LocationUtils {
 
     fun getInstance(context: Context): LocationUtils {
 
+        this.isActivity = true
+
         initLocation(context)
 
         return LocationUtils
     }
 
     fun getInstance(fragment: Fragment, context: Context): LocationUtils {
-        this.isActivity=false
+
+        this.isActivity = false
         this.fragment = fragment
+
         initLocation(context)
 
         return LocationUtils
@@ -63,60 +69,60 @@ object LocationUtils {
         requestUpdates(context, isActivity)
     }
 
-//    fun getID(context: Context): String {
-//        return Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID)
-//    }
-
     fun initGPS(context: Context) {
-        val builder = LocationSettingsRequest.Builder()
-            .addLocationRequest(locationRequest)
-        locationRequest.interval = 3000
-        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-        locationRequest.maxWaitTime = 7000
+            dialogCount++
+            val builder = LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest)
+            locationRequest.interval = 3000
+            locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+            locationRequest.maxWaitTime = 7000
 
-        val result = LocationServices.getSettingsClient(context)
-            .checkLocationSettings(builder.build())
+            val result = LocationServices.getSettingsClient(context)
+                .checkLocationSettings(builder.build())
 
-        result.addOnCompleteListener(object : OnCompleteListener<LocationSettingsResponse> {
-            override fun onComplete(task: Task<LocationSettingsResponse>) {
-                try {
-                    var response = task.getResult(ApiException::class.java)
-                    // All location settings are satisfied. The client can initialize location
-                    // requests here.
-                } catch (exception: ApiException) {
-                    when (exception.statusCode) {
-                        LocationSettingsStatusCodes.RESOLUTION_REQUIRED ->
-                            // Location settings are not satisfied. But could be fixed by showing the
-                            // user a dialog.
-                            try {
-                                // Cast to a resolvable exception.
-                                val resolvable = exception as ResolvableApiException
-                                // Show the dialog by calling startResolutionForResult(),
-                                // and check the result in onActivityResult().
-                                resolvable.startResolutionForResult(
-                                    context as Activity,
-                                    100
-                                )
-                            } catch (
-                                e: IntentSender.SendIntentException
-                            ) {
-                                // Ignore the error.
-                            } catch (e: ClassCastException) {
-                                // Ignore, should be an impossible error.
-                            }
-                        LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE ->
-                            // Location settings are not satisfied. However, we have no way to fix the
-                            // settings so we won't show the dialog.
-                            return
+            result.addOnCompleteListener(object : OnCompleteListener<LocationSettingsResponse> {
+                override fun onComplete(task: Task<LocationSettingsResponse>) {
+                    try {
+                        var response = task.getResult(ApiException::class.java)
+                        if (context is MainActivity && ::fragment.isInitialized && fragment is MainFragment)
+                            (fragment as MainFragment).filterAndSortResources()
+                        // All location settings are satisfied. The client can initialize location
+                        // requests here.
+                    } catch (exception: ApiException) {
+                        when (exception.statusCode) {
+                            LocationSettingsStatusCodes.RESOLUTION_REQUIRED ->
+                                // Location settings are not satisfied. But could be fixed by showing the
+                                // user a dialog.
+                                try {
+                                    // Cast to a resolvable exception.
+                                    val resolvable = exception as ResolvableApiException
+                                    // Show the dialog by calling startResolutionForResult(),
+                                    // and check the result in onActivityResult().
+                                    resolvable.startResolutionForResult(
+                                        context as Activity,
+                                        100
+                                    )
+                                } catch (
+                                    e: IntentSender.SendIntentException
+                                ) {
+                                    // Ignore the error.
+                                } catch (e: ClassCastException) {
+                                    // Ignore, should be an impossible error.
+                                }
+                            LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE ->
+                                // Location settings are not satisfied. However, we have no way to fix the
+                                // settings so we won't show the dialog.
+                                return
+                        }
                     }
                 }
-            }
-        })
+            })
     }
 
     private fun initListener(context: Context) {
         listener = object : LocationListener {
             override fun onLocationChanged(location: Location?) {
+                var oldLocation = userLocation
                 fusedLocationProviderClient =
                     LocationServices.getFusedLocationProviderClient(context)
                 getLastKnowLocation(context)
@@ -126,13 +132,17 @@ object LocationUtils {
                     val userLong = location.longitude
                     val userLatLng = LatLng(userLat, userLong)
                 }
-//                if (activity is MainActivity) {
+                if (fragment.isVisible
+                    && oldLocation?.latitude != userLocation?.latitude
+                    || oldLocation?.longitude != userLocation?.longitude
+                ) {
 //                    if ((activity as MainActivity).resourcesList == null) {
 //                        (activity as MainActivity).getMyResources()
 //                    }else {
-//                    (activity as MainActivity).checkNearestMarker()
-//                    (activity as MainActivity).adapter.notifyDataSetChanged()
-//                }
+//                    (fragment as MainFragment).getMyResources()
+                    (fragment as MainFragment).filterAndSortResources()
+//                    (fragment as MainFragment).adapter.notifyDataSetChanged()
+                }
 //            }
             }
 
@@ -140,13 +150,16 @@ object LocationUtils {
             }
 
             override fun onProviderEnabled(provider: String?) {
+                providerDisabled = false
+                if (context is MainActivity && ::fragment.isInitialized && fragment is MainFragment)
+                    (fragment as MainFragment).filterAndSortResources()
             }
 
             override fun onProviderDisabled(provider: String?) {
-                if (provider == "gps" && dialogCount == 0) {
-                    initGPS(context)
-                    dialogCount++
-                }
+                if (provider == "gps")
+                    providerDisabled = true
+                if (context is MainActivity && ::fragment.isInitialized && fragment is MainFragment)
+                    (fragment as MainFragment).filterAndSortResources()
             }
         }
     }
@@ -163,7 +176,7 @@ object LocationUtils {
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    (context as Activity).requestPermissions(
+                    (context as AppCompatActivity).requestPermissions(
                         arrayOf(
                             Manifest.permission.ACCESS_COARSE_LOCATION,
                             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -218,6 +231,8 @@ object LocationUtils {
                 val name = (context as Activity).intent.getStringExtra("NAME")
                 location?.let {
                     userLocation = it
+                    if (this::fragment.isInitialized)
+                        (fragment as MainFragment).getMyResources()
                 }
             }
     }

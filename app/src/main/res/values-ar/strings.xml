@@ -92,4 +92,15 @@
     <string name="status">الحالة</string>
     <string name="reminder_product">التذكير بالمنتج</string>
     <string name="call_product">المنتج الجديد</string>
+    <string name="mock_location">تم اكتشاف برنامج تزوير الموقع!</string>
+    <string name="mock_location_desc">الرجاء اطفاء البرنامج وإعادة المحاولة، سيتم ابلاغ المشرف بأية أنشطة مريبة</string>
+    <string name="hospitalFull">المستشفى:</string>
+    <string name="provider_disabled">خدمة الGPS معطلة</string>
+    <string name="provider_disabled_desc">الرجاء تشغيل خدمة الGPS لإستخدام التطبيق</string>
+    <string name="regionFull">المنطقة:</string>
+    <string name="something_went_wrong">حدث خطأ :(</string>
+    <string name="streetFull">الشارع:</string>
+    <string name="workFull">العمل:</string>
+    <string name="enable_gps">تشغيل الGPS</string>
+    <string name="search">"بحث: "</string>
 </resources>

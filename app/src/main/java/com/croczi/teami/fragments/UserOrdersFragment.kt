@@ -1,6 +1,7 @@
 package com.croczi.teami.fragments
 
 
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -13,6 +14,8 @@ import com.croczi.teami.adapters.UserOrdersAdapter
 import com.croczi.teami.models.UserOrderResponse
 import com.croczi.teami.models.UserOrder
 import com.croczi.teami.retrofit.RepresentativesInterface
+import com.croczi.teami.retrofit.addTLSSupport
+import com.croczi.teami.utils.Consts
 import com.croczi.teami.utils.Consts.BASE_URL
 import com.croczi.teami.utils.getID
 import kotlinx.android.synthetic.main.fragment_user_orders.*
@@ -43,10 +46,13 @@ class UserOrdersFragment : Fragment() {
 
     private fun getUserData(token: String, phoneId: String) {
         userOrderResfresh.isRefreshing = true
-        val retrofit = Retrofit.Builder()
+        var retrofitBuilder = Retrofit.Builder()
             .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        if(Build.VERSION.SDK_INT<= Build.VERSION_CODES.KITKAT){
+            retrofitBuilder.addTLSSupport()
+        }
+        val retrofit=retrofitBuilder.build()
         retrofit.create(RepresentativesInterface::class.java)
             .checkUserOrders(token, phoneId).enqueue(object : Callback<UserOrderResponse> {
                 override fun onFailure(call: Call<UserOrderResponse>, t: Throwable) {

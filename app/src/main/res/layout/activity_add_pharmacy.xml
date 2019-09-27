@@ -6,18 +6,21 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fitsSystemWindows="true"
-        tools:context=".activities.ProfileActivity" android:background="@color/background"
+        tools:context=".activities.ProfileActivity"
+        android:background="@color/background"
         android:id="@+id/coordinatorLayout3">
     <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent" android:id="@+id/constraintLayout5">
+            android:layout_height="match_parent"
+            android:id="@+id/constraintLayout5">
 
         <android.support.design.widget.AppBarLayout
                 android:id="@+id/app_bar"
                 android:fitsSystemWindows="true"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:theme="@style/AppTheme.AppBarOverlay" android:background="@drawable/ic_subtraction_1"
+                android:theme="@style/AppTheme.AppBarOverlay"
+                android:background="@drawable/ic_curved_app_bar"
         >
 
             <android.support.design.widget.CollapsingToolbarLayout
@@ -34,10 +37,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:gravity="center_horizontal" android:paddingTop="8dp" android:layout_marginBottom="32dp">
+                        android:gravity="center_horizontal"
+                        android:paddingTop="8dp"
+                        android:layout_marginBottom="32dp">
                     <ImageView
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" app:srcCompat="@drawable/ic_pharmacy"
+                            android:layout_height="wrap_content"
+                            app:srcCompat="@drawable/ic_pharmacy"
                             android:id="@+id/imageView"/>
                     <EditText
                             android:layout_width="300dp"
@@ -45,20 +51,28 @@
                             android:inputType="textPersonName"
                             android:digits="ءآأؤإئابةتثجحخدذرزسشصضطظعغـفقكلمنهوىي ً ٌ ٍ َ ُ ِ ّ ْ ٓ ٔ ٕﷵﷶﷷﷸﷹٮٯ ٰٱٲٳٴٵٶٷٸٹٺٻټٽپٿڀځڂڃڄڅچڇڈډڊڋڌڍڎڏڐڑڒړڔڕږڗژڙښڛڜڝڞڟڠڡڢڣڤڥڦڧڨکڪګڬڭڮگڰڱڲڳڴڵڶڷڸڹںڻڼڽھڿۀہۂۃۄۅۆۇۈۉۊۋیۍێۏېۑےۓ۔ەۖۗ ۘ ۙ ۚ ۛ ۜ۟۠ ۡ ۢ ۣ ۤ ۥ ۦ ۧ ۨ ۪ ۫ ۬ ۭۺۻۼ۽۾ﹰﹱﹲﹴﹶﹷﹸﹹﹺﹻﹼﹽﹾﹿﺀﺁﺂﺃﺄﺅﺆﺇﺈﺉﺊﺋﺌﺍﺎﺏﺐﺑﺒﺓﺔﺕﺖﺗﺘﺙﺚﺛﺜﺝﺞﺟﺠﺡﺢﺣﺤﺥﺦﺧﺨﺩﺪﺫﺬﺭﺮﺯﺰﺱﺲﺳﺴﺵﺶﺷﺸﺹﺺﺻﺼﺽﺾﺿﻀﻁﻂﻃﻄﻅﻆﻇﻈﻉﻊﻋﻌﻍﻎﻏﻐﻑﻒﻓﻔﻕﻖﻗﻘﻙﻚﻛﻜﻝﻞﻟﻠﻡﻢﻣﻤﻥﻦﻧﻨﻩﻪﻫﻬﻭﻮﻯﻰﻱﻲﻵﻶﻷﻸﻹﻺﻻﻼ"
                             android:ems="10"
-                            android:id="@+id/pharmNameET" android:background="@drawable/edittext_normal"
+                            android:id="@+id/pharmNameET"
+                            android:background="@drawable/edittext_normal"
                             android:paddingStart="8dp"
                             android:paddingEnd="32dp"
-                            android:hint="@string/name" android:layout_marginTop="8dp"
-                            android:layout_marginBottom="16dp" android:textColor="#666666"
-                            android:textColorHint="#999999" android:fontFamily="@font/cairo" android:textSize="16sp"/>
+                            android:hint="@string/name"
+                            android:layout_marginTop="8dp"
+                            android:layout_marginBottom="16dp"
+                            android:textColor="#666666"
+                            android:textColorHint="#999999"
+                            android:fontFamily="@font/cairo"
+                            android:textSize="16sp"/>
                 </LinearLayout>
 
             </android.support.design.widget.CollapsingToolbarLayout>
         </android.support.design.widget.AppBarLayout>
-        <ScrollView android:layout_width="match_parent" android:layout_height="0dp"
-                    tools:context=".activities.AddPharmacy" android:layout_gravity="bottom"
+        <ScrollView android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    tools:context=".activities.AddPharmacy"
+                    android:layout_gravity="bottom"
                     app:layout_constraintTop_toBottomOf="@+id/app_bar"
-                    android:id="@+id/constraintLayout2" app:layout_constraintStart_toStartOf="parent"
+                    android:id="@+id/constraintLayout2"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent">
 
@@ -73,7 +87,9 @@
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        android:layout_margin="8dp" app:cardCornerRadius="14dp" android:id="@+id/cardView5"
+                        android:layout_margin="8dp"
+                        app:cardCornerRadius="14dp"
+                        android:id="@+id/cardView5"
                         app:cardElevation="6dp">
                     <android.support.constraint.ConstraintLayout
                             android:layout_width="match_parent"
@@ -89,8 +105,10 @@
                                 app:layout_constraintStart_toStartOf="parent"/>
                         <ImageView
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" app:srcCompat="@drawable/ic_area_bg"
-                                android:id="@+id/locationIV2" app:layout_constraintStart_toStartOf="@+id/breakerCV"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_area_bg"
+                                android:id="@+id/locationIV2"
+                                app:layout_constraintStart_toStartOf="@+id/breakerCV"
                                 app:layout_constraintTop_toTopOf="@+id/breakerCV"
                                 app:layout_constraintBottom_toBottomOf="@+id/breakerCV"
                                 app:layout_constraintEnd_toEndOf="@+id/breakerCV"/>
@@ -107,9 +125,12 @@
                                 app:layout_constraintTop_toTopOf="parent"
                                 android:paddingStart="8dp"
                                 app:layout_constraintStart_toEndOf="@+id/breakerCV"
-                                android:background="@drawable/edittext_normal" android:paddingEnd="32dp"
-                                android:hint="@string/province" android:foregroundGravity="center_horizontal"
-                                android:fontFamily="@font/cairo" android:textSize="16sp"/>
+                                android:background="@drawable/edittext_normal"
+                                android:paddingEnd="32dp"
+                                android:hint="@string/province"
+                                android:foregroundGravity="center_horizontal"
+                                android:fontFamily="@font/cairo"
+                                android:textSize="16sp"/>
                         <AutoCompleteTextView
                                 android:layout_width="0dp"
                                 android:layout_height="32dp"
@@ -120,25 +141,33 @@
                                 android:layout_marginStart="8dp"
                                 android:layout_gravity="center_horizontal"
                                 app:layout_constraintTop_toBottomOf="@+id/pharmProvinceET"
-                                android:layout_marginTop="16dp" android:paddingStart="8dp"
+                                android:layout_marginTop="16dp"
+                                android:paddingStart="8dp"
                                 android:foregroundGravity="center_horizontal"
                                 app:layout_constraintStart_toEndOf="@+id/breakerCV"
-                                android:background="@drawable/edittext_normal" android:paddingEnd="32dp"
-                                android:hint="@string/area" android:fontFamily="@font/cairo" android:textSize="16sp"/>
+                                android:background="@drawable/edittext_normal"
+                                android:paddingEnd="32dp"
+                                android:hint="@string/area"
+                                android:fontFamily="@font/cairo"
+                                android:textSize="16sp"/>
                         <ImageView
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" app:srcCompat="@drawable/ic_cancel_red_24dp"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_cancel_red_24dp"
                                 android:id="@+id/orgRmvIV2"
                                 app:layout_constraintBottom_toBottomOf="@+id/pharmProvinceET"
-                                app:layout_constraintTop_toTopOf="@+id/pharmProvinceET" android:visibility="gone"
+                                app:layout_constraintTop_toTopOf="@+id/pharmProvinceET"
+                                android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="@+id/pharmProvinceET"
                                 android:layout_marginEnd="8dp"/>
                         <ImageView
                                 android:layout_width="wrap_content"
-                                android:layout_height="wrap_content" app:srcCompat="@drawable/ic_cancel_red_24dp"
+                                android:layout_height="wrap_content"
+                                app:srcCompat="@drawable/ic_cancel_red_24dp"
                                 android:id="@+id/regionRmvIV2"
                                 app:layout_constraintBottom_toBottomOf="@+id/pharmAreaET"
-                                app:layout_constraintTop_toTopOf="@+id/pharmAreaET" android:visibility="gone"
+                                app:layout_constraintTop_toTopOf="@+id/pharmAreaET"
+                                android:visibility="gone"
                                 app:layout_constraintEnd_toEndOf="@+id/pharmAreaET"
                                 android:layout_marginEnd="8dp"/>
                         <EditText
@@ -154,10 +183,13 @@
                                 android:background="@drawable/edittext_normal"
                                 android:layout_marginTop="16sp"
                                 app:layout_constraintTop_toBottomOf="@+id/pharmAreaET"
-                                android:hint="@string/block_name" android:paddingStart="8dp"
+                                android:hint="@string/block_name"
+                                android:paddingStart="8dp"
                                 android:paddingEnd="32dp"
-                                app:layout_constraintStart_toEndOf="@+id/breakerCV" android:layout_marginBottom="16dp"
-                                app:layout_constraintBottom_toBottomOf="parent" android:fontFamily="@font/cairo"
+                                app:layout_constraintStart_toEndOf="@+id/breakerCV"
+                                android:layout_marginBottom="16dp"
+                                app:layout_constraintBottom_toBottomOf="parent"
+                                android:fontFamily="@font/cairo"
                                 android:textSize="16sp"/>
                     </android.support.constraint.ConstraintLayout>
                 </android.support.v7.widget.CardView>
@@ -165,21 +197,28 @@
                         style="?android:attr/progressBarStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@+id/addPharmPB" app:layout_constraintStart_toStartOf="@+id/finishAddPharmBtn"
+                        android:id="@+id/addPharmPB"
+                        app:layout_constraintStart_toStartOf="@+id/finishAddPharmBtn"
                         app:layout_constraintEnd_toEndOf="@+id/finishAddPharmBtn"
                         app:layout_constraintTop_toTopOf="@+id/finishAddPharmBtn"
-                        app:layout_constraintBottom_toBottomOf="@+id/finishAddPharmBtn" android:visibility="gone"/>
-                <Button
+                        app:layout_constraintBottom_toBottomOf="@+id/finishAddPharmBtn"
+                        android:visibility="gone"/>
+                <android.support.design.button.MaterialButton
                         android:text="@string/add"
                         android:layout_width="0dp"
-                        android:layout_height="wrap_content" android:id="@+id/finishAddPharmBtn"
+                        android:layout_height="58dp"
+                        android:id="@+id/finishAddPharmBtn"
                         app:layout_constraintTop_toBottomOf="@+id/cardView5"
                         app:layout_constraintEnd_toEndOf="parent"
-                        android:layout_marginEnd="16dp" app:layout_constraintStart_toStartOf="parent"
-                        android:layout_marginStart="16dp" android:layout_marginTop="16dp"
-                        android:background="@drawable/rounded_btn_shape"
-                        android:textColor="@color/background" android:fontFamily="@font/cairo_bold"
-                        android:layout_marginBottom="8dp" app:layout_constraintBottom_toBottomOf="parent"/>
+                        android:layout_marginEnd="16dp"
+                        app:layout_constraintStart_toStartOf="parent"
+                        android:layout_marginStart="16dp"
+                        app:cornerRadius="24dp"
+                        android:layout_marginTop="16dp"
+                        android:textColor="@android:color/white"
+                        android:fontFamily="@font/cairo_bold"
+                        android:layout_marginBottom="8dp"
+                        app:layout_constraintBottom_toBottomOf="parent"/>
             </android.support.constraint.ConstraintLayout>
         </ScrollView>
     </android.support.constraint.ConstraintLayout>

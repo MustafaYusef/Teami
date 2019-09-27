@@ -13,14 +13,6 @@ interface RepresentativesInterface {
         @Query("phone_id") phoneId: String
     ): Call<ItemsResponse>
 
-    @POST("pharmacies/edit/")
-    fun registerPharmacy(
-        @Header("Content-Type") header1: String,
-        @Header("cache-control") header2: String,
-        @Header("crossDomain") header3: Boolean,
-        @Body pharmacy: Pharmacy
-    ): Call<RegisterResponse>
-
     @POST("login")
     fun getToken(@Body loginRequest: LoginRequest): Call<LoginResponse>
 

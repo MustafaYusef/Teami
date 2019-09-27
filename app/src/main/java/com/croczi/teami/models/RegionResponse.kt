@@ -4,5 +4,5 @@ import com.google.gson.annotations.SerializedName
 
 class RegionResponse(
     @SerializedName("Reigns")
-    var reigns:List<Resource>
+    var regions:List<Resource>
 )

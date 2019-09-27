@@ -16,6 +16,7 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.app.AppCompatDelegate
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -23,26 +24,26 @@ import android.widget.Toast
 import com.croczi.teami.R
 import com.croczi.teami.models.*
 import com.croczi.teami.retrofit.RepresentativesInterface
-import com.croczi.teami.utils.Consts.BASE_URL
 import kotlinx.android.synthetic.main.activity_add_doctor.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
 import android.widget.TextView
 import android.view.ViewGroup
+import com.croczi.teami.retrofit.NetworkTools
+import com.croczi.teami.retrofit.addTLSSupport
 import com.croczi.teami.utils.*
+import com.croczi.teami.utils.Consts.BASE_URL
 
 
 class AddDoctor : AppCompatActivity() {
 
-    private var token: String?=null
+    private var token: String? = null
     private var tokenExp: Long? = 0
-    private var calendar: Calendar? = null
     private lateinit var specialtiesList: List<Resource>
-    private lateinit var organiztionsList: List<Resource>
+    private lateinit var organizationsList: List<Resource>
     private lateinit var regionsList: List<Resource>
     private lateinit var hospitalsList: List<Resource>
     private lateinit var userLocation: Location
@@ -53,24 +54,25 @@ class AddDoctor : AppCompatActivity() {
     private var selectedWork = -1
     private lateinit var locationUtils: LocationUtils
     private var permissionCount = 0
-    private var loginResponse: LoginResponse?=null
+    private var loginResponse: LoginResponse? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_doctor)
-        loginResponse = checkUser(this)
+        checkUser(this) { status, loginResponse ->
+            this.loginResponse = loginResponse
+        }
         if (loginResponse != null) {
             token = loginResponse?.token
             tokenExp = loginResponse?.expire
         }
         locationUtils = LocationUtils.getInstance(this)
-//        locationUtils.initLocation(this)
         finishAddBtn.setOnClickListener {
-            loginResponse = checkUser(this)
             if (setValidation() && loginResponse != null)
                 addDoctor()
         }
-        getSpeciatly()
+        getSpecialty()
         getRegion()
         getOrganizations()
         getHospitals()
@@ -92,31 +94,44 @@ class AddDoctor : AppCompatActivity() {
     private fun setValidation(): Boolean {
         when {
             docNameET.text.isNullOrBlank() && docNameET.text.isEmpty() -> {
-                Toast.makeText(this@AddDoctor, getString(R.string.name_empty), Toast.LENGTH_LONG).show()
+                Toast.makeText(this@AddDoctor, getString(R.string.name_empty), Toast.LENGTH_LONG)
+                    .show()
                 return false
             }
             selectedSpeciality < 1 -> {
-                Toast.makeText(this@AddDoctor, getString(R.string.speciality_empty), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@AddDoctor,
+                    getString(R.string.speciality_empty),
+                    Toast.LENGTH_LONG
+                ).show()
                 return false
             }
             selectedOrg < 1 -> {
-                Toast.makeText(this@AddDoctor, getString(R.string.org_empty), Toast.LENGTH_LONG).show()
+                Toast.makeText(this@AddDoctor, getString(R.string.org_empty), Toast.LENGTH_LONG)
+                    .show()
                 return false
             }
             selectedRegion < 1 -> {
-                Toast.makeText(this@AddDoctor, getString(R.string.region_empty), Toast.LENGTH_LONG).show()
+                Toast.makeText(this@AddDoctor, getString(R.string.region_empty), Toast.LENGTH_LONG)
+                    .show()
                 return false
             }
             docBlockET.text.isNullOrBlank() && docBlockET.text.isEmpty() -> {
-                Toast.makeText(this@AddDoctor, getString(R.string.block_empty), Toast.LENGTH_LONG).show()
+                Toast.makeText(this@AddDoctor, getString(R.string.block_empty), Toast.LENGTH_LONG)
+                    .show()
                 return false
             }
             selectedHospital < 1 -> {
-                Toast.makeText(this@AddDoctor, getString(R.string.hospital_empty), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@AddDoctor,
+                    getString(R.string.hospital_empty),
+                    Toast.LENGTH_LONG
+                ).show()
                 return false
             }
             selectedWork < 1 -> {
-                Toast.makeText(this@AddDoctor, getString(R.string.work_empty), Toast.LENGTH_LONG).show()
+                Toast.makeText(this@AddDoctor, getString(R.string.work_empty), Toast.LENGTH_LONG)
+                    .show()
                 return false
             }
             else -> return true
@@ -124,7 +139,7 @@ class AddDoctor : AppCompatActivity() {
     }
 
     private fun addDoctor() {
-        var location = locationUtils.userLocation
+        val location = locationUtils.userLocation
         if (location != null) {
             userLocation = location
 
@@ -151,146 +166,70 @@ class AddDoctor : AppCompatActivity() {
                 token,
                 getID()
             )
-            val retrofit = Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(BASE_URL)
-                .build()
-            val addDoctorResponseCall = retrofit.create(RepresentativesInterface::class.java)
-                .addNewDoctor(doctor).enqueue(object : Callback<AddDoctorResponse> {
-                    override fun onFailure(call: Call<AddDoctorResponse>, t: Throwable) {
-                        addDocPB.visibility = View.GONE
-                        finishAddBtn.visibility = View.VISIBLE
-                        Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
-                    }
+            NetworkTools.addDoctor(doctor, {
+                addDocPB.visibility = View.GONE
+                finishAddBtn.visibility = View.VISIBLE
+                showMessageOK(getString(R.string.doctor_added_successfully),
+                    DialogInterface.OnClickListener { dialog, which ->
+                        dialog?.dismiss()
+                        docNameET.text.clear()
+                    })
+            }, { message ->
+                addDocPB.visibility = View.GONE
+                finishAddBtn.visibility = View.VISIBLE
+                Toast.makeText(this@AddDoctor, message, Toast.LENGTH_LONG).show()
+            })
 
-                    override fun onResponse(call: Call<AddDoctorResponse>, response: Response<AddDoctorResponse>) {
-                        addDocPB.visibility = View.GONE
-                        finishAddBtn.visibility = View.VISIBLE
-                        if (response.body()?.doctor_id != null) {
-                            showMessageOK(getString(R.string.doctor_added_successfully),
-                                DialogInterface.OnClickListener { dialog, which ->
-                                    dialog?.dismiss()
-                                    docNameET.text.clear()
-                                })
-                        } else if (response.code() == 406) {
-                            val converter = retrofit.responseBodyConverter<ErrorResponse>(
-                                ErrorResponse::class.java,
-                                arrayOfNulls<Annotation>(0)
-                            )
-                            val errors = converter.convert(response.errorBody())
-                            Toast.makeText(this@AddDoctor, errors?.error, Toast.LENGTH_SHORT).show()
-                        } else if (response.code() == 400) {
-                            val converter = retrofit.responseBodyConverter<ErrorResponseArray>(
-                                ErrorResponseArray::class.java,
-                                arrayOfNulls<Annotation>(0)
-                            )
-                            val errors = converter.convert(response.errorBody())
-                            Toast.makeText(this@AddDoctor, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                })
         } else {
             Toast.makeText(this@AddDoctor, "Location Unavailable", Toast.LENGTH_LONG).show()
             return
         }
     }
 
-    private fun getSpeciatly() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val specialityResponseCall = token?.let {
-            retrofit.create(RepresentativesInterface::class.java)
-                .getSpecialty(it, getID()).enqueue(object : Callback<SpecialityResponse> {
-                    override fun onFailure(call: Call<SpecialityResponse>, t: Throwable) {
-                        Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
-                    }
-
-                    override fun onResponse(
-                        call: Call<SpecialityResponse>,
-                        response: Response<SpecialityResponse>
-                    ) {
-                        val specialityResponse = response.body()
-                        specialityResponse?.let {
-                            specialtiesList = it.specialities
-                            setSpecialtySpinner()
-                        }
-                    }
-                })
-        }
-    }
-
-    private fun getRegion() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val regionResponseCall = token?.let {
-            retrofit.create(RepresentativesInterface::class.java)
-                .getRegion(it, getID(), selectedOrg).enqueue(object : Callback<RegionResponse> {
-                    override fun onFailure(call: Call<RegionResponse>, t: Throwable) {
-                        Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
-                    }
-
-                    override fun onResponse(call: Call<RegionResponse>, response: Response<RegionResponse>) {
-                        val regionResponse = response.body()
-                        regionResponse?.let {
-                            regionsList = regionResponse.reigns
-                            setRegionsSpinner()
-                        }
-                    }
-                })
-        }
+    private fun getSpecialty() {
+        token?.let {
+            NetworkTools.getSpecialties(it, getID(), {
+                specialtiesList = it.specialities
+                setSpecialtySpinner()
+            }, { message ->
+                Toast.makeText(this@AddDoctor, message, Toast.LENGTH_LONG).show()
+            })
+        } ?: run { checkUser(this) { status, response -> } }
     }
 
     private fun getOrganizations() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val organizationResponseCall = token?.let {
-            retrofit.create(RepresentativesInterface::class.java)
-                .getOrgs(it, getID()).enqueue(object : Callback<OrganizationResponse> {
-                    override fun onFailure(call: Call<OrganizationResponse>, t: Throwable) {
-                        Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
-                    }
-
-                    override fun onResponse(
-                        call: Call<OrganizationResponse>,
-                        response: Response<OrganizationResponse>
-                    ) {
-                        val organizationResponse = response.body()
-                        organizationResponse?.let {
-                            organiztionsList = it.organization
-                            setOrgsSpinner()
-                        }
-                    }
+        token?.let {
+            NetworkTools.getOrganizations(it, getID(),
+                success = {
+                    organizationsList = it.organization
+                    setOrgsSpinner()
+                }, failure = { message ->
+                    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
                 })
-        }
+        } ?: run { checkUser(this) { status, response -> } }
+    }
+
+    private fun getRegion() {
+        token?.let {
+            NetworkTools.getRegions(it, getID(), selectedOrg,
+                success = { regionResponse ->
+                    regionsList = regionResponse.regions
+                    setRegionsSpinner()
+                }, failure = { message ->
+                    Toast.makeText(this, message, Toast.LENGTH_LONG).show()
+                })
+        } ?: run { checkUser(this) { status, response -> } }
     }
 
     private fun getHospitals() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val hospitalResponseCall = token?.let {
-            retrofit.create(RepresentativesInterface::class.java)
-                .getHospitals(it, getID(), selectedOrg).enqueue(object : Callback<HospitalsResponse> {
-                    override fun onFailure(call: Call<HospitalsResponse>, t: Throwable) {
-                        Toast.makeText(this@AddDoctor, t.message, Toast.LENGTH_LONG).show()
-                    }
-
-                    override fun onResponse(call: Call<HospitalsResponse>, response: Response<HospitalsResponse>) {
-                        val hospitalResponse = response.body()
-                        hospitalResponse?.let {
-                            hospitalsList = it.hospitals
-                            setHospitalsSpinner()
-                        }
-                    }
-                })
-        }
+        token?.let {
+            NetworkTools.getHospitals(it, getID(), selectedOrg, {
+                hospitalsList = it.hospitals
+                setHospitalsSpinner()
+            }, { message ->
+                Toast.makeText(this@AddDoctor, message, Toast.LENGTH_LONG).show()
+            })
+        } ?: run { checkUser(this) { status, response -> } }
     }
 
     private fun setSpecialtySpinner() {
@@ -363,7 +302,7 @@ class AddDoctor : AppCompatActivity() {
         docProvET.threshold = 0
         val adapter = ArrayAdapter(
             this,
-            R.layout.support_simple_spinner_dropdown_item, organiztionsList
+            R.layout.support_simple_spinner_dropdown_item, organizationsList
         )
         docProvET.setAdapter(adapter)
         docProvET.setOnFocusChangeListener { v, hasFocus ->
@@ -455,7 +394,12 @@ class AddDoctor : AppCompatActivity() {
 
             }
 
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
                 selectedWork = position
             }
         }
@@ -488,7 +432,7 @@ class AddDoctor : AppCompatActivity() {
                                 Manifest.permission.ACCESS_COARSE_LOCATION
                             ) != PackageManager.PERMISSION_GRANTED
                         )
-                        else locationUtils.requestUpdates(this,true)
+                        else locationUtils.requestUpdates(this, true)
                     }
                     Activity.RESULT_CANCELED -> locationUtils.initGPS(this)
                 }
@@ -496,7 +440,11 @@ class AddDoctor : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             10 -> {
                 if ((grantResults.isNotEmpty()
@@ -512,9 +460,15 @@ class AddDoctor : AppCompatActivity() {
                                 Manifest.permission.WRITE_CONTACTS
                             )
                         ) {
-                            showMessageOKCancel(this@AddDoctor, getString(R.string.permissionsTitle),
+                            showMessageOKCancel(this@AddDoctor,
+                                getString(R.string.permissionsTitle),
                                 getString(R.string.permissionMessage),
-                                DialogInterface.OnClickListener { dialog, which -> locationUtils.requestUpdates(this,true) },
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    locationUtils.requestUpdates(
+                                        this,
+                                        true
+                                    )
+                                },
                                 DialogInterface.OnClickListener { dialog, which ->
                                     this.finish()
                                 })

@@ -1,6 +1,7 @@
 package com.croczi.teami.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.DialogInterface
 import android.content.Intent
@@ -15,6 +16,7 @@ import android.provider.Settings
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.ContextCompat
 import android.support.v4.content.PermissionChecker
+import android.support.v7.app.AppCompatDelegate
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -22,87 +24,86 @@ import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.croczi.teami.R
 import com.croczi.teami.models.*
-import com.croczi.teami.retrofit.RepresentativesInterface
+import com.croczi.teami.retrofit.NetworkTools
 import com.croczi.teami.utils.*
-import com.croczi.teami.utils.Consts.BASE_URL
+import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_add_pharmacy.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import java.util.*
 
 class AddPharmacy : AppCompatActivity() {
 
-    private var token: String?=null
+    private lateinit var token: String
     private var tokenExp: Long? = 0
-    private var loginResponse: LoginResponse?=null
-    private var calendar: Calendar? = null
-    private lateinit var organiztionsList: List<Resource>
+    private lateinit var loginResponse: LoginResponse
+    private lateinit var organizationsList: List<Resource>
     private lateinit var regionsList: List<Resource>
     private lateinit var userLocation: Location
     private var selectedOrg = 0
     private var selectedRegion = -1
     private lateinit var locationUtils: LocationUtils
-    private var permissionCount=0
+    private var permissionCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_pharmacy)
-        loginResponse= checkUser(this)
-        if(loginResponse!=null){
-            token=loginResponse?.token
-            tokenExp=loginResponse?.expire
-        }
-        locationUtils = LocationUtils.getInstance(this)
-//        locationUtils.initLocation(this)
-        finishAddPharmBtn.setOnClickListener {
-            loginResponse= checkUser(this)
-            if (setValidation()&&loginResponse!=null)
-                addPharm()
-        }
+        checkUser(this) { status, loginResponse ->
+            when (status) {
+                UserStatus.LoggedOut -> logout()
+                UserStatus.LoggedIn -> {
+                    loginResponse?.let {
+                        this.loginResponse = it
+                        token = it.token
+                        tokenExp = it.expire
 
-        getRegion()
-        getOrganizations()
-        pharmNameET.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (!s.isNullOrEmpty()) {
+                        locationUtils = LocationUtils.getInstance(this)
+                        finishAddPharmBtn.setOnClickListener {
+                            if (setValidation())
+                                addPharm()
+                        }
 
-                        pharmNameET.background = ColorDrawable(getColor(R.color.colorPrimary))
-                        pharmNameET.setTextColor(resources.getColor(R.color.background))
-                    } else {
-                        pharmNameET.background = getDrawable(R.drawable.edittext_normal)
-                        pharmNameET.setTextColor(Color.parseColor("#666666"))
+                        getRegion()
+                        getOrganizations()
+                        pharmBlockET.afterTextChanged {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                if (it.isNotEmpty() && it.isNotBlank()) {
+                                    pharmNameET.background =
+                                        ColorDrawable(getColor(R.color.colorPrimary))
+                                    pharmNameET.setTextColor(resources.getColor(R.color.background))
+                                } else {
+                                    pharmNameET.background = getDrawable(R.drawable.edittext_normal)
+                                    pharmNameET.setTextColor(Color.parseColor("#666666"))
+                                }
+                            }
+                        }
                     }
                 }
             }
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            }
-        })
+        }
     }
 
     private fun setValidation(): Boolean {
         when {
             pharmNameET.text.isNullOrBlank() && pharmNameET.text.isEmpty() -> {
-                Toast.makeText(this@AddPharmacy, getString(R.string.name_empty), Toast.LENGTH_LONG).show()
+                Toast.makeText(this@AddPharmacy, getString(R.string.name_empty), Toast.LENGTH_LONG)
+                    .show()
                 return false
             }
             selectedOrg < 1 -> {
-                Toast.makeText(this@AddPharmacy, getString(R.string.org_empty), Toast.LENGTH_LONG).show()
+                Toast.makeText(this@AddPharmacy, getString(R.string.org_empty), Toast.LENGTH_LONG)
+                    .show()
                 return false
             }
             selectedRegion < 1 -> {
-                Toast.makeText(this@AddPharmacy, getString(R.string.region_empty), Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@AddPharmacy,
+                    getString(R.string.region_empty),
+                    Toast.LENGTH_LONG
+                ).show()
                 return false
             }
             pharmBlockET.text.isNullOrBlank() && pharmBlockET.text.isEmpty() -> {
-                Toast.makeText(this@AddPharmacy, getString(R.string.block_empty), Toast.LENGTH_LONG).show()
+                Toast.makeText(this@AddPharmacy, getString(R.string.block_empty), Toast.LENGTH_LONG)
+                    .show()
                 return false
             }
             else -> return true
@@ -110,107 +111,58 @@ class AddPharmacy : AppCompatActivity() {
     }
 
     private fun addPharm() {
-        var location = locationUtils.userLocation
+        val location = locationUtils.userLocation
         if (location != null) {
             userLocation = location
-
             addPharmPB.visibility = View.VISIBLE
             finishAddPharmBtn.visibility = View.INVISIBLE
             val name = pharmNameET.text.toString()
             val street = pharmBlockET.text.toString()
-            val pharmacy = token?.let {
-                Pharmacy(
-                    name, street, selectedOrg.toString(), selectedRegion.toString()
-                    , userLocation.latitude.toString(), userLocation.longitude.toString(), it, getID()
-                )
-            }
-            val retrofit = Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(BASE_URL)
-                .build()
-            val addPharmacyResponseCall = pharmacy?.let {
-                retrofit.create(RepresentativesInterface::class.java)
-                    .addNewPharmacy(it).enqueue(object : Callback<AddPharmacyResponse> {
-                        override fun onFailure(call: Call<AddPharmacyResponse>, t: Throwable) {
-                            addPharmPB.visibility = View.GONE
-                            finishAddPharmBtn.visibility = View.VISIBLE
-                            Toast.makeText(this@AddPharmacy, t.message, Toast.LENGTH_LONG).show()
-                        }
-
-                        override fun onResponse(call: Call<AddPharmacyResponse>, response: Response<AddPharmacyResponse>) {
-                            addPharmPB.visibility = View.GONE
-                            finishAddPharmBtn.visibility = View.VISIBLE
-                            if (response.body()?.pharmacy_id != null) {
-                                showMessageOK(this@AddPharmacy,getString(R.string.pharm_added),"",
-                                    DialogInterface.OnClickListener { dialog, which ->
-                                        dialog?.dismiss()
-                                        pharmNameET.text.clear()
-                                    })
-                            } else if (response.code() == 406) {
-                                val converter = retrofit.responseBodyConverter<ErrorResponse>(
-                                    ErrorResponse::class.java,
-                                    arrayOfNulls<Annotation>(0)
-                                )
-                                val errors = converter.convert(response.errorBody())
-                                Toast.makeText(this@AddPharmacy, errors?.error, Toast.LENGTH_SHORT).show()
-                            } else if (response.code() == 400) {
-                                val converter = retrofit.responseBodyConverter<ErrorResponseArray>(
-                                    ErrorResponseArray::class.java,
-                                    arrayOfNulls<Annotation>(0)
-                                )
-                                val errors = converter.convert(response.errorBody())
-                                Toast.makeText(this@AddPharmacy, errors?.error?.get(0), Toast.LENGTH_SHORT).show()
-                            }
-                        }
+            val pharmacy = Pharmacy(
+                name,
+                street,
+                selectedOrg.toString(),
+                selectedRegion.toString()
+                ,
+                userLocation.latitude.toString(),
+                userLocation.longitude.toString(),
+                token,
+                getID()
+            )
+            NetworkTools.addPharmacy(pharmacy, {
+                addPharmPB.visibility = View.GONE
+                finishAddPharmBtn.visibility = View.VISIBLE
+                showMessageOK(this@AddPharmacy, getString(R.string.pharm_added), "",
+                    DialogInterface.OnClickListener { dialog, which ->
+                        dialog?.dismiss()
+                        pharmNameET.text.clear()
                     })
-            }
-        }
-    }
-
-    private fun getRegion() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val regionResponseCall = token?.let {
-            retrofit.create(RepresentativesInterface::class.java)
-                .getRegion(it, getID(), selectedOrg).enqueue(object : Callback<RegionResponse> {
-                    override fun onFailure(call: Call<RegionResponse>, t: Throwable) {
-                        Toast.makeText(this@AddPharmacy, t.message, Toast.LENGTH_LONG).show()
-                    }
-
-                    override fun onResponse(call: Call<RegionResponse>, response: Response<RegionResponse>) {
-                        val regionResponse = response.body()
-                        regionResponse?.let {
-                            regionsList = regionResponse.reigns
-                            setRegionsSpinner()
-                        }
-                    }
-                })
+            }, { message ->
+                addPharmPB.visibility = View.GONE
+                finishAddPharmBtn.visibility = View.VISIBLE
+                Toast.makeText(this@AddPharmacy, message, Toast.LENGTH_LONG).show()
+            })
         }
     }
 
     private fun getOrganizations() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val organizationResponseCall = token?.let {
-            retrofit.create(RepresentativesInterface::class.java)
-                .getOrgs(it, getID()).enqueue(object : Callback<OrganizationResponse> {
-                    override fun onFailure(call: Call<OrganizationResponse>, t: Throwable) {
-                        Toast.makeText(this@AddPharmacy, t.message, Toast.LENGTH_LONG).show()
-                    }
+        NetworkTools.getOrganizations(token, getID(),
+            success = {
+                organizationsList = it.organization
+                setOrgsSpinner()
+            }, failure = { message ->
+                Toast.makeText(this@AddPharmacy, message, Toast.LENGTH_LONG).show()
+            })
+    }
 
-                    override fun onResponse(call: Call<OrganizationResponse>, response: Response<OrganizationResponse>) {
-                        val organizationResponse = response.body()
-                        organizationResponse?.let {
-                            organiztionsList = it.organization
-                            setOrgsSpinner()
-                        }
-                    }
-                })
-        }
+    private fun getRegion() {
+        NetworkTools.getRegions(token, getID(), selectedOrg,
+            success = { regionResponse ->
+                regionsList = regionResponse.regions
+                setRegionsSpinner()
+            }, failure = { message ->
+                Toast.makeText(this@AddPharmacy, message, Toast.LENGTH_LONG).show()
+            })
     }
 
     private fun setRegionsSpinner() {
@@ -247,7 +199,7 @@ class AddPharmacy : AppCompatActivity() {
         pharmProvinceET.threshold = 0
         val adapter = ArrayAdapter(
             this,
-            R.layout.support_simple_spinner_dropdown_item, organiztionsList
+            R.layout.support_simple_spinner_dropdown_item, organizationsList
         )
         pharmProvinceET.setAdapter(adapter)
         pharmProvinceET.setOnFocusChangeListener { v, hasFocus ->
@@ -273,8 +225,12 @@ class AddPharmacy : AppCompatActivity() {
 
     }
 
+    @SuppressLint("HardwareIds")
     fun getID(): String {
-        return Settings.Secure.getString(this@AddPharmacy.contentResolver, Settings.Secure.ANDROID_ID)
+        return Settings.Secure.getString(
+            this@AddPharmacy.contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
     }
 
 
@@ -292,7 +248,7 @@ class AddPharmacy : AppCompatActivity() {
                                 Manifest.permission.ACCESS_COARSE_LOCATION
                             ) != PackageManager.PERMISSION_GRANTED
                         )
-                        else locationUtils.requestUpdates(this,true)
+                        else locationUtils.requestUpdates(this, true)
                     }
                     Activity.RESULT_CANCELED -> locationUtils.initGPS(this)
                 }
@@ -300,7 +256,11 @@ class AddPharmacy : AppCompatActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         when (requestCode) {
             10 -> {
                 if ((grantResults.isNotEmpty()
@@ -316,9 +276,15 @@ class AddPharmacy : AppCompatActivity() {
                                 Manifest.permission.WRITE_CONTACTS
                             )
                         ) {
-                            showMessageOKCancel(this@AddPharmacy,getString(R.string.permissionsTitle),
+                            showMessageOKCancel(this@AddPharmacy,
+                                getString(R.string.permissionsTitle),
                                 getString(R.string.permissionMessage),
-                                DialogInterface.OnClickListener { dialog, which -> locationUtils.requestUpdates(this,true) },
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    locationUtils.requestUpdates(
+                                        this,
+                                        true
+                                    )
+                                },
                                 DialogInterface.OnClickListener { dialog, which ->
                                     this.finish()
                                 })
@@ -334,6 +300,19 @@ class AddPharmacy : AppCompatActivity() {
         }
     }
 
+    private fun logout() {
+        val intent = Intent(this, MainActivity::class.java)
+        Hawk.deleteAll()
+        intent.flags = Intent
+            .FLAG_ACTIVITY_CLEAR_TOP or Intent
+            .FLAG_ACTIVITY_NO_HISTORY or Intent
+            .FLAG_ACTIVITY_NEW_TASK or Intent
+            .FLAG_ACTIVITY_CLEAR_TASK
+        intent.putExtra(Consts.SHOULD_LOGOUT, true)
+        finish()
+        startActivity(intent)
+    }
+
     override fun onStop() {
         locationUtils.stopLocation()
         super.onStop()
@@ -343,4 +322,5 @@ class AddPharmacy : AppCompatActivity() {
         locationUtils.getLastKnowLocation(this)
         super.onRestart()
     }
+
 }

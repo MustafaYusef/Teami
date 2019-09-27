@@ -1,6 +1,7 @@
 package com.croczi.teami.fragments
 
 import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
 import android.support.v4.app.Fragment
 import android.support.v7.widget.LinearLayoutManager
@@ -14,7 +15,9 @@ import com.croczi.teami.adapters.PerformanceAdapter
 import com.croczi.teami.models.Performance
 import com.croczi.teami.models.PerformanceResponse
 import com.croczi.teami.retrofit.RepresentativesInterface
+import com.croczi.teami.retrofit.addTLSSupport
 import com.croczi.teami.utils.Consts
+import com.croczi.teami.utils.Consts.BASE_URL
 import com.croczi.teami.utils.getID
 import kotlinx.android.synthetic.main.fragment_performance.*
 import retrofit2.Call
@@ -43,10 +46,13 @@ class PerformanceFragment : Fragment() {
 
     private fun getUserData(token: String, phoneId: String) {
         performanceSwipe?.isRefreshing = true
-        val retrofit = Retrofit.Builder()
-            .baseUrl(Consts.BASE_URL)
+        var retrofitBuilder = Retrofit.Builder()
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        if(Build.VERSION.SDK_INT<= Build.VERSION_CODES.KITKAT){
+            retrofitBuilder.addTLSSupport()
+        }
+        val retrofit=retrofitBuilder.build()
         retrofit.create(RepresentativesInterface::class.java)
             .getUserPerformance(token, phoneId).enqueue(object : Callback<PerformanceResponse> {
                 override fun onFailure(call: Call<PerformanceResponse>, t: Throwable) {

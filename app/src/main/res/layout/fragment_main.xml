@@ -1,220 +1,385 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/coordinatorLayout2"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    android:theme="@style/splashScreenTheme"
+    tools:context=".activities.ProfileActivity">
+
+    <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".activities.ProfileActivity"
-        android:background="@color/background"
-        android:theme="@style/splashScreenTheme"
-        android:id="@+id/coordinatorLayout2">
-    <android.support.constraint.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="visible">
+        android:visibility="visible">
 
         <android.support.constraint.ConstraintLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="8dp"
-                android:id="@+id/errorLayout"
-                android:visibility="invisible"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@+id/frameLayout"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/resourcesRefresh"
-                app:layout_constraintVertical_bias="0.29000002">
+            android:id="@+id/providerDisabledLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                    android:text="@string/something_happened"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/errorTV"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/cairo_semibold"
-                    android:gravity="center_horizontal"
-                    android:foregroundGravity="center_horizontal"
-                    app:layout_constraintTop_toBottomOf="@+id/errorIV"
-                    app:layout_constraintBottom_toTopOf="@+id/errorDescTV"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-            />
-            <TextView
-                    android:text="@string/check_connection"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/errorDescTV"
-                    android:gravity="center"
-                    android:fontFamily="@font/cairo_light"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/errorTV"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"/>
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_error"
-                    android:id="@+id/errorIV"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toTopOf="@+id/errorTV"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-            />
-        </android.support.constraint.ConstraintLayout>
-        <android.support.constraint.ConstraintLayout
+                android:id="@+id/providerDisabledTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/cairo_semibold"
+                android:foregroundGravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="@string/provider_disabled"
+                android:textColor="#333333"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toTopOf="@+id/providerDisabledDescTV"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginEnd="8dp"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginStart="8dp"
-                android:id="@+id/emptyListLayout"
-                android:visibility="invisible"
-                android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@+id/frameLayout"
-                android:layout_marginBottom="8dp"
-                app:layout_constraintBottom_toBottomOf="@+id/resourcesRefresh"
-                app:layout_constraintVertical_bias="0.29000002">
+                app:layout_constraintTop_toBottomOf="@+id/providerDisabledIV" />
 
             <TextView
-                    android:text="@string/the_list_is_empty"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/emptyTV"
-                    android:textSize="20sp"
-                    android:fontFamily="@font/cairo_semibold"
-                    android:gravity="center_horizontal"
-                    android:foregroundGravity="center_horizontal"
-                    app:layout_constraintTop_toBottomOf="@+id/imageView5"
-                    app:layout_constraintBottom_toTopOf="@+id/emptyDescTV"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-            />
-            <TextView
-                    android:text="@string/empty_list_desc"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/emptyDescTV"
-                    android:gravity="center"
-                    android:fontFamily="@font/cairo_light"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/emptyTV"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"/>
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_list_grey"
-                    android:id="@+id/imageView5"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toTopOf="@+id/emptyTV"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-            />
-        </android.support.constraint.ConstraintLayout>
-        <android.support.v4.widget.SwipeRefreshLayout
+                android:id="@+id/providerDisabledDescTV"
                 android:layout_width="0dp"
-                android:layout_height="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/cairo_light"
+                android:gravity="center"
+                android:text="@string/provider_disabled_desc"
+                android:textColor="#555555"
+                android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:id="@+id/resourcesRefresh"
-                app:layout_constraintTop_toTopOf="parent"
-                android:paddingTop="12dp"
-                android:layout_marginTop="52dp">
-            <android.support.v7.widget.RecyclerView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/resourcesRV"
+                app:layout_constraintTop_toBottomOf="@+id/providerDisabledTV" />
 
-            />
-        </android.support.v4.widget.SwipeRefreshLayout>
-        <FrameLayout
-                android:layout_width="match_parent"
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/providerDisabledIV"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@+id/providerDisabledTV"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:background="@drawable/ic_subtraction_1"
-                android:paddingTop="12dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_location_off" />
+
+            <android.support.design.button.MaterialButton
+                android:id="@+id/enable_gps_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="16dp"
+                android:text="@string/enable_gps"
+                android:textColor="#ffffff"
+                app:backgroundTint="@color/colorPrimary"
+                app:cornerRadius="24dp"
+                app:fontFamily="@font/cairo_semibold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/providerDisabledDescTV"
+                app:layout_constraintStart_toStartOf="@+id/providerDisabledDescTV"
+                app:layout_constraintTop_toBottomOf="@+id/providerDisabledDescTV" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/mockLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/mockTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/cairo_semibold"
+                android:foregroundGravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="@string/mock_location"
+                android:textColor="#333333"
+                android:textSize="24sp"
+                app:layout_constraintBottom_toTopOf="@+id/mockDescTV"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/mockIV" />
+
+            <TextView
+                android:id="@+id/mockDescTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/cairo_light"
+                android:gravity="center"
+                android:text="@string/mock_location_desc"
+                android:textColor="#555555"
+                android:textSize="18sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/mockTV" />
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/mockIV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/mockTV"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_triangle_warning" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/errorLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/resourcesRefresh"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+            app:layout_constraintVertical_bias="0">
+
+            <TextView
+                android:id="@+id/errorTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/cairo_semibold"
+                android:foregroundGravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="@string/something_happened"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/errorDescTV"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/errorIV" />
+
+            <TextView
+                android:id="@+id/errorDescTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/cairo_light"
+                android:gravity="center"
+                android:text="@string/check_connection"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/errorTV" />
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/errorIV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/errorTV"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_error" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/emptyListLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:visibility="invisible"
+            app:layout_constraintBottom_toBottomOf="@+id/resourcesRefresh"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+            app:layout_constraintVertical_bias="0">
+
+            <TextView
+                android:id="@+id/emptyTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/cairo_semibold"
+                android:foregroundGravity="center_horizontal"
+                android:gravity="center_horizontal"
+                android:text="@string/the_list_is_empty"
+                android:textSize="20sp"
+                app:layout_constraintBottom_toTopOf="@+id/emptyDescTV"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView5" />
+
+            <TextView
+                android:id="@+id/emptyDescTV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:fontFamily="@font/cairo_light"
+                android:gravity="center"
+                android:text="@string/empty_list_desc"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/emptyTV" />
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/imageView5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toTopOf="@+id/emptyTV"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_list_grey" />
+        </android.support.constraint.ConstraintLayout>
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/resourcesRefresh"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="48dp"
+            android:paddingTop="12dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:animateLayoutChanges="true"
+                android:orientation="vertical">
+
+                <include
+                    android:id="@+id/search_include"
+                    layout="@layout/search_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/resourcesRV"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp" />
+            </LinearLayout>
+        </android.support.v4.widget.SwipeRefreshLayout>
+
+        <FrameLayout
+            android:id="@+id/frameLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/ic_curved_app_bar"
+            android:clipToPadding="false"
+            android:hardwareAccelerated="false"
+            android:outlineProvider="background"
+            android:paddingTop="12dp"
+            android:paddingBottom="10dp"
+            app:elevation="8dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/profileIV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start|top"
+                android:foreground="?actionBarItemBackground"
+                android:paddingStart="12dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="12dp"
                 android:paddingBottom="10dp"
-                android:id="@+id/frameLayout"
-        >
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_person_white_24dp"
-                    android:id="@+id/profileIV"
-                    android:foreground="?actionBarItemBackground"
-                    android:scaleY="1.2"
-                    android:scaleX="1.2"
-                    android:layout_gravity="start|top"
-                    android:paddingBottom="10dp"
-                    android:paddingEnd="12dp"
-                    android:paddingStart="12dp"
-                    android:paddingTop="10dp"/>
-            <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_logo"
-                    android:id="@+id/imageView13"
-                    android:layout_gravity="center_horizontal|center_vertical"
-                    android:scaleX="2"
-                    android:scaleY="2"
-                    android:paddingTop="8dp"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:paddingBottom="8dp"/>
+                android:scaleX="1.2"
+                android:scaleY="1.2"
+                app:srcCompat="@drawable/ic_person_white_24dp" />
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/searchIV"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end|top"
+                android:foreground="?actionBarItemBackground"
+                android:paddingStart="12dp"
+                android:paddingTop="10dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="10dp"
+                android:scaleX="1.3"
+                android:scaleY="1.3"
+                app:srcCompat="@drawable/ic_search_white_24dp" />
+            <android.support.v7.widget.AppCompatImageView
+                android:id="@+id/imageView13"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal|center_vertical"
+                android:paddingStart="12dp"
+                android:paddingTop="8dp"
+                android:paddingEnd="12dp"
+                android:paddingBottom="8dp"
+                android:scaleX="2"
+                android:scaleY="2"
+                app:srcCompat="@drawable/ic_logo" />
         </FrameLayout>
 
     </android.support.constraint.ConstraintLayout>
-    <View android:layout_width="match_parent"
-          android:layout_height="match_parent"
-          android:background="#22000000"
-          android:visibility="gone"
-          android:id="@+id/dimView"/>
+
+    <View
+        android:id="@+id/dimView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#22000000"
+        android:visibility="gone" />
+
     <com.getbase.floatingactionbutton.FloatingActionsMenu
-            android:id="@+id/pink_icon"
+        android:id="@+id/pink_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+        android:layout_marginRight="16dp"
+        android:layout_marginBottom="16dp"
+        android:visibility="gone"
+        app:fab_addButtonColorNormal="@color/colorAccent"
+        app:fab_addButtonColorPressed="@color/colorAccentDark"
+        app:fab_addButtonStrokeVisible="true"
+        app:fab_icon="@drawable/ic_add_white_24dp"
+        app:fab_labelStyle="@style/AppTheme.Fab">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/addDocFab"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:fab_icon="@drawable/ic_add_white_24dp"
-            app:fab_labelStyle="@style/AppTheme.Fab"
-            app:fab_addButtonStrokeVisible="true"
-            app:fab_addButtonColorNormal="@color/colorAccent"
-            app:fab_addButtonColorPressed="@color/colorAccentDark"
-            android:layout_gravity="bottom|right"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
-            android:visibility="gone">
+            app:fab_colorNormal="@color/colorAccent"
+            app:fab_colorPressed="@color/colorAccentDark"
+            app:fab_icon="@drawable/ic_doctor"
+            app:fab_size="mini"
+            app:fab_title="@string/newDoc"
+            app:rippleColor="@color/colorAccentDark" />
+
         <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/addDocFab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_title="@string/newDoc"
-                app:fab_size="mini"
-                app:fab_icon="@drawable/ic_doctor"
-                app:rippleColor="@color/colorAccentDark"
-                app:fab_colorNormal="@color/colorAccent"
-                app:fab_colorPressed="@color/colorAccentDark"
-        />
-        <com.getbase.floatingactionbutton.FloatingActionButton
-                android:id="@+id/addPharmFab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:fab_title="@string/newPharm"
-                app:fab_size="mini"
-                app:fab_icon="@drawable/ic_pharmacy"
-                app:rippleColor="@color/colorAccentDark"
-                app:fab_colorNormal="@color/colorAccent"
-                app:fab_colorPressed="@color/colorAccentDark"
-        />
+            android:id="@+id/addPharmFab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:fab_colorNormal="@color/colorAccent"
+            app:fab_colorPressed="@color/colorAccentDark"
+            app:fab_icon="@drawable/ic_pharmacy"
+            app:fab_size="mini"
+            app:fab_title="@string/newPharm"
+            app:rippleColor="@color/colorAccentDark" />
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
 </android.support.design.widget.CoordinatorLayout>

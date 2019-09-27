@@ -8,7 +8,7 @@ class MyResources(
     @SerializedName("resource_type")
     var resourceType:String,
     var id: Int,
-    var name: String?,
+    var name: String,
     var street: String,
     @SerializedName("work_time")
     var workTime: String?,

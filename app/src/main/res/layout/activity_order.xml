@@ -7,7 +7,7 @@
     <android.support.design.widget.AppBarLayout
             android:id="@+id/appbar"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent" android:background="@drawable/ic_subtraction_1" app:elevation="0dp"
+            android:layout_width="match_parent" android:background="@drawable/ic_curved_app_bar" app:elevation="0dp"
             android:gravity="center_vertical">
         <LinearLayout
                 android:orientation="vertical"
@@ -91,16 +91,24 @@
                     app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
             </LinearLayout>
-            <Button
+            <android.support.design.button.MaterialButton
                     android:text="@string/done"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/doneOrderBtn"
-                    app:layout_constraintStart_toStartOf="parent" android:layout_marginStart="8dp"
-                    app:layout_constraintEnd_toEndOf="parent" android:layout_marginEnd="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent" android:background="@drawable/rounded_btn_shape"
-                    android:textColor="@android:color/white" android:textSize="18sp"
-                    android:fontFamily="@font/cairo_semibold" android:layout_marginBottom="8dp"
-                    app:layout_constraintTop_toBottomOf="@+id/itemsLinLay" android:layout_marginTop="16dp"/>
+                    android:layout_width="0dp"
+                    android:layout_height="58dp"
+                    android:id="@+id/doneOrderBtn"
+                    app:layout_constraintStart_toStartOf="parent"
+                    android:layout_marginStart="16dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    android:background="@drawable/rounded_btn_shape"
+                    android:textColor="@android:color/white"
+                    android:textSize="16sp"
+                    android:fontFamily="@font/cairo_bold"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintTop_toBottomOf="@+id/itemsLinLay"
+                    android:layout_marginTop="16dp"
+                    app:cornerRadius="24dp"/>
         </android.support.constraint.ConstraintLayout>
     </ScrollView>
 </android.support.design.widget.CoordinatorLayout>

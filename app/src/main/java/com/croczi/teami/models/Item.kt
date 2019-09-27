@@ -5,11 +5,11 @@ import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
 
 class Item(
-    var id: Int,
-    var name: String,
-    var description: String,
+    var id: Int=0,
+    var name: String="",
+    var description: String="",
     @SerializedName("company_name")
-    var companyName: String
+    var companyName: String=""
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),

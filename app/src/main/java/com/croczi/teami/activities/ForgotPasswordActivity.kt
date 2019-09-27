@@ -1,14 +1,18 @@
 package com.croczi.teami.activities
 
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.support.v7.app.AppCompatDelegate
 import android.view.View
 import android.widget.Toast
 import com.croczi.teami.R
 import com.croczi.teami.models.ForgotRequest
 import com.croczi.teami.models.ForgotResponse
 import com.croczi.teami.retrofit.RepresentativesInterface
+import com.croczi.teami.retrofit.addTLSSupport
 import com.croczi.teami.utils.Consts
+import com.croczi.teami.utils.Consts.BASE_URL
 import kotlinx.android.synthetic.main.activity_forgot_password.*
 import retrofit2.Call
 import retrofit2.Callback
@@ -20,6 +24,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class ForgotPasswordActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_forgot_password)
 
@@ -29,10 +34,13 @@ class ForgotPasswordActivity : AppCompatActivity() {
     }
 
     private fun sendEmail() {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(Consts.BASE_URL)
+        var retrofitBuilder = Retrofit.Builder()
+            .baseUrl(BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
-            .build()
+        if(Build.VERSION.SDK_INT<= Build.VERSION_CODES.KITKAT){
+            retrofitBuilder.addTLSSupport()
+        }
+        val retrofit=retrofitBuilder.build()
         val forgotInterface = retrofit.create(RepresentativesInterface::class.java)
         forgotProgressBar.visibility = View.VISIBLE
         forgotBtn.visibility = View.GONE

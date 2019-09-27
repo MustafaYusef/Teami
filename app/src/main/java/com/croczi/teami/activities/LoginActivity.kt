@@ -4,6 +4,7 @@ import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
+import android.support.v7.app.AppCompatDelegate
 import android.view.View
 import android.widget.Toast
 import com.croczi.teami.R
@@ -28,6 +29,7 @@ class LoginActivity : AppCompatActivity() {
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         setTheme(R.style.AppTheme_NoActionBar)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
@@ -87,12 +89,11 @@ class LoginActivity : AppCompatActivity() {
                 val loginResponse = response.body()
                 val intent = Intent(this@LoginActivity, MainActivity::class.java)
                 Hawk.put(LOGIN_RESPONSE_SHARED, loginResponse)
-                Hawk.put(LOGIN_TIME, Calendar.getInstance(TimeZone.getDefault()))
                 if (!loginResponse?.token.isNullOrEmpty()) {
                     startActivity(intent)
                 }
 //                    else {
-//                        val converter = retrofit.responseBodyConverter<ErrorResponse>(
+//                        val converter = retrofitBuilder.responseBodyConverter<ErrorResponse>(
 //                            ErrorResponse::class.java,
 //                            arrayOfNulls<Annotation>(0)
 //                        )
