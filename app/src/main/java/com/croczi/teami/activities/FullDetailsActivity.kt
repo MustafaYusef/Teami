@@ -50,16 +50,20 @@ class FullDetailsActivity : AppCompatActivity() {
 
         checkUser(this) { status, loginResponse ->
             this.loginResponse = loginResponse
+            if (loginResponse != null) {
+                token = loginResponse?.token
+                tokenExp = loginResponse?.expire
+            }
+            init()
         }
-        if (loginResponse != null) {
-            token = loginResponse?.token
-            tokenExp = loginResponse?.expire
-        }
+    }
+
+    private fun init() {
         resource = intent.getParcelableExtra("RESOURCE")
 
         setResource()
 
-        orderBtn.setOnClickListener {
+        orderBtn?.setOnClickListener {
             val intent = Intent(this, OrderActivity::class.java)
             intent.putExtra("RESOURCE", resource)
             startActivity(intent)

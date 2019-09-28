@@ -55,27 +55,30 @@ class AddPharmacy : AppCompatActivity() {
                         token = it.token
                         tokenExp = it.expire
 
-                        locationUtils = LocationUtils.getInstance(this)
-                        finishAddPharmBtn.setOnClickListener {
-                            if (setValidation())
-                                addPharm()
-                        }
-
-                        getRegion()
-                        getOrganizations()
-                        pharmBlockET.afterTextChanged {
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                if (it.isNotEmpty() && it.isNotBlank()) {
-                                    pharmNameET.background =
-                                        ColorDrawable(getColor(R.color.colorPrimary))
-                                    pharmNameET.setTextColor(resources.getColor(R.color.background))
-                                } else {
-                                    pharmNameET.background = getDrawable(R.drawable.edittext_normal)
-                                    pharmNameET.setTextColor(Color.parseColor("#666666"))
-                                }
-                            }
-                        }
+                       init()
                     }
+                }
+            }
+        }
+    }
+    private fun init(){
+        locationUtils = LocationUtils.getInstance(this)
+        finishAddPharmBtn.setOnClickListener {
+            if (setValidation())
+                addPharm()
+        }
+
+        getRegion()
+        getOrganizations()
+        pharmBlockET.afterTextChanged {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (it.isNotEmpty() && it.isNotBlank()) {
+                    pharmNameET.background =
+                        ColorDrawable(getColor(R.color.colorPrimary))
+                    pharmNameET.setTextColor(resources.getColor(R.color.background))
+                } else {
+                    pharmNameET.background = getDrawable(R.drawable.edittext_normal)
+                    pharmNameET.setTextColor(Color.parseColor("#666666"))
                 }
             }
         }

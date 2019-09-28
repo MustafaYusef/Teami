@@ -62,11 +62,16 @@ class AddDoctor : AppCompatActivity() {
         setContentView(R.layout.activity_add_doctor)
         checkUser(this) { status, loginResponse ->
             this.loginResponse = loginResponse
+
+            if (loginResponse != null) {
+                token = loginResponse?.token
+                tokenExp = loginResponse?.expire
+            }
+            init()
         }
-        if (loginResponse != null) {
-            token = loginResponse?.token
-            tokenExp = loginResponse?.expire
-        }
+    }
+
+    private fun init() {
         locationUtils = LocationUtils.getInstance(this)
         finishAddBtn.setOnClickListener {
             if (setValidation() && loginResponse != null)
