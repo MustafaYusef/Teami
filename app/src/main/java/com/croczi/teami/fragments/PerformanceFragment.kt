@@ -3,8 +3,8 @@ package com.croczi.teami.fragments
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -26,7 +26,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class PerformanceFragment : Fragment() {
+class PerformanceFragment : androidx.fragment.app.Fragment() {
     private lateinit var token: String
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -118,7 +118,7 @@ class PerformanceFragment : Fragment() {
     private fun showUserInfo(performance: List<Performance>?) {
         performance?.let {
             val adapter = PerformanceAdapter(performance)
-            performanceRV?.layoutManager = LinearLayoutManager(context)
+            performanceRV?.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             performanceRV?.adapter = adapter
         }
     }

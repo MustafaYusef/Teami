@@ -2,29 +2,37 @@ package com.croczi.teami.activities
 
 import android.annotation.SuppressLint
 import android.app.Dialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.location.Location
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v7.app.AppCompatDelegate
+import androidx.appcompat.app.AppCompatDelegate
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import com.croczi.teami.R
+import com.croczi.teami.database.entitis.FeedbackRequestLocal
+import com.croczi.teami.database.entitis.ItemLocal
 import com.croczi.teami.models.*
 import com.croczi.teami.retrofit.NetworkTools
 import com.croczi.teami.retrofit.RepresentativesInterface
 import com.croczi.teami.retrofit.addTLSSupport
-import com.croczi.teami.utils.Consts
+import com.croczi.teami.utils.*
 import com.croczi.teami.utils.Consts.BASE_URL
-import com.croczi.teami.utils.checkUser
-import com.croczi.teami.utils.getID
-import com.croczi.teami.utils.showMessageOK
+import com.mustafayusef.holidaymaster.utils.corurtins
+import com.mustafayusef.sharay.database.databaseApp
+import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_full_details.*
 import kotlinx.android.synthetic.main.feedback_popup.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -42,77 +50,161 @@ class FullDetailsActivity : AppCompatActivity() {
     private lateinit var allItems: List<Item>
     private var selectedReminder: Item = Item()
     private var selectedCall: Item = Item()
+    var db: databaseApp?=null
+   lateinit var userLocation: Location
 
+     var allItemsLocal= mutableListOf<Item>()
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_full_details)
+        resource = intent.getParcelableExtra("RESOURCE")!!
+        userLocation=intent.getParcelableExtra("userLocation") as Location
+        setResource()
+        db= this?.let { databaseApp(it) }
 
-        checkUser(this) { status, loginResponse ->
-            this.loginResponse = loginResponse
-            if (loginResponse != null) {
-                token = loginResponse?.token
-                tokenExp = loginResponse?.expire
+//        this.loginResponse=Hawk.get<LoginResponse>(Consts.LOGIN_RESPONSE_SHARED)
+//        token= this.loginResponse!!.token
+//        tokenExp =this.loginResponse!!.expire
+        orderProgressBar?.visibility=View.VISIBLE
+        orderBtn?.visibility=View.INVISIBLE
+        feedbackBtn?.visibility=View.INVISIBLE
+            checkUser(this) { status
+                              , loginResponse ->
+                if(status== UserStatus.NetworkError){
+                    this.loginResponse=Hawk.get<LoginResponse>(Consts.LOGIN_RESPONSE_SHARED)
+                    token= this.loginResponse!!.token
+                    tokenExp =this.loginResponse!!.expire
+                    orderProgressBar?.visibility=View.GONE
+                    orderBtn?.visibility=View.VISIBLE
+                    feedbackBtn?.visibility=View.VISIBLE
+                    init()
+
+                }else{
+                    this.loginResponse = loginResponse
+                    if (loginResponse != null) {
+                        token = loginResponse.token
+                        tokenExp = loginResponse.expire
+                        orderProgressBar?.visibility=View.GONE
+                        orderBtn?.visibility=View.VISIBLE
+                        feedbackBtn?.visibility=View.VISIBLE
+                        init()
+                    }
+                }
             }
-            init()
-        }
+
+
+
+
+//        corurtins.main {
+////            if(db!!.items_Dao().getAllItems().isNullOrEmpty()){
+////                (requireActivity() as MainActivity). getItems()
+////            }
+////            if(db!!.statusDoc_Dao().getAllStatusDoc().isNullOrEmpty()){
+////                (requireActivity() as MainActivity). getStatusDoctor()
+////            }
+////            if(db!!.statusPh_Dao().getAllStatusPharnasy().isNullOrEmpty()){
+////                (requireActivity() as MainActivity). getStatusPhar()
+////            }
+//            println("Itemssssssssssssss "+db!!.items_Dao().getAllItems())
+//            println("statuse doctorrrrrrrrrrr  "+db!!.statusDoc_Dao().getAllStatusDoc())
+//            println("statuse Pharmasyyyyyyyyy  "+db!!.statusPh_Dao().getAllStatusPharnasy())
+//
+//        }
+
     }
 
     private fun init() {
-        resource = intent.getParcelableExtra("RESOURCE")
-
-        setResource()
-
         orderBtn?.setOnClickListener {
             val intent = Intent(this, OrderActivity::class.java)
             intent.putExtra("RESOURCE", resource)
+
             startActivity(intent)
         }
-        if (resource.resourceType == "pharmacies")
-            resourceIcon.setImageResource(R.drawable.ic_pharmacy)
+
         feedbackBtn?.setOnClickListener {
-            if (loginResponse != null) {
-                if (resource.resourceType == "doctors") {
-                    getItems(0)
-                } else {
-                    getItems(1)
+            if(checkIfNearMarker(resource)){
+                if (loginResponse != null) {
+                    if (resource.resourceType == "doctors") {
+                        getItems(0)
+                    } else {
+                        getItems(1)
+                    }
                 }
+            }else{
+                Toast.makeText(this, this. getString(R.string.not_near), Toast.LENGTH_LONG)
+                    .show()
             }
+
         }
     }
 
-    private fun getPharmacyStatus() {
-        token?.let {
-            NetworkTools.getPharmacyStatus(it, getID(), { response ->
-                initFeedback(response.PharmacyStatus)
-            }, { message ->
-                fbBtnProgressBar?.visibility = View.GONE
-                feedbackBtn?.visibility = View.VISIBLE
-                Toast.makeText(this@FullDetailsActivity, message, Toast.LENGTH_LONG)
-                    .show()
-            })
-        } ?: run { checkUser(this) { _, _ -> } }
-    }
-
+//    private fun getPharmacyStatus() {
+//        token?.let {
+//            NetworkTools.getPharmacyStatus(it, getID(), { response ->
+//                initFeedback(response.PharmacyStatus)
+//            }, { message ->
+//                fbBtnProgressBar?.visibility = View.GONE
+//                feedbackBtn?.visibility = View.VISIBLE
+//                Toast.makeText(this@FullDetailsActivity, message, Toast.LENGTH_LONG)
+//                    .show()
+//            })
+//        } ?: run { checkUser(this) { _, _ -> } }
+//    }
+private fun getPharmacyStatus() {
+    var allStatus= mutableListOf<StatusResource>()
+    token?.let {
+       CoroutineScope(IO).launch {
+           async {
+               var status=db?.statusPh_Dao()!!.getAllStatusPharnasy()
+               for(i in 0 until status.size){
+                   var item=StatusResource(id=status[i].id,
+                       text=status[i].text)
+                   allStatus.add(item)
+               }
+           }.await()
+       }
+        initFeedback(allStatus)
+    } ?: run { checkUser(this) { _, _ -> } }
+}
     private fun getStatus() {
+        var allStatus= mutableListOf<StatusResource>()
         token?.let {
-            NetworkTools.getStatus(it, getID(), { response ->
-                initFeedback(response.status)
-            }, { message ->
-                fbBtnProgressBar?.visibility = View.GONE
-                feedbackBtn?.visibility = View.VISIBLE
-                Toast.makeText(
-                    this@FullDetailsActivity,
-                    message,
-                    Toast.LENGTH_LONG
-                )
-                    .show()
-            })
+            CoroutineScope(IO).launch {
+                async {
+
+                    var status = db?.statusDoc_Dao()!!.getAllStatusDoc()
+                    for (i in 0 until status.size) {
+                        var item = StatusResource(
+                            id = status[i].id,
+                            text = status[i].text
+                        )
+                        allStatus.add(item)
+                    }
+                }.await()
+            }
+            initFeedback(allStatus)
         } ?: run { checkUser(this) { _, _ -> } }
     }
+//    private fun getStatus() {
+//        token?.let {
+//            NetworkTools.getStatus(it, getID(), { response ->
+//                initFeedback(response.status)
+//            }, { message ->
+//                fbBtnProgressBar?.visibility = View.GONE
+//                feedbackBtn?.visibility = View.VISIBLE
+//                Toast.makeText(
+//                    this@FullDetailsActivity,
+//                    message,
+//                    Toast.LENGTH_LONG
+//                )
+//                    .show()
+//            })
+//        } ?: run { checkUser(this) { _, _ -> } }
+//    }
 
     private fun initFeedback(status: List<StatusResource>?) {
-        fbBtnProgressBar?.visibility = View.GONE
+       fbBtnProgressBar?.visibility = View.GONE
         feedbackBtn?.visibility = View.VISIBLE
         val dialog = Dialog(this)
         fbDialog = dialog
@@ -169,33 +261,58 @@ class FullDetailsActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun getItems(resourceType: Int) {
         fbBtnProgressBar?.visibility = View.VISIBLE
         feedbackBtn?.visibility = View.INVISIBLE
-        var retrofitBuilder = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-            retrofitBuilder.addTLSSupport()
-        }
-        val retrofit = retrofitBuilder.build()
 
-        val itemsInterface = retrofit.create(RepresentativesInterface::class.java)
         token?.let {
-            NetworkTools.getItems(it, getID(), { response ->
-                allItems = response.items
+           CoroutineScope(IO).launch {
+               async {
+                   var itemsLocal=db?.items_Dao()!!.getAllItems()
+                   for(i in 0 until itemsLocal.size){
+                       var item=Item(id=itemsLocal[i].id,
+                           name=itemsLocal[i].name,
+                           description=itemsLocal[i].description,
+                           companyName=itemsLocal[i].companyName)
+                       allItemsLocal.add(item)
+                   }
+                   allItems = allItemsLocal
+               }.await()
+
+           }
                 if (resourceType == 0)
                     getStatus()
                 else
                     getPharmacyStatus()
-            }, { message ->
-                fbBtnProgressBar?.visibility = View.GONE
-                feedbackBtn?.visibility = View.VISIBLE
-                Toast.makeText(this@FullDetailsActivity, message, Toast.LENGTH_LONG).show()
-            })
-        } ?: run { checkUser(this) { _, _ -> } }
+            } ?: run { checkUser(this) { _, _ -> } }
     }
+//    private fun getItems(resourceType: Int) {
+//        fbBtnProgressBar?.visibility = View.VISIBLE
+//        feedbackBtn?.visibility = View.INVISIBLE
+//        var retrofitBuilder = Retrofit.Builder()
+//            .baseUrl(BASE_URL)
+//            .addConverterFactory(GsonConverterFactory.create())
+//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+//            retrofitBuilder.addTLSSupport()
+//        }
+//        val retrofit = retrofitBuilder.build()
+//
+//        val itemsInterface = retrofit.create(RepresentativesInterface::class.java)
+//        token?.let {
+//            NetworkTools.getItems(it, getID(), { response ->
+//                allItems = response.items
+//                if (resourceType == 0)
+//                    getStatus()
+//                else
+//                    getPharmacyStatus()
+//            }, { message ->
+//
+//                fbBtnProgressBar?.visibility = View.GONE
+//                feedbackBtn?.visibility = View.VISIBLE
+//                Toast.makeText(this@FullDetailsActivity, message, Toast.LENGTH_LONG).show()
+//            })
+//        } ?: run { checkUser(this) { _, _ -> } }
+//    }
 
     private fun prepareItems() {
         val arrayAdapter = ArrayAdapter<Item>(this, R.layout.text_view_layout, allItems)
@@ -283,19 +400,43 @@ class FullDetailsActivity : AppCompatActivity() {
                     fbDialog.dismiss()
                 }
                 showMessageOK(this@FullDetailsActivity,
-                    getString(R.string.feedback_success),
+                getString(R.string.feedback_success),
+                ""
+                ,
+                DialogInterface.OnClickListener { dialog, which -> dialog?.dismiss() })
+            }, { message ->
+                var Feed= FeedbackRequestLocal( token=token!!,
+                 phoneId=feedbackRequest.phoneId,
+                 resourceType=feedbackRequest.resourceType,
+                 resourceId=feedbackRequest.resourceId,
+                 statusId=feedbackRequest.statusId,
+                 note=feedbackRequest.note,
+                 activityType=feedbackRequest.activityType,
+                 remindersProducts=feedbackRequest.remindersProducts,
+                 callProducts=feedbackRequest.callProducts)
+                 corurtins.main {
+                     db!!.feedBack_Dao().insertFeedBack(Feed)
+                 }
+                fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
+                fbDialog.fbProgressBar.visibility = View.GONE
+                if (fbDialog.isShowing) {
+                    fbDialog.fbProgressBar.visibility = View.GONE
+                    fbDialog.doneFeedbackBtn.visibility = View.VISIBLE
+                    fbDialog.dismiss()
+                }
+                showMessageOK(this@FullDetailsActivity,
+                    getString(R.string.Feed_successful_local),
                     ""
                     ,
                     DialogInterface.OnClickListener { dialog, which -> dialog?.dismiss() })
-            }, { message ->
-                fbBtnProgressBar?.visibility = View.GONE
-                feedbackBtn?.visibility = View.VISIBLE
-                Toast.makeText(this@FullDetailsActivity, message, Toast.LENGTH_LONG).show()
+//                Toast.makeText(this@FullDetailsActivity, message, Toast.LENGTH_LONG).show()
             })
         }
     }
 
     private fun setResource() {
+        if (resource.resourceType == "pharmacies")
+            resourceIcon.setImageResource(R.drawable.ic_pharmacy)
         docNameTV.text = resource.name
         doctorAddrTV.text = resource.reign
         doctorStTV.text = resource.street
@@ -323,5 +464,17 @@ class FullDetailsActivity : AppCompatActivity() {
             this@FullDetailsActivity.contentResolver,
             Settings.Secure.ANDROID_ID
         )
+    }
+
+    fun checkIfNearMarker(resource: MyResources): Boolean {
+        val docLocation = Location("Nearest Doctor")
+        docLocation.latitude = resource.latitude.toDouble()
+        docLocation.longitude = resource.longitude.toDouble()
+
+        userLocation?.let {
+            val distance = it.distanceTo(docLocation)
+            return distance < 200
+        }
+        return false
     }
 }

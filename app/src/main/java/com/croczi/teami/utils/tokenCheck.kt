@@ -12,18 +12,23 @@ import com.croczi.teami.utils.Consts.BASE_URL
 import com.croczi.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.croczi.teami.utils.Consts.LOGIN_TIME
 import com.orhanobut.hawk.Hawk
+import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 private lateinit var token: String
 private var tokenExp: Long = 0
 private var calendar: Calendar? = null
 
-fun checkUser(context: Activity, response: (status: UserStatus,loginResponse:LoginResponse?) -> Unit) {
+fun checkUser(
+    context: Activity,
+    response: (status: UserStatus, loginResponse: LoginResponse?) -> Unit
+) {
     val loginResponse = Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED)
     calendar = Hawk.get(LOGIN_TIME)
     if (loginResponse != null) {
@@ -31,27 +36,42 @@ fun checkUser(context: Activity, response: (status: UserStatus,loginResponse:Log
         tokenExp = loginResponse.expire
         checkTokenWithBackEnd(getID(context), token, tokenExp, calendar) { checkWithBackendStatus ->
             when (checkWithBackendStatus) {
-                CheckWithBackendStatus.NetworkError -> response(UserStatus.NetworkError,null)
-                CheckWithBackendStatus.TokenNotValid -> logoutUser(token, getID(context)) { logoutStatus ->
-                    response(logoutStatus,null)
+                CheckWithBackendStatus.NetworkError -> response(UserStatus.NetworkError, null)
+                CheckWithBackendStatus.TokenNotValid -> logoutUser(
+                    token,
+                    getID(context)
+                ) { logoutStatus ->
+                    response(logoutStatus, null)
                 }
-                CheckWithBackendStatus.TokenValid -> checkIfShouldRefresh(tokenExp, calendar) { shouldRefreshStatus ->
+                CheckWithBackendStatus.TokenValid -> checkIfShouldRefresh(
+                    tokenExp,
+                    calendar
+                ) { shouldRefreshStatus ->
                     when (shouldRefreshStatus) {
                         ShouldRefreshStatus.ShouldRefresh -> {
                             getRefresh(token, getID(context)) { refreshStatus, refreshResponse ->
                                 when (refreshStatus) {
                                     RefreshStatus.RefreshAcquired -> {
                                         Hawk.put(LOGIN_RESPONSE_SHARED, refreshResponse)
-                                        response(UserStatus.LoggedIn,refreshResponse)
+                                        response(UserStatus.LoggedIn, refreshResponse)
                                     }
-                                    RefreshStatus.RefreshNotAcquired -> logoutUser(token, getID(context)) {
-                                        response(it,null)
+                                    RefreshStatus.RefreshNotAcquired -> logoutUser(
+                                        token,
+                                        getID(context)
+                                    ) {
+                                        response(it, null)
                                     }
-                                    RefreshStatus.NetworkError -> response(UserStatus.NetworkError,null)
+                                    RefreshStatus.NetworkError -> response(
+                                        UserStatus.NetworkError,
+                                        null
+                                    )
                                 }
                             }
                         }
-                        ShouldRefreshStatus.ShouldNotRefresh -> response(UserStatus.LoggedIn,loginResponse)
+                        ShouldRefreshStatus.ShouldNotRefresh -> response(
+                            UserStatus.LoggedIn,
+                            loginResponse
+                        )
                     }
                 }
             }
@@ -64,7 +84,7 @@ fun checkUser(context: Activity, response: (status: UserStatus,loginResponse:Log
     }
 //        context is MainActivity -> return null
     else {
-        response(UserStatus.LoggedOut,null)
+        response(UserStatus.LoggedOut, null)
 //            val intent = Intent(context, MainActivity::class.java)
 //            Hawk.deleteAll()
 //            intent.flags = Intent
@@ -86,13 +106,16 @@ fun checkTokenWithBackEnd(
     calendar: Calendar?,
     response: (status: CheckWithBackendStatus) -> Unit
 ) {
+
+
+
     var retrofitBuilder = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+   // if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
         retrofitBuilder.addTLSSupport()
-    }
-    val retrofit = retrofitBuilder.build()
+
+    val retrofit = retrofitBuilder .build()
     val checkInterface = retrofit.create(RepresentativesInterface::class.java)
     val checkRequest = CheckRequest(token, phoneId)
     val checkResponseCall = checkInterface.checkToken(checkRequest)
@@ -146,39 +169,40 @@ fun getRefresh(
     var retrofitBuilder = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+    //if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
         retrofitBuilder.addTLSSupport()
-    }
+  //  }
     val retrofit = retrofitBuilder.build()
     val refreshInterface = retrofit.create(RepresentativesInterface::class.java)
     val refreshRequest = RefreshRequest(token, phoneId)
-    val refreshResponseCall = refreshInterface.getRefresh(refreshRequest).enqueue(object : Callback<LoginResponse> {
-        override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-            response(RefreshStatus.NetworkError, null)
+    val refreshResponseCall =
+        refreshInterface.getRefresh(refreshRequest).enqueue(object : Callback<LoginResponse> {
+            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
+                response(RefreshStatus.NetworkError, null)
 //            Toast.makeText(activity, t.message, Toast.LENGTH_LONG).show()
 //            if (activity is MainActivity) {
 //                activity.gotoMain()
 //            }
-        }
+            }
 
-        override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-            val refreshResponse = response.body()
-            if (refreshResponse?.token != null) {
-                response(RefreshStatus.RefreshAcquired, refreshResponse)
+            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
+                val refreshResponse = response.body()
+                if (refreshResponse?.token != null) {
+                    response(RefreshStatus.RefreshAcquired, refreshResponse)
 //                if (activity is MainActivity)
 //                    activity.gotoMain()
-            } else response(RefreshStatus.RefreshNotAcquired, null)
-        }
-    })
+                } else response(RefreshStatus.RefreshNotAcquired, null)
+            }
+        })
 }
 
 fun logoutUser(token: String?, phoneId: String, response: (status: UserStatus) -> Unit) {
     val retrofitBuilder = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+   // if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
         retrofitBuilder.addTLSSupport()
-    }
+   // }
     val retrofit = retrofitBuilder.build()
     val logoutInterface = retrofit.create(RepresentativesInterface::class.java)
     val logoutRequest = LogoutRequest(token, phoneId)

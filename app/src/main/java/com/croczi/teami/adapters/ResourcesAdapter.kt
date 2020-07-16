@@ -3,7 +3,7 @@ package com.croczi.teami.adapters
 import android.content.Context
 import android.content.Intent
 import android.location.Location
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +23,7 @@ class ResourcesAdapter(
     var userLocation: Location?,
     var context: Context
 ) :
-    RecyclerView.Adapter<ResourcesAdapter.DoctorsViewHolder>(){
+    androidx.recyclerview.widget.RecyclerView.Adapter<ResourcesAdapter.DoctorsViewHolder>(){
 
 
     override fun getItemId(position: Int): Long {
@@ -47,7 +47,7 @@ class ResourcesAdapter(
         viewHolder.setArea(allResources?.get(position))
     }
 
-    inner class DoctorsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    inner class DoctorsViewHolder(val view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
 
         fun checkIfNearMarker(resource: MyResources): Boolean {
             val docLocation = Location("Nearest Doctor")
@@ -63,7 +63,7 @@ class ResourcesAdapter(
                     view.distanceTV.text = view.context.getString(R.string.distanceM, distance)
                 }
 //                else
-                return distance < 150
+                return distance < 200
             }
             return false
         }
@@ -73,6 +73,9 @@ class ResourcesAdapter(
                 if (resource.resourceType == "pharmacies") {
                     view.resourceIV.setImageResource(R.drawable.ic_pharmacy_small)
                     view.resourceIV2.setImageResource(R.drawable.ic_pharmacy_red)
+                }else{
+                    view.resourceIV.setImageResource(R.drawable.ic_doctor)
+                    view.resourceIV2.setImageResource(R.drawable.ic_doctor_red)
                 }
                 view.resourceNameTV.text = it.name
                 view.resourceAddressTV.text = it.reign
@@ -90,9 +93,19 @@ class ResourcesAdapter(
                     view.detailsCV?.setOnClickListener {
                         val intent = Intent(view.context, FullDetailsActivity::class.java)
                         intent.putExtra("RESOURCE", resource)
+                        intent.putExtra("userLocation",userLocation!!)
                         view.context.startActivity(intent)
                     }
-                } else {
+                }else if(resource.resourceType == "pharmacies"){
+                    view.imageView4?.setImageResource(R.drawable.ic_my_location_red_24dp)
+                    view.detailsCV?.setOnClickListener {
+                        val intent = Intent(view.context, FullDetailsActivity::class.java)
+                        intent.putExtra("RESOURCE", resource)
+                        intent.putExtra("userLocation",userLocation!!)
+                        view.context.startActivity(intent)
+                    }
+                }
+                else {
                     view.detailsCV?.setOnClickListener {
                         Toast.makeText(view.context, view.context.getString(R.string.not_near), Toast.LENGTH_LONG)
                             .show()

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<androidx.coordinatorlayout.widget.CoordinatorLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_height="match_parent" android:layout_width="match_parent" android:background="@color/background">
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_height="wrap_content"
             android:layout_width="match_parent" android:background="@drawable/ic_curved_app_bar" app:elevation="0dp"
@@ -17,7 +17,7 @@
 
             <ImageView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" android:id="@+id/resourceIcon"
+                    android:layout_height="wrap_content" android:id="@+id/resourceIconOrder"
                     app:layout_collapseMode="pin"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -28,40 +28,57 @@
                     app:layout_constraintHorizontal_bias="0.5"
                     app:layout_constraintVertical_chainStyle="spread"
                     android:padding="16dp"/>
-            <android.support.constraint.ConstraintLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" android:padding="12dp" android:layout_marginBottom="8dp"
                     android:foregroundGravity="center_vertical" android:gravity="center_vertical"
                     android:layout_gravity="center_vertical">
+
                 <AutoCompleteTextView
-                        android:layout_width="160dp"
-                        android:layout_height="32dp"
-                        android:inputType="textPersonName"
-                        android:ems="10"
-                        android:id="@+id/ItemNameTV" android:hint="@string/item_name"
-                        android:layout_gravity="center_vertical" android:gravity="start"
-                        android:background="@drawable/edittext_normal" android:foregroundGravity="center_vertical"
-                        android:textColorHint="#333333" android:textColor="@android:color/black"
-                        android:fontFamily="@font/cairo"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        android:paddingStart="8dp" android:paddingEnd="8dp"/>
+                    android:id="@+id/ItemNameTV"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/edittext_normal"
+                    android:ems="10"
+                    android:foregroundGravity="center_vertical"
+                    android:gravity="start"
+                    android:hint="@string/item_name"
+                    android:inputType="textPersonName"
+                    android:paddingStart="8dp"
+
+                    android:paddingEnd="8dp"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="#333333"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/quantityET"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
                 <EditText
-                        android:layout_width="80dp"
-                        android:layout_height="32dp"
-                        android:inputType="number"
-                        android:ems="10"
-                        android:id="@+id/quantityET" android:hint="@string/quantity"
-                        android:background="@drawable/edittext_normal"
-                        android:layout_gravity="center_vertical" android:foregroundGravity="center_vertical"
-                        android:textColorHint="#333333" android:textColor="@android:color/black"
-                        android:fontFamily="@font/cairo"
-                        android:layout_marginEnd="16dp" app:layout_constraintEnd_toStartOf="@+id/addItemBtn"
-                        app:layout_constraintBottom_toBottomOf="@+id/ItemNameTV" android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp" app:layout_constraintTop_toTopOf="@+id/ItemNameTV"
-                        android:paddingStart="8dp" android:paddingEnd="8dp"/>
+                    android:id="@+id/quantityET"
+                    android:layout_width="80dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/edittext_normal"
+                    android:ems="10"
+                    android:foregroundGravity="center_vertical"
+                    android:hint="@string/quantity"
+
+                    android:inputType="number"
+                    android:maxLength="3"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textColor="@android:color/black"
+                    android:textColorHint="#333333"
+                    app:layout_constraintBottom_toBottomOf="@+id/ItemNameTV"
+                    app:layout_constraintEnd_toStartOf="@+id/addItemBtn"
+                    app:layout_constraintTop_toTopOf="@+id/ItemNameTV" />
                 <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent" app:srcCompat="@drawable/ic_add_white_24dp"
@@ -71,15 +88,15 @@
                         app:layout_constraintTop_toTopOf="parent" android:layout_marginBottom="8dp"
                         app:layout_constraintBottom_toBottomOf="parent"
                 />
-            </android.support.constraint.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </LinearLayout>
-    </android.support.design.widget.AppBarLayout>
+    </com.google.android.material.appbar.AppBarLayout>
     <ScrollView android:layout_width="match_parent" android:layout_height="match_parent"
-                app:layout_behavior="android.support.design.widget.AppBarLayout$ScrollingViewBehavior"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior"
                 tools:context=".activities.FullDetailsActivity"
     >
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 tools:context=".activities.OrderActivity"
@@ -88,27 +105,39 @@
                     android:orientation="vertical"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent" android:id="@+id/itemsLinLay"
-                    app:layout_constraintTop_toTopOf="parent" app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent">
             </LinearLayout>
-            <android.support.design.button.MaterialButton
-                    android:text="@string/done"
-                    android:layout_width="0dp"
-                    android:layout_height="58dp"
-                    android:id="@+id/doneOrderBtn"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="16dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:background="@drawable/rounded_btn_shape"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:fontFamily="@font/cairo_bold"
-                    android:layout_marginBottom="8dp"
-                    app:layout_constraintTop_toBottomOf="@+id/itemsLinLay"
-                    android:layout_marginTop="16dp"
-                    app:cornerRadius="24dp"/>
-        </android.support.constraint.ConstraintLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/doneOrderBtn"
+                android:layout_width="0dp"
+                android:layout_height="58dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/rounded_btn_shape"
+                android:text="@string/done"
+                android:textColor="@android:color/white"
+                android:textSize="16sp"
+                app:cornerRadius="24dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/itemsLinLay" />
+
+            <ProgressBar
+                style="?android:attr/progressBarStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/orderProgress"
+                app:layout_constraintEnd_toEndOf="@+id/doneOrderBtn"
+                app:layout_constraintStart_toStartOf="@+id/doneOrderBtn"
+                app:layout_constraintBottom_toBottomOf="@+id/doneOrderBtn"
+                app:layout_constraintTop_toTopOf="@+id/doneOrderBtn"
+                android:visibility="gone"/>
+        </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

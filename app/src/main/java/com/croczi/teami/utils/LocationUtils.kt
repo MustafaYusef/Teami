@@ -1,6 +1,7 @@
 package com.croczi.teami.utils
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.IntentSender
@@ -9,10 +10,10 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v4.content.PermissionChecker
+import androidx.fragment.app.Fragment
+import androidx.core.content.PermissionChecker
 import com.croczi.teami.activities.MainActivity
 import com.croczi.teami.fragments.MainFragment
 import com.google.android.gms.common.api.ApiException
@@ -25,7 +26,7 @@ import com.google.android.gms.tasks.Task
 
 object LocationUtils {
     var providerDisabled: Boolean = false
-    private lateinit var fragment: Fragment
+    private lateinit var fragment: androidx.fragment.app.Fragment
     private var isActivity: Boolean = true
     private var dialogCount = 0
     private lateinit var locationManager: LocationManager
@@ -44,7 +45,7 @@ object LocationUtils {
         return LocationUtils
     }
 
-    fun getInstance(fragment: Fragment, context: Context): LocationUtils {
+    fun getInstance(fragment: androidx.fragment.app.Fragment, context: Context): LocationUtils {
 
         this.isActivity = false
         this.fragment = fragment
@@ -164,6 +165,7 @@ object LocationUtils {
         }
     }
 
+    @SuppressLint("WrongConstant")
     fun requestUpdates(context: Context, isActivity: Boolean) {
         this.isActivity = isActivity
         if (isActivity) {
@@ -209,6 +211,7 @@ object LocationUtils {
         }
     }
 
+    @SuppressLint("WrongConstant")
     fun getLastKnowLocation(context: Context) {
         if (PermissionChecker.checkSelfPermission(
                 context,

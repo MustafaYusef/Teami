@@ -103,4 +103,12 @@
     <string name="workFull">العمل:</string>
     <string name="enable_gps">تشغيل الGPS</string>
     <string name="search">"بحث: "</string>
+    <string name="LogOut">هل تريد تسجيل الخروج؟ </string>
+
+    <string name="order_successful_local">سوف يتم إرسال طلبك عند توفر الأتصال</string>
+    <string name="Feed_successful_local">سوف يتم إرسال التقرير عند توفر الأتصال</string>
+
+    <string name="orderSends">تم ارسال جميع الطلبات و التقارير المخزونه في الجهاز بنجاح</string>
+    <string name="reportSends">تم ارسال جميع الطلبات و التقارير المخزونه في الجهاز بنجاح</string>
+    <string name="invalidEmailOr">كلمة المرور او الايميل غير صالح</string>
 </resources>

@@ -35,19 +35,19 @@ class MyDoctor(
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
         parcel.readInt(),
         parcel.readInt(),
         parcel.readInt(),
         parcel.readInt(),
-        parcel.readParcelable(Resource::class.java.classLoader),
-        parcel.readParcelable(Resource::class.java.classLoader),
-        parcel.readParcelable(Resource::class.java.classLoader),
-        parcel.readParcelable(Resource::class.java.classLoader)
+        parcel.readParcelable(Resource::class.java.classLoader)!!,
+        parcel.readParcelable(Resource::class.java.classLoader)!!,
+        parcel.readParcelable(Resource::class.java.classLoader)!!,
+        parcel.readParcelable(Resource::class.java.classLoader)!!
     ) {
     }
 

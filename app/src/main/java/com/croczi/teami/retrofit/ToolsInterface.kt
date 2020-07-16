@@ -10,9 +10,9 @@ import retrofit2.http.POST
 
 interface ToolsInterface {
 
-    @GET(".")
-    fun getIfAppIsLocked(): Call<AppLockedResponse>
-
+//    @GET(".")
+//    fun getIfAppIsLocked(): Call<AppLockedResponse>
+//
     @POST(".")
     fun postMockUser(
         @Body mockUser: MockUser

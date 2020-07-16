@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/coordinatorLayout2"
@@ -9,12 +9,12 @@
     android:theme="@style/splashScreenTheme"
     tools:context=".activities.ProfileActivity">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="visible">
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/providerDisabledLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -31,7 +31,7 @@
                 android:id="@+id/providerDisabledTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/cairo_semibold"
+
                 android:foregroundGravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:text="@string/provider_disabled"
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:fontFamily="@font/cairo_light"
+
                 android:gravity="center"
                 android:text="@string/provider_disabled_desc"
                 android:textColor="#555555"
@@ -58,7 +58,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/providerDisabledTV" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/providerDisabledIV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_location_off" />
 
-            <android.support.design.button.MaterialButton
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/enable_gps_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -80,14 +80,14 @@
                 android:textColor="#ffffff"
                 app:backgroundTint="@color/colorPrimary"
                 app:cornerRadius="24dp"
-                app:fontFamily="@font/cairo_semibold"
+
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/providerDisabledDescTV"
                 app:layout_constraintStart_toStartOf="@+id/providerDisabledDescTV"
                 app:layout_constraintTop_toBottomOf="@+id/providerDisabledDescTV" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/mockLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -104,7 +104,7 @@
                 android:id="@+id/mockTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/cairo_semibold"
+
                 android:foregroundGravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:text="@string/mock_location"
@@ -121,7 +121,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:fontFamily="@font/cairo_light"
+
                 android:gravity="center"
                 android:text="@string/mock_location_desc"
                 android:textColor="#555555"
@@ -131,7 +131,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/mockTV" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/mockIV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -140,9 +140,9 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_triangle_warning" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/errorLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -161,7 +161,7 @@
                 android:id="@+id/errorTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/cairo_semibold"
+
                 android:foregroundGravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:text="@string/something_happened"
@@ -177,7 +177,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:fontFamily="@font/cairo_light"
+
                 android:gravity="center"
                 android:text="@string/check_connection"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -185,7 +185,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/errorTV" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/errorIV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -194,9 +194,9 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_error" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.constraint.ConstraintLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/emptyListLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -215,7 +215,6 @@
                 android:id="@+id/emptyTV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/cairo_semibold"
                 android:foregroundGravity="center_horizontal"
                 android:gravity="center_horizontal"
                 android:text="@string/the_list_is_empty"
@@ -231,7 +230,6 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:fontFamily="@font/cairo_light"
                 android:gravity="center"
                 android:text="@string/empty_list_desc"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -239,7 +237,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/emptyTV" />
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imageView5"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -248,9 +246,9 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/ic_list_grey" />
-        </android.support.constraint.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <android.support.v4.widget.SwipeRefreshLayout
+        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/resourcesRefresh"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -273,14 +271,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" />
 
-                <android.support.v7.widget.RecyclerView
+                <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/resourcesRV"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp" />
             </LinearLayout>
-        </android.support.v4.widget.SwipeRefreshLayout>
+        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
         <FrameLayout
             android:id="@+id/frameLayout"
@@ -297,7 +295,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/profileIV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -310,7 +308,7 @@
                 android:scaleX="1.2"
                 android:scaleY="1.2"
                 app:srcCompat="@drawable/ic_person_white_24dp" />
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/searchIV"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -323,7 +321,7 @@
                 android:scaleX="1.3"
                 android:scaleY="1.3"
                 app:srcCompat="@drawable/ic_search_white_24dp" />
-            <android.support.v7.widget.AppCompatImageView
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imageView13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -337,7 +335,7 @@
                 app:srcCompat="@drawable/ic_logo" />
         </FrameLayout>
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <View
         android:id="@+id/dimView"
@@ -382,4 +380,4 @@
             app:fab_title="@string/newPharm"
             app:rippleColor="@color/colorAccentDark" />
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
-</android.support.design.widget.CoordinatorLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

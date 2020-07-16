@@ -8,7 +8,7 @@ class MeResponse(
     @SerializedName("user")
     var user: User
 ) : Parcelable {
-    constructor(parcel: Parcel) : this(parcel.readParcelable<User>(User::class.java.classLoader))
+    constructor(parcel: Parcel) : this(parcel.readParcelable<User>(User::class.java.classLoader)!!)
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeParcelable(user, flags)

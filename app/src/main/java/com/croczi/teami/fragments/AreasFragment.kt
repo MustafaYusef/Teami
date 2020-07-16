@@ -2,8 +2,8 @@ package com.croczi.teami.fragments
 
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +14,7 @@ import com.croczi.teami.models.User
 import kotlinx.android.synthetic.main.fragment_areas.*
 
 
-class AreasFragment : Fragment() {
+class AreasFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var meResponse: MeResponse
 
@@ -36,7 +36,7 @@ class AreasFragment : Fragment() {
     private fun showUserInfo(user: User?) {
         user?.let {
             val adapter = AreaAdapter(user.Coverage_Area)
-            areasRV?.layoutManager = LinearLayoutManager(context)
+            areasRV?.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             areasRV?.adapter = adapter
         }
     }

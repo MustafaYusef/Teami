@@ -112,5 +112,12 @@
     <string name="provider_disabled">GPS Disabled</string>
     <string name="enable_gps">Enable GPS</string>
     <string name="search">Search:</string>
+    <string name="LogOut">Do you want to Logout?</string>
 
+    <string name="order_successful_local">Your order will be send when the connection be available</string>
+    <string name="Feed_successful_local">Your Feedback will be send when the connection be available</string>
+
+    <string name="orderSends">Your offline orders and Reports has been send successfully</string>
+    <string name="reportSends">Your offline orders and  Reports has been send successfully</string>
+    <string name="invalidEmailOr">Invalid Email or Password</string>
 </resources>

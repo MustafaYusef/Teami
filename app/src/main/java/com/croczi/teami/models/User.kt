@@ -15,13 +15,13 @@ class User(
     val Userid: Int
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.createTypedArrayList(CoverageArea),
-        parcel.createStringArrayList(),
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.createTypedArrayList(CoverageArea)!!,
+        parcel.createStringArrayList()!!,
         parcel.readInt()
     ) {
     }

@@ -5,7 +5,7 @@ import android.os.Parcelable
 
 class LoginResponse(var token: String, var expire: Long) : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readString(),
+        parcel.readString()!!,
         parcel.readLong()
     ) {
     }

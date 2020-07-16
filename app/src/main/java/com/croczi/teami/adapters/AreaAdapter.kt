@@ -1,6 +1,6 @@
 package com.croczi.teami.adapters
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +11,7 @@ import com.croczi.teami.models.CoverageArea
 import kotlinx.android.synthetic.main.area_item.view.*
 
 class AreaAdapter(val areas: List<CoverageArea>) :
-    RecyclerView.Adapter<AreaAdapter.AreaViewHolder>() {
+    androidx.recyclerview.widget.RecyclerView.Adapter<AreaAdapter.AreaViewHolder>() {
     override fun onViewDetachedFromWindow(holder: AreaViewHolder) {
         super.onViewDetachedFromWindow(holder)
         holder.itemView.clearAnimation()
@@ -29,7 +29,7 @@ class AreaAdapter(val areas: List<CoverageArea>) :
         viewHolder.setArea(areas[position])
     }
 
-    class AreaViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+    class AreaViewHolder(val view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
 
         fun setArea(area: CoverageArea) {
             view.areaTV.text=area.name

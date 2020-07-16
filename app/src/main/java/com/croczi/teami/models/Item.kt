@@ -13,9 +13,9 @@ class Item(
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString()
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!
     ) {
     }
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<androidx.cardview.widget.CardView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -8,7 +8,7 @@
         app:cardCornerRadius="16dp"
         android:layout_gravity="center_horizontal"
         app:cardElevation="0dp">
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
     >
@@ -48,11 +48,11 @@
                 tools:text="klajsf lakjfklafmas lkfjalks fjalskfjalks faslkfnasmf lakfjlaksnfalk fnamsnfklasml ksacnka cmnaksnlvc nsakcmalkjcm asnkjcljak nvlsknjvlsnj vsjnvnsd vsdmv"
                 android:gravity="top"
                 android:inputType="textMultiLine"
-                android:fontFamily="@font/cairo"
+
                 app:layout_constraintTop_toBottomOf="@+id/reminderTV"
                 android:background="@drawable/edittext_normal"
                 android:padding="8dp"/>
-        <android.support.design.button.MaterialButton
+        <com.google.android.material.button.MaterialButton
                 android:text="@string/done"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -68,7 +68,7 @@
                 android:layout_marginBottom="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintVertical_bias="0.0"
-                android:fontFamily="@font/cairo_bold"
+
                 app:cornerRadius="24dp"/>
         <ProgressBar
                 style="?android:attr/progressBarStyle"
@@ -124,5 +124,5 @@
                 app:layout_constraintTop_toTopOf="@+id/callTV"
                 app:layout_constraintBottom_toBottomOf="@+id/callTV"
                 android:visibility="gone"/>
-    </android.support.constraint.ConstraintLayout>
-</android.support.v7.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

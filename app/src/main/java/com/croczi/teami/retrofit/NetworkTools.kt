@@ -14,6 +14,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 object NetworkTools {
 
@@ -28,9 +29,9 @@ object NetworkTools {
     private var toolsInterface: ToolsInterface
 
     init {
-        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
+//        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
             retrofitBuilder.addTLSSupport()
-        }
+//        }
         retrofit = retrofitBuilder.build()
         representativesInterface = retrofit.create(RepresentativesInterface::class.java)
         toolsInterface = toolsRetrofitBuilder.build().create(ToolsInterface::class.java)
@@ -127,16 +128,16 @@ object NetworkTools {
             .getCallback({ success(it) }, { failure(it) })
     }
 
-    fun checkIfAppIsLocked(
-        success: (response: AppLockedResponse) -> Unit,
-        failure: (throwable: String) -> Unit
-    ) {
-        toolsInterface.getIfAppIsLocked().getCallback({
-            success(it)
-        }, {
-            failure(it)
-        })
-    }
+//    fun checkIfAppIsLocked(
+//        success: (response: AppLockedResponse) -> Unit,
+//        failure: (throwable: String) -> Unit
+//    ) {
+//        toolsInterface.getIfAppIsLocked().getCallback({
+//            success(it)
+//        }, {
+//            failure(it)
+//        })
+//    }
 
     fun getMyResources(
         token: String,
@@ -253,6 +254,7 @@ fun Retrofit.Builder.addTLSSupport() {
         )
         .build()
     val client = OkHttpClient.Builder()
+        .connectTimeout(4,TimeUnit.SECONDS)
         .connectionSpecs(listOf(spec, ConnectionSpec.CLEARTEXT))
         .build()
     this.client(client)

@@ -24,7 +24,7 @@ fun showMessageOKCancel(activity: Activity,
         .setTitle(title)
         .setMessage(message)
         .setPositiveButton(activity.getString(R.string.okDialog), okListener)
-        .setNegativeButton(activity.getString(R.string.cancelDialog), cancelListener)
+        .setNeutralButton(activity.getString(R.string.cancelDialog), cancelListener)
         .create()
         .show()
 }

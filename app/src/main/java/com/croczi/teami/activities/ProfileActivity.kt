@@ -1,13 +1,14 @@
 package com.croczi.teami.activities
 
 import android.annotation.SuppressLint
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.provider.Settings
-import android.support.v4.content.res.ResourcesCompat
-import android.support.v7.app.AppCompatActivity
-import android.support.v7.app.AppCompatDelegate
+import androidx.core.content.res.ResourcesCompat
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -24,6 +25,8 @@ import com.croczi.teami.utils.Consts.BASE_URL
 import com.croczi.teami.utils.Consts.SHOULD_LOGOUT
 import com.croczi.teami.utils.UserStatus
 import com.croczi.teami.utils.checkUser
+import com.croczi.teami.utils.showMessageOK
+import com.croczi.teami.utils.showMessageOKCancel
 import com.orhanobut.hawk.Hawk
 import kotlinx.android.synthetic.main.activity_profile.*
 import kotlinx.android.synthetic.main.error_layout.*
@@ -67,16 +70,23 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun logout() {
-        val intent = Intent(this, MainActivity::class.java)
-        Hawk.deleteAll()
-        intent.flags = Intent
-            .FLAG_ACTIVITY_CLEAR_TOP or Intent
-            .FLAG_ACTIVITY_NO_HISTORY or Intent
-            .FLAG_ACTIVITY_NEW_TASK or Intent
-            .FLAG_ACTIVITY_CLEAR_TASK
-        intent.putExtra(SHOULD_LOGOUT, true)
-        finish()
-        startActivity(intent)
+        showMessageOKCancel(this,
+            getString(R.string.LogOut),
+            ""
+            ,
+            DialogInterface.OnClickListener { dialog, which ->
+                val intent = Intent(this, MainActivity::class.java)
+                Hawk.deleteAll()
+                intent.flags = Intent
+                    .FLAG_ACTIVITY_CLEAR_TOP or Intent
+                    .FLAG_ACTIVITY_NO_HISTORY or Intent
+                    .FLAG_ACTIVITY_NEW_TASK or Intent
+                    .FLAG_ACTIVITY_CLEAR_TASK
+                intent.putExtra(SHOULD_LOGOUT, true)
+                finish()
+                startActivity(intent)},
+            DialogInterface.OnClickListener{ dialog, which -> dialog?.dismiss() })
+
     }
 
     private fun getUserData(phoneId: String) {

@@ -7,7 +7,7 @@ class Resource(var id:Int, var name:String) : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
-        parcel.readString()
+        parcel.readString()!!
     ) {
     }
 

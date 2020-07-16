@@ -2,8 +2,8 @@ package com.croczi.teami.fragments
 
 import android.os.Build
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import android.support.v7.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -24,7 +24,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class HistoryFragment : Fragment() {
+class HistoryFragment : androidx.fragment.app.Fragment() {
 
     private lateinit var token: String
 
@@ -77,7 +77,7 @@ class HistoryFragment : Fragment() {
     private fun showUserInfo(history: List<History>?) {
         history?.let {
             val adapter = HistoryAdapter(history)
-            historyRV?.layoutManager = LinearLayoutManager(context)
+            historyRV?.layoutManager = androidx.recyclerview.widget.LinearLayoutManager(context)
             historyRV?.adapter = adapter
         }
     }

@@ -62,18 +62,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".activities.LoginActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar">
+<!--        <activity-->
+<!--            android:name=".activities.LoginActivity"-->
+<!--            android:screenOrientation="portrait"-->
+<!--            android:theme="@style/AppTheme.NoActionBar">-->
 
-            <!-- <intent-filter> -->
-            <!-- <action android:name="android.intent.action.MAIN"/> -->
+<!--            &lt;!&ndash; <intent-filter> &ndash;&gt;-->
+<!--            &lt;!&ndash; <action android:name="android.intent.action.MAIN"/> &ndash;&gt;-->
 
 
-            <!-- <category android:name="android.intent.category.LAUNCHER"/> -->
-            <!-- </intent-filter> -->
-        </activity>
+<!--            &lt;!&ndash; <category android:name="android.intent.category.LAUNCHER"/> &ndash;&gt;-->
+<!--            &lt;!&ndash; </intent-filter> &ndash;&gt;-->
+<!--        </activity>-->
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -98,6 +98,14 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <receiver
+            android:name=".utils.ConnectivityReceiver"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

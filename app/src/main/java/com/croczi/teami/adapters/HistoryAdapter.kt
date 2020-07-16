@@ -1,7 +1,7 @@
 package com.croczi.teami.adapters
 
 import android.graphics.Color
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +14,7 @@ import com.intrusoft.scatter.ChartData
 
 
 class HistoryAdapter(val history: List<History>) :
-    RecyclerView.Adapter<HistoryAdapter.HistoryVH>() {
+    androidx.recyclerview.widget.RecyclerView.Adapter<HistoryAdapter.HistoryVH>() {
     override fun onViewDetachedFromWindow(holder: HistoryVH) {
         super.onViewDetachedFromWindow(holder)
         holder.itemView.clearAnimation()
@@ -33,7 +33,7 @@ class HistoryAdapter(val history: List<History>) :
         viewHolder.setOrder(history[position])
     }
 
-    class HistoryVH(val view: View) : RecyclerView.ViewHolder(view) {
+    class HistoryVH(val view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
 
         fun setOrder(history: History) {
             view.resourceNameTV.text = history.doctorName

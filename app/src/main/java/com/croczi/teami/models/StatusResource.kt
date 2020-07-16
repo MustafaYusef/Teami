@@ -6,7 +6,7 @@ import android.os.Parcelable
 class StatusResource(var id:Int, var text:String) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
-        parcel.readString()
+        parcel.readString()!!
     )
     override fun toString(): String {
         return text

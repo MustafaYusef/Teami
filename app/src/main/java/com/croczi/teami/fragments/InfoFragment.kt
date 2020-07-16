@@ -2,7 +2,7 @@ package com.croczi.teami.fragments
 
 
 import android.os.Bundle
-import android.support.v4.app.Fragment
+import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,7 +14,7 @@ import com.croczi.teami.models.MeResponse
 import com.croczi.teami.models.User
 import kotlinx.android.synthetic.main.fragment_info.*
 
-class InfoFragment : Fragment() {
+class InfoFragment : androidx.fragment.app.Fragment() {
 
     private var lastPosition = -1
     private val fadeDuration: Long = 500

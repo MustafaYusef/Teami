@@ -1,16 +1,16 @@
 package com.croczi.teami.adapters
 
-import android.support.v4.app.Fragment
-import android.support.v4.app.FragmentManager
-import android.support.v4.app.FragmentPagerAdapter
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentPagerAdapter
 import java.util.ArrayList
 
 
-class TabAdapter(fm:FragmentManager) : FragmentPagerAdapter(fm) {
-     val mFragmentList = ArrayList<Fragment>()
+class TabAdapter(fm: androidx.fragment.app.FragmentManager) : androidx.fragment.app.FragmentPagerAdapter(fm) {
+     val mFragmentList = ArrayList<androidx.fragment.app.Fragment>()
     private val mFragmentTitleList = ArrayList<String>()
 
-    override fun getItem(position: Int): Fragment {
+    override fun getItem(position: Int): androidx.fragment.app.Fragment {
         return mFragmentList[position]
     }
 
@@ -18,7 +18,7 @@ class TabAdapter(fm:FragmentManager) : FragmentPagerAdapter(fm) {
         return mFragmentList.size
     }
 
-    fun addFragment(fragment: Fragment, title: String) {
+    fun addFragment(fragment: androidx.fragment.app.Fragment, title: String) {
         mFragmentList.add(fragment)
         mFragmentTitleList.add(title)
     }

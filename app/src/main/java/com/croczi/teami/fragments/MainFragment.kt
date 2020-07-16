@@ -2,6 +2,7 @@ package com.croczi.teami.fragments
 
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
@@ -11,13 +12,15 @@ import android.graphics.Color
 import android.location.Location
 import android.os.Build
 import android.os.Bundle
-import android.support.design.chip.Chip
-import android.support.v4.app.ActivityCompat
-import android.support.v4.app.Fragment
-import android.support.v4.content.ContextCompat
-import android.support.v4.content.PermissionChecker
-import android.support.v7.app.AppCompatDelegate
-import android.support.v7.widget.LinearLayoutManager
+import android.os.LocaleList
+import androidx.annotation.RequiresApi
+import com.google.android.material.chip.Chip
+import androidx.core.app.ActivityCompat
+import androidx.fragment.app.Fragment
+import androidx.core.content.ContextCompat
+import androidx.core.content.PermissionChecker
+import androidx.appcompat.app.AppCompatDelegate
+import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,6 +30,7 @@ import com.getbase.floatingactionbutton.FloatingActionsMenu
 import com.croczi.teami.R
 import com.croczi.teami.activities.AddDoctor
 import com.croczi.teami.activities.AddPharmacy
+import com.croczi.teami.activities.MainActivity
 import com.croczi.teami.activities.ProfileActivity
 import com.croczi.teami.adapters.ResourcesAdapter
 import com.croczi.teami.models.*
@@ -38,8 +42,13 @@ import com.croczi.teami.utils.*
 import com.croczi.teami.utils.Consts.BASE_URL
 import com.croczi.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.croczi.teami.utils.Consts.USER_LOCATION
+import com.mustafayusef.holidaymaster.utils.corurtins
+import com.mustafayusef.sharay.database.databaseApp
+import com.mustafayusef.sharay.database.entitis.MyResourcesLocal
 import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.search_layout.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -48,12 +57,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import kotlin.Comparator
 
-class MainFragment : Fragment() {
+class MainFragment : androidx.fragment.app.Fragment() {
 
     private var checkedSearchChip: Int = 0
     private var searchText: String = ""
     private var meResponse: MeResponse? = null
     var resourcesList: List<MyResources>? = null
+    var resourcesListMutble= mutableListOf<MyResources>()
     private var userLocation: Location? = null
     private var token: String? = null
     private var tokenExp: Long? = 0
@@ -63,6 +73,7 @@ class MainFragment : Fragment() {
     private lateinit var myContext: Context
     private var loginResponse: LoginResponse? = null
 
+    var  localResource= mutableListOf<MyResourcesLocal>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -71,7 +82,7 @@ class MainFragment : Fragment() {
 
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
-
+    var db:databaseApp?=null
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
         super.onViewCreated(view, savedInstanceState)
@@ -79,13 +90,23 @@ class MainFragment : Fragment() {
             frameLayout?.elevation = 16f
             frameLayout?.translationZ = 16f
         }
+
+         db= context?.let { databaseApp(it) }
         loginResponse = arguments?.get(LOGIN_RESPONSE_SHARED) as LoginResponse?
         token = loginResponse?.token
         tokenExp = loginResponse?.expire
+
+//        providerDisabledLayout?.visibility = View.VISIBLE
+//        mockLayout?.visibility = View.GONE
+//        resourcesRV?.visibility = View.GONE
+//        resourcesRefresh?.visibility = View.GONE
+
+
         pink_icon?.visibility = View.GONE
         context?.let {
             myContext = it
         }
+
 //        resourcesRV?.itemAnimator?.changeDuration=0
 //        if (resourcesRV?.itemAnimator is SimpleItemAnimator)
 //            (resourcesRV?.itemAnimator as SimpleItemAnimator).supportsChangeAnimations = false
@@ -104,9 +125,11 @@ class MainFragment : Fragment() {
             getMyResources()
             emptyListLayout?.visibility = View.INVISIBLE
             errorLayout?.visibility = View.INVISIBLE
+
         }
         getUserData(token, getID(context))
         getMyResources()
+
         adapter.notifyDataSetChanged()
         setSearchLayoutListener()
     }
@@ -178,7 +201,6 @@ class MainFragment : Fragment() {
         areaChip?.setOnClickListener {
             setSelectedChip(areaChip)
             filterAndSortResources()
-
         }
         streetChip?.setOnClickListener {
             setSelectedChip(streetChip)
@@ -214,6 +236,7 @@ class MainFragment : Fragment() {
         }
     }
 
+
     fun filterAndSortResources(): List<MyResources>? {
         checkLocation()
         val sortedDoctors = resourcesList
@@ -225,7 +248,7 @@ class MainFragment : Fragment() {
             filtered.addAll(filterResourcesByQuery())
         }
         userLocation = locationUtils.userLocation
-        adapter.userLocation = userLocation
+        adapter.userLocation = userLocation!!
         if (filtered.isNotEmpty()) {
             resourcesRV?.visibility = View.VISIBLE
             emptyListLayout?.visibility = View.INVISIBLE
@@ -288,6 +311,7 @@ class MainFragment : Fragment() {
         return sortedResources
     }
 
+
     private fun checkLocation() {
         userLocation?.let {
             if (it.isFromMockProvider) {
@@ -343,6 +367,7 @@ class MainFragment : Fragment() {
     }
 
     fun getMyResources() {
+        localResource.clear()
         checkLocation()
         resourcesRefresh?.isRefreshing = true
         token?.let {
@@ -355,16 +380,87 @@ class MainFragment : Fragment() {
                 if (userLocation != null)
                     filterAndSortResources()
                 resourcesRV?.adapter = adapter
-                resourcesRV?.layoutManager = LinearLayoutManager(context)
+                resourcesRV?.layoutManager =
+                    androidx.recyclerview.widget.LinearLayoutManager(context)
                 adapter.notifyDataSetChanged()
+                 for(i in 0 until resourcesList!!.size) {
+                     var myLocal=MyResourcesLocal(resourceType = resourcesList!![i].resourceType,
+                         id= resourcesList!![i].id, name=resourcesList!![i].name,
+                      street=resourcesList!![i].street, workTime=resourcesList!![i].workTime ,
+                         organisation=resourcesList!![i].organisation,
+                      speciality=resourcesList!![i].speciality,
+                      hospital=resourcesList!![i].hospital,
+                              reign=resourcesList!![i].reign,
+                         latitude= resourcesList!![i].latitude,
+                      longitude=resourcesList!![i].longitude)
+                     localResource.add(myLocal)
+                 }
+
+              //  println("Locallllllllllllllllllllllll;; "+localResource[0].hospital)
+                  CoroutineScope(IO).launch{
+                      async {
+                          db!!.resource_Dao().deleteAllResource()
+                      }.await()
+                      async {
+                          db!!.resource_Dao().inserAllResource(localResource.toList())
+                      }.await()
+
+                }
+                //set the cash
             }, {
+                resourcesListMutble.clear()
+
                 resourcesRefresh?.isRefreshing = false
-                errorLayout?.visibility = View.VISIBLE
-                resourcesRV?.visibility = View.INVISIBLE
+//                errorLayout?.visibility = View.VISIBLE
+//                resourcesRV?.visibility = View.INVISIBLE
+
+                errorLayout?.visibility = View.INVISIBLE
+                resourcesRV?.visibility = View.VISIBLE
+
+                CoroutineScope(IO).launch{
+                   async {
+                       var localRes=db!!.resource_Dao().getAllResource()
+                       withContext(Dispatchers.Main){
+                           for(i in 0 until localRes.size){
+                               var myRes=MyResources( resourceType=localRes[i].resourceType,
+                                   id=localRes[i].id,
+                                   name=localRes[i].name,
+                                   street=localRes[i].street,
+                                   workTime=localRes[i].workTime,
+                                   organisation=localRes[i].organisation,
+                                   speciality=localRes[i].speciality,
+                                   hospital=localRes[i].hospital,
+                                   reign=localRes[i].reign,
+                                   latitude=localRes[i].latitude,
+                                   longitude=localRes[i].longitude)
+                               resourcesListMutble.add(myRes)
+                           }
+                           resourcesList =resourcesListMutble
+                           userLocation = locationUtils.userLocation
+                           if (userLocation != null)
+                               filterAndSortResources()
+                           resourcesRV?.adapter = adapter
+                           resourcesRV?.layoutManager =
+                               androidx.recyclerview.widget.LinearLayoutManager(context)
+                           adapter.notifyDataSetChanged()
+                       }
+                   }.await()
+
+
+
+                }
+                // desplay them
             })
         } ?: run { checkUser(requireActivity(), { _, _ -> }) }
-    }
 
+    }
+  suspend fun print1(localResource:MutableList<MyResourcesLocal>){
+      withContext(Dispatchers.Main){
+
+      }
+
+  }
+    @SuppressLint("WrongConstant")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {

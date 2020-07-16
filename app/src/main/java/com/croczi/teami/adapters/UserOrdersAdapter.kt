@@ -1,6 +1,6 @@
 package com.croczi.teami.adapters
 
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +11,7 @@ import com.croczi.teami.models.UserOrder
 import kotlinx.android.synthetic.main.user_orders_item.view.*
 
 class UserOrdersAdapter(val orders: List<UserOrder>) :
-    RecyclerView.Adapter<UserOrdersAdapter.UserOrdersVH>() {
+    androidx.recyclerview.widget.RecyclerView.Adapter<UserOrdersAdapter.UserOrdersVH>() {
     override fun onViewDetachedFromWindow(holder: UserOrdersVH) {
         super.onViewDetachedFromWindow(holder)
         holder.itemView.clearAnimation()
@@ -29,7 +29,7 @@ class UserOrdersAdapter(val orders: List<UserOrder>) :
         viewHolder.setOrder(orders[position])
     }
 
-    class UserOrdersVH(val view: View) : RecyclerView.ViewHolder(view) {
+    class UserOrdersVH(val view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
 
         fun setOrder(order: UserOrder) {
             view.pharmacyNameTV.text=order.pharmacyName

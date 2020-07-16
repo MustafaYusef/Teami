@@ -1,8 +1,10 @@
 package com.croczi.teami.models
 
+
 import android.os.Parcel
 import android.os.Parcelable
 import com.google.gson.annotations.SerializedName
+
 
 class MyResources(
     @SerializedName("resource_type")
@@ -20,17 +22,17 @@ class MyResources(
     var longitude: String
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readString(),
-        parcel.readInt(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString(),
-        parcel.readString()
+        parcel.readString()!!,
+        parcel.readInt()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!
     ) {
     }
 

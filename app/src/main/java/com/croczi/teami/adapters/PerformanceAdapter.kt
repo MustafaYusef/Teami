@@ -1,7 +1,7 @@
 package com.croczi.teami.adapters
 
 import android.graphics.Color
-import android.support.v7.widget.RecyclerView
+import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.performance_item.view.classTV
 
 
 class PerformanceAdapter(val performance: List<Performance>) :
-    RecyclerView.Adapter<PerformanceAdapter.PerformanceVH>() {
+    androidx.recyclerview.widget.RecyclerView.Adapter<PerformanceAdapter.PerformanceVH>() {
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PerformanceVH {
@@ -30,7 +30,7 @@ class PerformanceAdapter(val performance: List<Performance>) :
         viewHolder.setPerformance(performance[position])
     }
 
-    class PerformanceVH(val view: View) : RecyclerView.ViewHolder(view) {
+    class PerformanceVH(val view: View) : androidx.recyclerview.widget.RecyclerView.ViewHolder(view) {
 
         fun setPerformance(performance: Performance) {
             view.classTV.text = performance.classX
