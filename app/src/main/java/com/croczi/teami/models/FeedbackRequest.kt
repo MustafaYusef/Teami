@@ -19,5 +19,8 @@ class FeedbackRequest(
     @SerializedName("reminders_products")
     var remindersProducts:String?,
     @SerializedName("call_products")
-    var callProducts:String?
+    var callProducts:String?,
+
+    @SerializedName("Insert_order")
+    var date_insert:String?
 )

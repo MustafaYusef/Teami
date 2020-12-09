@@ -19,7 +19,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:theme="@style/AppTheme.AppBarOverlay"
-                android:background="@drawable/ic_curved_app_bar"
+                android:background="@drawable/curved_appbar"
                 android:foregroundGravity="center_vertical"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"

@@ -9,6 +9,7 @@ import androidx.cardview.widget.CardView
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.*
+import androidx.annotation.RequiresApi
 import com.croczi.teami.R
 import com.croczi.teami.database.entitis.FeedbackRequestLocal
 import com.croczi.teami.database.entitis.OrderRequestLocal
@@ -32,18 +33,17 @@ import kotlinx.android.synthetic.main.order_item_layout.view.itemNameTV
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
+import java.util.*
+
+import kotlin.collections.ArrayList
 
 class OrderActivity : AppCompatActivity() {
 
     private var selectedItems: ArrayList<Item> = arrayListOf()
     private lateinit var allItems: List<Item>
     private var item_ids: ArrayList<Int> = arrayListOf()
-    private var quantities: ArrayList<Int> = arrayListOf()
+    private var quantities: ArrayList<String> = arrayListOf()
     private lateinit var token: String
     var db: databaseApp?=null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -115,9 +115,13 @@ class OrderActivity : AppCompatActivity() {
 //        })
 //    }
 
+
     private fun postOrder() {
         orderProgress?.visibility=View.VISIBLE
         doneOrderBtn?.visibility=View.GONE
+        val current =Calendar.getInstance().time
+        val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+        val formatedDate = sdf.format(current)
         val resource: MyResources = intent.getParcelableExtra("RESOURCE")!!
         val orderRequest = OrderRequest(
             token,
@@ -125,7 +129,7 @@ class OrderActivity : AppCompatActivity() {
             item_ids,
             quantities,
             resource.resourceType,
-            resource.id
+            resource.id,formatedDate.toString()
         )
         if(!item_ids.isNullOrEmpty()){
             NetworkTools.postOrder(orderRequest, {
@@ -142,6 +146,10 @@ class OrderActivity : AppCompatActivity() {
                 doneOrderBtn?.visibility=View.VISIBLE
                 //            println("String item_ids:"+item_ids.toString().subSequence
 //                (1,item_ids.toString().length-1).split(',').size)
+                val current =Calendar.getInstance().time
+                val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss",Locale.ENGLISH)
+                val formatedDate = sdf.format(current)
+
                 var Feed= OrderRequestLocal( token=orderRequest.token!!,
                     phone_id=orderRequest.phone_id!!,
                     item_idArray=orderRequest.item_id.toString().subSequence
@@ -149,7 +157,7 @@ class OrderActivity : AppCompatActivity() {
                     quantityArray=orderRequest.quantity .toString().subSequence
                         (1,orderRequest.quantity.toString().length-1).toString().replace(" ",""),
                     resource_type=orderRequest.resource_type,
-                    resource_id=orderRequest.resource_id)
+                    resource_id=orderRequest.resource_id,created_at = formatedDate.toString())
                 println("Feeeeeeeeeeeeeeeed   :"+Feed)
                 corurtins.main {
                     db!!.orders_Dao().insertOrder(Feed)
@@ -187,7 +195,7 @@ class OrderActivity : AppCompatActivity() {
                 ItemNameTV.setText(item.name)
                 addItemBtn.setOnClickListener {
                     if (quantityET.text.isNotBlank() && ItemNameTV.text.isNotBlank()) {
-                        quantities.add(quantityET.text.toString().toInt())
+                        quantities.add(quantityET.text.toString())
                         item_ids.add(item.id)
                         selectedItems.add(item)
                         ItemNameTV.text.clear()

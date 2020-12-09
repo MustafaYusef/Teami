@@ -154,11 +154,11 @@ class ProfileActivity : AppCompatActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem?): Boolean {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item?.itemId) {
             R.id.logout -> logout()
         }
-        return super.onOptionsItemSelected(item)
+        return item?.let { super.onOptionsItemSelected(it) }
     }
 
     override fun onSupportNavigateUp(): Boolean {

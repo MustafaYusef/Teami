@@ -120,6 +120,7 @@ class AddPharmacy : AppCompatActivity() {
             addPharmPB.visibility = View.VISIBLE
             finishAddPharmBtn.visibility = View.INVISIBLE
             val name = pharmNameET.text.toString()
+            println("name       "+name)
             val street = pharmBlockET.text.toString()
             val pharmacy = Pharmacy(
                 name,
@@ -132,6 +133,22 @@ class AddPharmacy : AppCompatActivity() {
                 token,
                 getID()
             )
+
+            println("name   "+pharmacy.name)
+            println("latitude   "+pharmacy.latitude)
+            println("longitude   "+pharmacy.longitude)
+
+            println("organizationId   "+selectedOrg.toString())
+
+            println("regionId   "+selectedRegion.toString())
+
+
+            println("token   "+pharmacy.token)
+            println("phoneID   "+pharmacy.phoneID)
+
+            println("street   "+pharmacy.street)
+
+            println()
             NetworkTools.addPharmacy(pharmacy, {
                 addPharmPB.visibility = View.GONE
                 finishAddPharmBtn.visibility = View.VISIBLE

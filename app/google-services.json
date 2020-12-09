@@ -1,42 +1,34 @@
 {
   "project_info": {
-    "project_number": "905690423971",
-    "firebase_url": "https://fir-test-9a646.firebaseio.com",
-    "project_id": "fir-test-9a646",
-    "storage_bucket": "fir-test-9a646.appspot.com"
+    "project_number": "61526428169",
+    "firebase_url": "https://teami-e5a61.firebaseio.com",
+    "project_id": "teami-e5a61",
+    "storage_bucket": "teami-e5a61.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:905690423971:android:b8f93edd707a0737",
+        "mobilesdk_app_id": "1:61526428169:android:b7cff7fb4d393543b686d8",
         "android_client_info": {
           "package_name": "com.croczi.teami"
         }
       },
       "oauth_client": [
         {
-          "client_id": "905690423971-v2ktelj5sa0mlq04481ve5vr4p3nmcvq.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.croczi.teami",
-            "certificate_hash": "e15f06bfd8e9f596f8c0086ae5078e31011823e0"
-          }
-        },
-        {
-          "client_id": "905690423971-kt8ifpcmrcggt5snh858pejbeeafckff.apps.googleusercontent.com",
+          "client_id": "61526428169-0dksgf45ev7hhsmfgmih6esq94bu95vi.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDEPM80dVJeRS38jgGfS9-LS0Cp_dzSgFg"
+          "current_key": "AIzaSyDjNQimae7rSdTHPTOfnkbdYmlaPB-uWwY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "905690423971-kt8ifpcmrcggt5snh858pejbeeafckff.apps.googleusercontent.com",
+              "client_id": "61526428169-0dksgf45ev7hhsmfgmih6esq94bu95vi.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

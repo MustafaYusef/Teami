@@ -15,7 +15,7 @@
             android:layout_height="wrap_content"
             android:layout_width="match_parent"
             android:theme="@style/AppTheme.AppBarOverlay"
-            android:background="@drawable/ic_curved_app_bar"
+            android:background="@drawable/curved_appbar"
     >
 
         <com.google.android.material.appbar.CollapsingToolbarLayout

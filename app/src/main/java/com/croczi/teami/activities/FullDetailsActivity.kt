@@ -33,11 +33,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 class FullDetailsActivity : AppCompatActivity() {
 
@@ -59,9 +58,10 @@ class FullDetailsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_full_details)
         resource = intent.getParcelableExtra("RESOURCE")!!
-        userLocation=intent.getParcelableExtra("userLocation") as Location
+        userLocation= intent.getParcelableExtra("userLocation")!!
         setResource()
         db= this?.let { databaseApp(it) }
+
 
 //        this.loginResponse=Hawk.get<LoginResponse>(Consts.LOGIN_RESPONSE_SHARED)
 //        token= this.loginResponse!!.token
@@ -364,6 +364,9 @@ private fun getPharmacyStatus() {
 
     private fun postFeedback(statusId: Int, note: String) {
         val feedbackRequest = token?.let {
+            val current =Calendar.getInstance().time
+            val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss",Locale.ENGLISH)
+            val formatedDate = sdf.format(current)
             if (resource.resourceType == "doctors")
                 FeedbackRequest(
                     it,
@@ -374,7 +377,7 @@ private fun getPharmacyStatus() {
                     note,
                     "visit",
                     "${selectedReminder.companyName}_${selectedReminder.name}",
-                    "${selectedCall.companyName}_${selectedCall.name}"
+                    "${selectedCall.companyName}_${selectedCall.name}",formatedDate.toString()
                 )
             else
                 FeedbackRequest(
@@ -387,7 +390,7 @@ private fun getPharmacyStatus() {
                     statusId.toString(),
                     note
                     ,
-                    "visit", null, null
+                    "visit", null, null,formatedDate.toString()
                 )
         }
         feedbackRequest?.let {
@@ -405,6 +408,9 @@ private fun getPharmacyStatus() {
                 ,
                 DialogInterface.OnClickListener { dialog, which -> dialog?.dismiss() })
             }, { message ->
+                val current =Calendar.getInstance().time
+                val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss",Locale.ENGLISH)
+                val formatedDate = sdf.format(current)
                 var Feed= FeedbackRequestLocal( token=token!!,
                  phoneId=feedbackRequest.phoneId,
                  resourceType=feedbackRequest.resourceType,
@@ -413,7 +419,7 @@ private fun getPharmacyStatus() {
                  note=feedbackRequest.note,
                  activityType=feedbackRequest.activityType,
                  remindersProducts=feedbackRequest.remindersProducts,
-                 callProducts=feedbackRequest.callProducts)
+                 callProducts=feedbackRequest.callProducts,created_at = formatedDate.toString())
                  corurtins.main {
                      db!!.feedBack_Dao().insertFeedBack(Feed)
                  }

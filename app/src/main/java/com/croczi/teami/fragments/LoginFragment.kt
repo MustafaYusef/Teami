@@ -55,7 +55,7 @@ import okhttp3.ConnectionSpec
 import okhttp3.internal.Version
 
 
-class LoginFragment : androidx.fragment.app.Fragment() {
+class LoginFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -123,6 +123,7 @@ class LoginFragment : androidx.fragment.app.Fragment() {
                 loginBtn?.visibility = View.VISIBLE
                 val loginResponse = response.body()
                 if (!loginResponse?.token.isNullOrEmpty()) {
+
                     Hawk.put(LOGIN_RESPONSE_SHARED, loginResponse)
                     Hawk.put(LOGIN_TIME, Calendar.getInstance(TimeZone.getDefault()))
                     var token=Hawk.get<LoginResponse>(LOGIN_RESPONSE_SHARED).token

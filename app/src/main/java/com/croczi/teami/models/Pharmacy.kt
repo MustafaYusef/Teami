@@ -3,6 +3,7 @@ package com.croczi.teami.models
 import com.google.gson.annotations.SerializedName
 
 class Pharmacy(
+    @SerializedName("name")
     var name: String,
     var street: String,
     @SerializedName("organisation_id")

@@ -30,7 +30,7 @@
             android:layout_width="match_parent"
             android:layout_height="390dp"
             app:layout_collapseMode="pin"
-            app:srcCompat="@drawable/ic_curved_app_bar"
+            app:srcCompat="@drawable/curved_appbar"
             android:scaleType="fitXY"
             android:foregroundGravity="top"
             android:layout_gravity="top"/>
@@ -130,7 +130,7 @@
                     android:layout_gravity="left">
                 <EditText
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="60dp"
                         android:inputType="textEmailAddress"
                         android:ems="10"
                         android:id="@+id/emailET"
@@ -157,8 +157,8 @@
 
                 <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/textInput"
-                        android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="60dp"
                         android:layerType="software"
                         app:passwordToggleEnabled="true"
                         app:passwordToggleTint="@color/colorPrimaryDark"
@@ -177,20 +177,22 @@
                 >
                     <EditText
                             android:layout_width="match_parent"
+                        android:layout_height="60dp"
                             android:id="@+id/passwordET"
                             android:paddingStart="10dp"
                             android:inputType="textPassword"
                             android:drawablePadding="8dp"
                             android:drawableStart="@drawable/ic_password"
                             android:gravity="center"
-                            android:layout_height="match_parent"
+
+
                             android:background="@android:color/transparent"
                             android:hint="@string/passwordHint"
                             android:textColorHint="@color/colorPrimaryDark"
                             android:layout_marginStart="4dp"
 
                             android:textSize="16sp"
-                            android:layout_gravity="left"
+
                     />
                 </com.google.android.material.textfield.TextInputLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>

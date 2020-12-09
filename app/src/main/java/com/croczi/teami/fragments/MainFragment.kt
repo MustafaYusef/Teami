@@ -93,7 +93,9 @@ class MainFragment : androidx.fragment.app.Fragment() {
 
          db= context?.let { databaseApp(it) }
         loginResponse = arguments?.get(LOGIN_RESPONSE_SHARED) as LoginResponse?
+
         token = loginResponse?.token
+        println("token "+token)
         tokenExp = loginResponse?.expire
 
 //        providerDisabledLayout?.visibility = View.VISIBLE
@@ -120,6 +122,7 @@ class MainFragment : androidx.fragment.app.Fragment() {
             startActivity(i)
         }
         adapter = ResourcesAdapter(resourcesList, userLocation, myContext)
+
         adapter.setHasStableIds(true)
         resourcesRefresh?.setOnRefreshListener {
             getMyResources()
@@ -319,7 +322,7 @@ class MainFragment : androidx.fragment.app.Fragment() {
                 providerDisabledLayout?.visibility = View.GONE
                 resourcesRV?.visibility = View.GONE
                 resourcesRefresh?.visibility = View.GONE
-                sendMockReport()
+               // sendMockReport()
             } else {
                 providerDisabledLayout?.visibility = View.GONE
                 mockLayout?.visibility = View.GONE
@@ -373,15 +376,18 @@ class MainFragment : androidx.fragment.app.Fragment() {
         token?.let {
             NetworkTools.getMyResources(it, getID(requireContext()), {
                 resourcesRefresh?.isRefreshing = false
+                println("resource   : "+it.Resource)
+
                 errorLayout?.visibility = View.INVISIBLE
                 resourcesRV?.visibility = View.VISIBLE
                 resourcesList = it.Resource
+                println("count    resourse   "+resourcesList?.size.toString())
                 userLocation = locationUtils.userLocation
                 if (userLocation != null)
                     filterAndSortResources()
                 resourcesRV?.adapter = adapter
                 resourcesRV?.layoutManager =
-                    androidx.recyclerview.widget.LinearLayoutManager(context)
+                    LinearLayoutManager(context)
                 adapter.notifyDataSetChanged()
                  for(i in 0 until resourcesList!!.size) {
                      var myLocal=MyResourcesLocal(resourceType = resourcesList!![i].resourceType,
@@ -416,7 +422,6 @@ class MainFragment : androidx.fragment.app.Fragment() {
 
                 errorLayout?.visibility = View.INVISIBLE
                 resourcesRV?.visibility = View.VISIBLE
-
                 CoroutineScope(IO).launch{
                    async {
                        var localRes=db!!.resource_Dao().getAllResource()
@@ -447,7 +452,10 @@ class MainFragment : androidx.fragment.app.Fragment() {
                    }.await()
 
 
-
+                    var report=db?.feedBack_Dao()?.getAllResource()
+                    println("feeds   : "+report)
+                    var order=db?.orders_Dao()?.getAllOrders()
+                    println("orders   : "+order)
                 }
                 // desplay them
             })

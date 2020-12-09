@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.croczi.teami.database.entitis.*
 
 import com.mustafayusef.sharay.database.entitis.MyResourcesLocal
@@ -11,7 +13,7 @@ import com.mustafayusef.sharay.database.entitis.MyResourcesLocal
 
 @Database(entities = [MyResourcesLocal::class,FeedbackRequestLocal::class
         ,ItemLocal::class,OrderRequestLocal::class,StatusPharmasyResourceLocal::class,
-         StatusResourceLocal::class], version = 3)
+         StatusResourceLocal::class], version = 7)
 public abstract class databaseApp : RoomDatabase() {
 
 
@@ -31,13 +33,24 @@ public abstract class databaseApp : RoomDatabase() {
                 INSTANCE=it
             }
         }
+//        val MIGRATION_3_4 = object : Migration(3, 4) {
+//            override fun migrate(database: SupportSQLiteDatabase) {
+//                database.execSQL("ALTER TABLE OrderRequestLocal ADD COLUMN created_at TEXT")
+//            }
+//        }
+//
+//        val MIGRATION_4_5 = object : Migration(4, 5) {
+//            override fun migrate(database: SupportSQLiteDatabase) {
+//                database.execSQL("ALTER TABLE FeedbackRequestLocal ADD COLUMN created_at TEXT")
+//            }
+//        }
 
         fun getDatabase(context: Context)=
             Room.databaseBuilder(
                 context.applicationContext,
                 databaseApp::class.java,
                 "sharay"
-            ).fallbackToDestructiveMigration().build()
+            ).fallbackToDestructiveMigration() .build()
 
     }
 }

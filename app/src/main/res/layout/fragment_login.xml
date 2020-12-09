@@ -34,7 +34,7 @@
             android:scaleType="fitXY"
             android:foregroundGravity="top"
             android:layout_gravity="top"
-            app:srcCompat="@drawable/ic_curved_app_bar"/>
+            android:src="@drawable/curved_appbar"/>
     <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -114,7 +114,7 @@
                     android:layout_gravity="left">
                 <EditText
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="50dp"
                         android:inputType="textEmailAddress"
                         android:ems="10"
                         android:id="@+id/emailET"
@@ -142,7 +142,7 @@
                 <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/textInput"
                         android:layout_width="0dp"
-                        android:layout_height="32dp"
+                        android:layout_height="50dp"
                         android:layerType="software"
                         app:passwordToggleEnabled="true"
                         app:passwordToggleTint="@color/colorPrimaryDark"
@@ -167,7 +167,7 @@
                             android:drawablePadding="8dp"
                             android:drawableStart="@drawable/ic_password"
                             android:gravity="center"
-                            android:layout_height="match_parent"
+                            android:layout_height="60dp"
                             android:background="@android:color/transparent"
                             android:hint="@string/passwordHint"
                             android:textColorHint="@color/colorPrimaryDark"

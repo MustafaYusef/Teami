@@ -15,5 +15,8 @@ data class FeedbackRequestLocal(
     var note: String?,
     var activityType: String?,
     var remindersProducts:String?,
-    var callProducts:String?
+    var callProducts:String?,
+    var created_at:String?
+
+
 )

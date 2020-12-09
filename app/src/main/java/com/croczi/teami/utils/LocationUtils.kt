@@ -122,15 +122,15 @@ object LocationUtils {
 
     private fun initListener(context: Context) {
         listener = object : LocationListener {
-            override fun onLocationChanged(location: Location?) {
+            override fun onLocationChanged(p0: Location) {
                 var oldLocation = userLocation
                 fusedLocationProviderClient =
                     LocationServices.getFusedLocationProviderClient(context)
                 getLastKnowLocation(context)
-                location?.let {
+                p0?.let {
                     userLocation = it
-                    val userLat = location.latitude
-                    val userLong = location.longitude
+                    val userLat = p0.latitude
+                    val userLong = p0.longitude
                     val userLatLng = LatLng(userLat, userLong)
                 }
                 if (fragment.isVisible
@@ -150,13 +150,13 @@ object LocationUtils {
             override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
             }
 
-            override fun onProviderEnabled(provider: String?) {
+            override fun onProviderEnabled(provider: String) {
                 providerDisabled = false
                 if (context is MainActivity && ::fragment.isInitialized && fragment is MainFragment)
                     (fragment as MainFragment).filterAndSortResources()
             }
 
-            override fun onProviderDisabled(provider: String?) {
+            override fun onProviderDisabled(provider: String) {
                 if (provider == "gps")
                     providerDisabled = true
                 if (context is MainActivity && ::fragment.isInitialized && fragment is MainFragment)

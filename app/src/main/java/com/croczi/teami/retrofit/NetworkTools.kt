@@ -43,12 +43,15 @@ object NetworkTools {
     ) {
         enqueue(object : Callback<T> {
             override fun onFailure(call: Call<T>, t: Throwable) {
+                println("throwable       "+t.message)
                 t.message?.let {
+
                     failure(it)
-                } ?: failure("Something went wrong")
+                } ?: failure(t.message.toString())
             }
 
             override fun onResponse(call: Call<T>, response: Response<T>) {
+                println("on response     "+response.body())
                 checkResponseForErrors(
                     response,
                     noErrors = { data ->
@@ -67,8 +70,11 @@ object NetworkTools {
         success: (response: AddPharmacyResponse) -> Unit,
         failure: (throwable: String) -> Unit
     ) {
+        println("pharmacy object    "+pharmacy.name)
         representativesInterface.addNewPharmacy(pharmacy)
-            .getCallback({ success(it) }, { failure(it) })
+            .getCallback({ success(it) }, {
+                println("add pharmacy   "+it)
+                failure(it) })
     }
 
     fun getUserInfo(
@@ -116,7 +122,11 @@ object NetworkTools {
         failure: (throwable: String) -> Unit
     ) {
         representativesInterface.postFeedback(feedbackRequest)
-            .getCallback({ success(it) }, { failure(it) })
+            .getCallback({
+
+
+                println("feed success "+it.activity.createdAt)
+                success(it) }, { failure(it) })
     }
 
     fun postOrder(
@@ -125,7 +135,9 @@ object NetworkTools {
         failure: (throwable: String) -> Unit
     ) {
         representativesInterface.postOrder(orderRequest)
-            .getCallback({ success(it) }, { failure(it) })
+            .getCallback({
+                println("order success "+it.order[0].createdAt)
+                success(it) }, { failure(it) })
     }
 
 //    fun checkIfAppIsLocked(
@@ -254,7 +266,8 @@ fun Retrofit.Builder.addTLSSupport() {
         )
         .build()
     val client = OkHttpClient.Builder()
-        .connectTimeout(4,TimeUnit.SECONDS)
+        .connectTimeout(4,TimeUnit.MINUTES)
+        .readTimeout(4,TimeUnit.MINUTES)
         .connectionSpecs(listOf(spec, ConnectionSpec.CLEARTEXT))
         .build()
     this.client(client)

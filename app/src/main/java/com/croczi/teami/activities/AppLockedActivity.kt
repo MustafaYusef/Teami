@@ -32,7 +32,7 @@ class AppLockedActivity : AppCompatActivity() {
 
         val appLockedResponse = intent.getParcelableExtra<AppLockedResponse>(AppLockedExtra)
         lockedIV.controller = Fresco.newDraweeControllerBuilder()
-            .setUri(appLockedResponse.imgUrl)
+            .setUri(appLockedResponse?.imgUrl)
             .setControllerListener(object:ControllerListener<ImageInfo> {
                 override fun onFailure(id: String?, throwable: Throwable?) {
                 }

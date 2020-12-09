@@ -7,7 +7,7 @@
     <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent" android:background="@drawable/ic_curved_app_bar" app:elevation="0dp"
+            android:layout_width="match_parent" android:background="@drawable/curved_appbar" app:elevation="0dp"
             android:gravity="center_vertical">
         <LinearLayout
                 android:orientation="vertical"
@@ -59,7 +59,7 @@
 
                 <EditText
                     android:id="@+id/quantityET"
-                    android:layout_width="80dp"
+                    android:layout_width="100dp"
                     android:layout_height="32dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginTop="8dp"
@@ -70,8 +70,8 @@
                     android:foregroundGravity="center_vertical"
                     android:hint="@string/quantity"
 
-                    android:inputType="number"
-                    android:maxLength="3"
+                    android:inputType="text"
+                    android:maxLength="10"
                     android:paddingStart="8dp"
                     android:paddingEnd="8dp"
                     android:textColor="@android:color/black"
@@ -79,6 +79,7 @@
                     app:layout_constraintBottom_toBottomOf="@+id/ItemNameTV"
                     app:layout_constraintEnd_toStartOf="@+id/addItemBtn"
                     app:layout_constraintTop_toTopOf="@+id/ItemNameTV" />
+
                 <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="match_parent" app:srcCompat="@drawable/ic_add_white_24dp"
@@ -116,6 +117,7 @@
                 android:layout_height="58dp"
                 android:layout_marginStart="16dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginTop="5dp"
                 android:layout_marginBottom="8dp"
                 android:background="@drawable/rounded_btn_shape"
                 android:text="@string/done"

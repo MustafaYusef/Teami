@@ -11,5 +11,7 @@ var phone_id:String,
 var item_idArray:String,
 var quantityArray:String,
 var resource_type:String,
-var resource_id:Int
+var resource_id:Int,
+    var created_at:String?
+
 )

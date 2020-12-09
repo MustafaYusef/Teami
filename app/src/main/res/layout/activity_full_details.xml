@@ -7,10 +7,14 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" android:background="@color/background" android:id="@+id/coordinatorLayout">
     <com.google.android.material.appbar.AppBarLayout
+
             android:id="@+id/appbar"
             android:layout_height="wrap_content"
-            android:layout_width="match_parent" android:background="@drawable/ic_curved_app_bar" app:elevation="0dp"
+            android:layout_width="match_parent"
+        android:background="@drawable/curved_appbar"
+         app:elevation="0dp"
             android:gravity="center_vertical">
+
         <LinearLayout
                 android:orientation="vertical"
                 android:layout_width="match_parent"
@@ -293,6 +297,7 @@
                     android:layout_marginStart="16dp"
                     app:layout_constraintStart_toStartOf="parent"
                     android:layout_marginTop="16dp"
+                android:layout_marginBottom="10dp"
                     app:layout_constraintTop_toBottomOf="@+id/workHoursCV"
 
                />
@@ -307,20 +312,21 @@
                     android:id="@+id/fbBtnProgressBar" android:visibility="gone"/>
 
             <Button
-                    android:text="@string/order"
-                    android:layout_width="0dp"
-                    android:layout_height="58dp"
-                    android:id="@+id/orderBtn"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    android:layout_marginEnd="16dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginStart="16dp"
-                    android:background="@drawable/rounded_btn_shape"
-                    android:textColor="#ffffff"
-                    app:layout_constraintTop_toBottomOf="@+id/feedbackBtn"
+                android:id="@+id/orderBtn"
+                android:layout_width="0dp"
+                android:layout_height="58dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="15dp"
+                android:layout_marginEnd="16dp"
+                android:background="@drawable/rounded_btn_shape"
+                android:text="@string/order"
+                android:textColor="#ffffff"
+                android:visibility="visible"
+                app:layout_constraintEnd_toEndOf="parent"
 
-                    android:visibility="visible"
-                  />
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/feedbackBtn" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

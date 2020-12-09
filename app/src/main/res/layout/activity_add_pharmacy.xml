@@ -20,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:theme="@style/AppTheme.AppBarOverlay"
-                android:background="@drawable/ic_curved_app_bar"
+                android:background="@drawable/curved_appbar"
             tools:ignore="MissingConstraints">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
@@ -48,8 +48,8 @@
                     <EditText
                             android:layout_width="300dp"
                             android:layout_height="32dp"
-                            android:inputType="textPersonName"
-                            android:ems="10"
+                            android:inputType="text"
+
                             android:id="@+id/pharmNameET"
                             android:background="@drawable/edittext_normal"
                             android:paddingStart="8dp"

@@ -24,7 +24,7 @@ import com.croczi.teami.utils.Consts.LOGIN_RESPONSE_SHARED
 import com.croczi.teami.utils.Consts.SHOULD_LOGOUT
 import com.croczi.teami.utils.UserStatus.*
 import com.facebook.drawee.backends.pipeline.Fresco
-import com.google.firebase.iid.FirebaseInstanceId
+//import com.google.firebase.id.FirebaseInstanceId
 import com.mustafayusef.holidaymaster.utils.corurtins
 import com.mustafayusef.sharay.database.databaseApp
 import com.orhanobut.hawk.Hawk
@@ -71,13 +71,20 @@ class MainActivity : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiv
         }
     }
 
-   fun convertToInt(split: List<String>):List<Int> {
-       var ListInt= mutableListOf<Int>()
+   fun convertToStr(split: List<String>):List<String> {
+       var ListInt= mutableListOf<String>()
        for(i in 0 until split.size){
-           ListInt.add(split[i].toInt())
+           ListInt.add(split[i])
        }
        return ListInt
    }
+    fun convertToInt(split: List<String>):List<Int> {
+        var ListInt= mutableListOf<Int>()
+        for(i in 0 until split.size){
+            ListInt.add(split[i].toInt())
+        }
+        return ListInt
+    }
     private fun postFeedOnline(feedbackRequestLocal: FeedbackRequestLocal) {
         val feedbackRequest = FeedbackRequest(
             feedbackRequestLocal.token,
@@ -88,7 +95,7 @@ class MainActivity : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiv
             feedbackRequestLocal.note,
             feedbackRequestLocal.activityType,
             feedbackRequestLocal.remindersProducts,
-            feedbackRequestLocal.callProducts
+            feedbackRequestLocal.callProducts,feedbackRequestLocal.created_at
                 )
         feedbackRequest?.let {
             NetworkTools.postFeedback(it, {
@@ -108,10 +115,10 @@ class MainActivity : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiv
         val orderRequest = OrderRequest(
             orderRequestLocal.token,
             orderRequestLocal.phone_id,
-           convertToInt(orderRequestLocal.item_idArray.split(',')) ,
-            convertToInt (orderRequestLocal.quantityArray .split(',')),
+            convertToInt(orderRequestLocal.item_idArray.split(',')) ,
+            convertToStr (orderRequestLocal.quantityArray .split(',')),
             orderRequestLocal.resource_type,
-            orderRequestLocal.resource_id
+            orderRequestLocal.resource_id,orderRequestLocal.created_at
         )
         NetworkTools.postOrder(orderRequest, {
             CoroutineScope(IO).launch {
@@ -293,11 +300,11 @@ class MainActivity : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiv
 
     private fun launchApp() {
        // Hawk.init(this).build()
-        FirebaseInstanceId.getInstance().
-            instanceId.addOnSuccessListener { instanceIdResult ->
-            val newToken = instanceIdResult.token
-            Log.d("Token", newToken)
-        }
+//        FirebaseInstanceId.getInstance().
+//            instanceId.addOnSuccessListener { instanceIdResult ->
+//            val newToken = instanceIdResult.token
+//            Log.d("Token", newToken)
+//        }
         if (intent.getBooleanExtra(SHOULD_LOGOUT, false))
             gotoLogin()
         else
@@ -350,11 +357,11 @@ class MainActivity : AppCompatActivity(),ConnectivityReceiver.ConnectivityReceiv
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-
-
-    }
+//    override fun onStart() {
+//        super.onStart()
+//
+//
+//    }
 
     override fun onPause() {
         super.onPause()
